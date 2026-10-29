@@ -1,0 +1,261 @@
+category,name,kcal,protein,carbs,fat,sweet,salty,sour,spicy,priority
+Meat,Chicken Breast,165,31,0,3.6,0,2,0,0,2
+Meat,Chicken Thigh,209,26,0,11,0,2,0,0,2
+Meat,Chicken Wings,203,30,0,8,0,2,0,0,2
+Meat,Whole Chicken,239,27,0,14,0,2,0,0,2
+Meat,Chicken Qeema,143,17,0,8,0,2,0,0,2
+Meat,Chicken Liver,167,24,1,6.5,0,2,0,0,4
+Meat,Mutton,294,25,0,21,0,2,0,0,2
+Meat,Mutton Chops,290,24,0,21,0,2,0,0,3
+Meat,Mutton Qeema,282,17,0,23,0,2,0,0,2
+Meat,Mutton Paya,180,20,0,11,0,2,0,0,4
+Meat,Beef,250,26,0,15,0,2,0,0,2
+Meat,Beef Qeema,254,17,0,20,0,2,0,0,2
+Meat,Beef Nihari Shank,235,27,0,14,0,2,0,0,4
+Meat,Rohu Fish,97,17,0,2.9,0,2,0,0,3
+Meat,Pomfret Fish,96,18,0,2,0,2,0,0,4
+Meat,Prawns,99,24,0.2,0.3,1,3,0,0,4
+Meat,Eggs,143,13,0.7,9.5,0,1,0,0,2
+Meat,Chicken Boneless (Boti),165,31,0,3.6,0,2,0,0,2
+Meat,Chicken Drumstick,172,28,0,5.7,0,2,0,0,3
+Meat,Chicken Leg Piece,209,26,0,11,0,2,0,0,3
+Meat,Chicken Gizzard (Gizzi),94,17,0,2.1,0,2,0,0,4
+Meat,Mutton Leg (Raan),258,25,0,17,0,2,0,0,3
+Meat,Mutton Shoulder,270,24,0,19,0,2,0,0,3
+Meat,Mutton Ribs (Chaap),294,25,0,21,0,2,0,0,3
+Meat,Mutton Liver (Kaleji),139,20.4,3.9,4.9,0,2,0,0,3
+Meat,Mutton Brain (Maghaz),145,10.9,0,10.3,0,2,0,0,4
+Meat,Mutton Kidney (Gurda),97,16.5,0.8,3.1,0,2,0,0,4
+Meat,Beef Boneless,250,26,0,15,0,2,0,0,3
+Meat,Beef Ribs,291,24,0,21,0,2,0,0,3
+Meat,Beef Liver (Kaleji),135,20,3.9,3.6,0,2,0,0,4
+Meat,Beef Bone Marrow (Nalli),750,7,0,80,0,1,0,0,4
+Meat,Beef Tripe (Ojri),85,12,0,3.7,0,2,0,0,4
+Meat,Catla Fish,111,16.6,0,2.5,0,2,0,0,3
+Meat,Tilapia Fish,128,26,0,2.7,0,2,0,0,3
+Meat,Hilsa Fish (Palla),273,22,0,20,0,2,0,0,4
+Meat,Singhara Fish (Catfish),105,18,0,2.9,0,2,0,0,3
+Meat,Surmai Fish (King Fish),134,22,0,4.5,0,2,0,0,3
+Meat,Quail (Bater),227,25,0,14,0,2,0,0,4
+Vegetables,Tomato,18,0.9,3.9,0.2,2,0,4,0,1
+Vegetables,Onion,40,1.1,9.3,0.1,3,0,0,1,1
+Vegetables,Garlic,149,6.4,33,0.5,0,0,0,3,1
+Vegetables,Ginger,80,1.8,18,0.8,1,0,0,4,1
+Vegetables,Potato,77,2,17,0.1,1,0,0,0,1
+Vegetables,Spinach,23,2.9,3.6,0.4,0,0,0,0,2
+Vegetables,Cauliflower,25,1.9,5,0.3,1,0,0,0,2
+Vegetables,Green Chilli,40,2,9,0.2,0,0,0,9,1
+Vegetables,Okra (Bhindi),33,1.9,7.5,0.2,0,0,0,0,2
+Vegetables,Carrot,41,0.9,9.6,0.2,4,0,0,0,2
+Vegetables,Green Peas,81,5.4,14,0.4,3,0,0,0,2
+Vegetables,Cabbage,25,1.3,5.8,0.1,1,0,0,0,2
+Vegetables,Brinjal (Baingan),25,1,6,0.2,0,0,0,0,2
+Vegetables,Bottle Gourd (Lauki),14,0.6,3.4,0,0,0,0,0,3
+Vegetables,Bitter Gourd (Karela),17,1,3.7,0.2,0,0,1,0,3
+Vegetables,Capsicum,20,0.9,4.6,0.2,1,0,0,1,2
+Vegetables,Cucumber,15,0.7,3.6,0.1,0,0,0,0,2
+Vegetables,Mushroom,22,3.1,3.3,0.3,0,0,0,0,4
+Vegetables,Pumpkin (Kaddu),26,1,6.5,0.1,3,0,0,0,3
+Vegetables,Turnip (Shaljam),28,0.9,6.4,0.1,1,0,0,0,3
+Vegetables,Fresh Coriander,23,2.1,3.7,0.5,0,0,0,0,1
+Vegetables,Fresh Mint (Pudina),44,3.3,8.4,0.7,0,0,0,0,2
+Vegetables,Radish (Mooli),16,0.7,3.4,0.1,0,0,0,2,2
+Vegetables,Fenugreek Leaves (Methi),49,4.4,6,0.9,0,0,0,1,2
+Vegetables,Mustard Greens (Sarson Saag),27,2.9,4.7,0.4,0,0,0,1,3
+Vegetables,Sweet Potato (Shakarkandi),86,1.6,20,0.1,4,0,0,0,3
+Vegetables,Apple Gourd (Tinda),21,1.4,3.4,0.1,0,0,0,0,3
+Vegetables,Spring Onion (Hara Pyaz),32,1.8,7.3,0.2,2,0,0,1,2
+Vegetables,Green Beans (Fali),31,1.8,7,0.2,1,0,0,0,3
+Vegetables,Cluster Beans (Gwar Phali),16,3.2,3.4,0.1,0,0,0,0,3
+Vegetables,Ridge Gourd (Tori),20,1.2,4.4,0.2,0,0,0,0,3
+Vegetables,Colocasia (Arvi),112,1.5,26.5,0.2,1,0,0,0,3
+Vegetables,Lotus Stem (Bhein),74,2.6,17,0.1,1,0,0,0,4
+Vegetables,Raw Mango (Kairi),60,0.8,15,0.4,1,0,8,0,3
+Vegetables,Raw Banana (Kela),89,1.1,23,0.3,1,0,0,0,4
+Vegetables,Corn (Makai),96,3.4,21,1.5,3,0,0,0,3
+Vegetables,Broccoli,34,2.8,6.6,0.4,0,0,0,0,3
+Vegetables,Beetroot (Chukandar),43,1.6,9.6,0.2,3,0,0,0,3
+Vegetables,Dill (Soya),43,3.5,7,1.1,0,0,0,1,4
+Vegetables,Bathua,43,4,7.3,0.8,0,0,0,0,4
+Vegetables,Curry Leaves (Kari Patta),108,6.1,18.7,1,0,0,0,1,4
+Vegetables,Lettuce (Salad Patta),15,1.4,2.9,0.2,0,0,0,0,3
+Vegetables,Yam (Jimikand),118,1.5,28,0.2,1,0,0,0,4
+Fruits,Mango,60,0.8,15,0.4,8,0,2,0,2
+Fruits,Apple,52,0.3,14,0.2,6,0,2,0,2
+Fruits,Banana,89,1.1,23,0.3,7,0,0,0,2
+Fruits,Orange (Malta),47,0.9,12,0.1,6,0,5,0,2
+Fruits,Guava (Amrood),68,2.6,14,1,5,0,2,0,3
+Fruits,Pomegranate (Anar),83,1.7,19,1.2,6,0,4,0,2
+Fruits,Watermelon,30,0.6,7.6,0.2,6,0,0,0,3
+Fruits,Grapes,69,0.7,18,0.2,7,0,2,0,3
+Fruits,Dates (Khajoor),282,2.5,75,0.4,10,0,0,0,2
+Fruits,Lemon,29,1.1,9,0.3,0,0,10,0,2
+Fruits,Pear (Nashpati),57,0.4,15,0.1,6,0,1,0,4
+Fruits,Peach (Aarhoo),39,0.9,10,0.3,6,0,2,0,4
+Fruits,Plum (Aloo Bukhara),46,0.7,11,0.3,5,0,5,0,3
+Fruits,Papaya,43,0.5,11,0.3,6,0,0,0,4
+Fruits,Melon (Kharbooza),34,0.8,8,0.2,7,0,0,0,4
+Fruits,Apricot (Khubani),48,1.4,11,0.4,5,0,4,0,3
+Fruits,Fig (Anjeer),74,0.8,19,0.3,8,0,0,0,4
+Fruits,Strawberry,32,0.7,7.7,0.3,5,0,4,0,4
+Fruits,Kinnow,47,0.9,11.8,0.3,6,0,4,0,2
+Fruits,Sweet Lime (Mosambi),43,0.8,9.3,0.3,5,0,3,0,3
+Fruits,Lychee,66,0.8,16.5,0.4,8,0,1,0,3
+Fruits,Jamun,62,0.7,14,0.2,5,0,3,0,3
+Fruits,Mulberry (Shahtoot),43,1.4,9.8,0.4,6,0,2,0,4
+Fruits,Loquat (Lokat),47,0.4,12,0.2,5,0,3,0,4
+Fruits,Custard Apple (Sharifa),94,2.1,23.6,0.3,8,0,0,0,4
+Fruits,Persimmon (Amlok),70,0.6,18.6,0.2,8,0,0,0,4
+Fruits,Cherry,63,1.1,16,0.2,6,0,2,0,4
+Fruits,Pineapple,50,0.5,13,0.1,6,0,4,0,3
+Fruits,Chikoo,83,0.4,20,1.1,9,0,0,0,3
+Fruits,Ber (Jujube),79,1.2,20,0.2,6,0,1,0,4
+Fruits,Amla (Gooseberry),44,0.9,10.2,0.6,0,0,7,0,4
+Fruits,Fresh Coconut,354,3.3,15,33,3,0,0,0,3
+Fruits,Jackfruit (Kathal),95,1.7,23,0.6,6,0,0,0,4
+Dairy,Milk,61,3.2,4.8,3.3,2,0,0,0,2
+Dairy,Yogurt (Dahi),61,3.5,4.7,3.3,0,0,4,0,1
+Dairy,Butter (Makhan),717,0.9,0.1,81,0,1,0,0,2
+Dairy,Desi Ghee,900,0,0,100,0,0,0,0,1
+Dairy,Fresh Cream (Malai),340,2,3,36,1,0,0,0,2
+Dairy,Paneer,265,18,1.2,20,0,1,0,0,2
+Dairy,Cheddar Cheese,403,25,1.3,33,0,4,0,0,4
+Dairy,Mozzarella Cheese,280,28,3,17,0,2,0,0,4
+Dairy,Khoya (Mawa),421,15,22,31,4,0,0,0,4
+Dairy,Buttermilk (Chaas),40,3,5,1,0,2,3,0,3
+Dairy,Condensed Milk,321,8,54,8.7,9,0,0,0,4
+Dairy,Milk Powder,496,26,38,27,4,1,0,0,3
+Dairy,Lassi (Sweet),78,2.5,12,1.5,6,0,2,0,3
+Dairy,Rabri,215,7,25,10,7,0,0,0,4
+Dairy,Processed Cheese Slice,313,16,4,25,0,5,0,0,4
+Dairy,Clotted Cream (Qaimaq),350,3,4,35,1,0,0,0,4
+Dairy,Whipped Cream,257,2.1,12.5,22,3,0,0,0,4
+Dairy,Hung Curd (Thick Dahi),100,9,4,5,0,0,3,0,3
+Grocery,Basmati Rice,360,7.1,79,0.7,0,0,0,0,1
+Grocery,Wheat Flour (Atta),340,13,72,2.5,0,0,0,0,1
+Grocery,Refined Flour (Maida),364,10,76,1,0,0,0,0,2
+Grocery,Gram Flour (Besan),387,22,58,6.7,0,0,0,0,2
+Grocery,White Sugar,387,0,100,0,10,0,0,0,2
+Grocery,Jaggery (Gur),383,0.4,98,0.1,9,0,0,0,2
+Grocery,Salt,0,0,0,0,0,10,0,0,1
+Grocery,Semolina (Suji),360,13,73,1,0,0,0,0,4
+Grocery,Vermicelli (Seviyan),350,11,74,1.5,0,0,0,0,4
+Grocery,Bread,265,9,49,3.2,1,2,0,0,2
+Grocery,Noodles,360,12,72,1.5,0,1,0,0,4
+Grocery,Corn Flour,381,6,91,1.4,0,0,0,0,4
+Grocery,Honey,304,0.3,82,0,9,0,0,0,3
+Grocery,Tamarind (Imli),239,2.8,62,0.6,4,0,9,0,2
+Grocery,Vinegar,18,0,0.04,0,0,0,9,0,4
+Grocery,Soy Sauce,53,8,5,0,0,9,0,0,4
+Grocery,Tomato Ketchup,101,1,27,0.1,5,2,3,0,2
+Grocery,Rice Flour,366,6,80,1.4,0,0,0,0,4
+Grocery,Roasted Chana,364,22,61,6,0,0,0,0,3
+Grocery,Sella Basmati Rice,360,7.1,79,0.7,0,0,0,0,2
+Grocery,Cracked Wheat (Dalia),342,12,76,1.9,0,0,0,0,3
+Grocery,Cornmeal (Makai Atta),362,8,77,3.6,0,0,0,0,3
+Grocery,Millet Flour (Bajra Atta),378,11,73,4.2,0,0,0,0,4
+Grocery,Barley (Jau),354,12,74,2.3,0,0,0,0,4
+Grocery,Sago (Sabudana),358,0.2,88,0.2,0,0,0,0,4
+Grocery,Macaroni,371,13,75,1.5,0,0,0,0,3
+Grocery,Spaghetti,371,13,75,1.5,0,0,0,0,3
+Grocery,Baking Powder,53,0,28,0,0,4,0,0,4
+Grocery,Baking Soda,0,0,0,0,0,4,0,0,4
+Grocery,Rose Water (Gulab Jal),0,0,0,0,1,0,0,0,4
+Grocery,Kewra Water,0,0,0,0,1,0,0,0,4
+Grocery,Fried Onion (Birista),520,6,40,38,3,0,0,0,3
+Grocery,Papad,371,25,60,3,0,4,0,2,4
+Grocery,Samosa Pastry Sheets,310,9,62,2.5,0,1,0,0,4
+Grocery,Tea Leaves (Chai Patti),1,0,0,0,0,0,0,0,3
+Grocery,Custard Powder,354,0.3,85,0.7,2,0,0,0,4
+Spices,Red Chilli Powder,282,13,50,14,0,0,0,10,1
+Spices,Turmeric (Haldi),312,10,67,3,0,0,0,1,1
+Spices,Cumin (Zeera),375,18,44,22,0,0,0,2,1
+Spices,Coriander Powder,298,12,55,18,0,0,0,1,1
+Spices,Garam Masala,379,13,60,15,0,0,0,5,1
+Spices,Black Pepper,251,10,64,3.3,0,0,0,7,2
+Spices,Green Cardamom (Elaichi),311,11,68,6.7,2,0,0,2,2
+Spices,Cinnamon (Dalchini),247,4,81,1.2,3,0,0,1,2
+Spices,Cloves (Laung),274,6,66,13,0,0,0,4,2
+Spices,Bay Leaf (Tez Patta),313,7.6,75,8.4,0,0,0,1,2
+Spices,Fennel Seeds (Saunf),345,16,52,15,3,0,0,0,2
+Spices,Mustard Seeds (Sarson),508,26,28,36,0,0,0,5,3
+Spices,Carom Seeds (Ajwain),305,16,43,25,0,0,0,3,3
+Spices,Fenugreek (Methi Dana),323,23,58,6.4,0,0,1,1,3
+Spices,Dried Mango Powder (Amchur),300,3,70,2,0,0,9,0,3
+Spices,Chaat Masala,250,10,45,5,0,6,5,4,2
+Spices,Black Salt (Kala Namak),0,0,0,0,0,9,0,0,3
+Spices,Star Anise,337,18,50,16,2,0,0,1,4
+Spices,Nutmeg (Jaifal),525,6,49,36,1,0,0,2,4
+Spices,Kashmiri Chilli Powder,282,13,50,14,0,0,0,5,2
+Spices,Black Cardamom (Bari Elaichi),300,10,65,6,0,0,0,3,4
+Spices,Kasuri Methi,323,23,58,6.4,0,0,0,0,2
+Spices,Whole Red Chilli (Sabut Lal Mirch),318,12,57,17,0,0,0,9,2
+Spices,Coriander Seeds (Sabut Dhania),298,12,55,18,0,0,0,0,2
+Spices,Nigella Seeds (Kalonji),345,17,49,22,0,0,0,2,4
+Spices,Black Cumin (Shahi Zeera),375,18,44,22,0,0,0,3,3
+Spices,Ginger Powder (Saunth),335,9,72,4,0,0,0,5,3
+Spices,Red Chilli Flakes (Kuti Lal Mirch),318,12,57,17,0,0,0,8,3
+Spices,White Pepper,296,10,69,2,0,0,0,6,3
+Spices,Saffron (Zafran),310,11,65,6,1,0,0,0,4
+Spices,Biryani Masala,320,11,52,10,1,7,1,6,2
+Spices,Tikka Masala,310,11,50,10,1,7,2,7,3
+Spices,Karahi Masala,310,11,50,10,1,6,1,7,2
+Spices,Nihari Masala,320,11,52,10,1,6,0,6,3
+Spices,Korma Masala,320,11,52,11,2,6,0,5,3
+Spices,Chana Masala,300,11,50,9,0,6,4,6,3
+Spices,Pulao Masala,320,11,52,11,1,5,0,5,3
+Spices,Pomegranate Seeds Dried (Anardana),290,3,65,3,2,0,8,0,3
+Spices,Poppy Seeds (Khashkhash),525,18,28,42,0,0,0,0,4
+Spices,Mace (Javitri),475,6.7,50,32,0,0,0,3,4
+Spices,Asafoetida (Hing),297,4,68,1,0,0,0,4,3
+Spices,Dried Mint (Pudina Khushk),285,20,52,6,0,0,0,1,3
+Pulses & Nuts,Masoor Dal,352,24,60,1.1,0,0,0,0,2
+Pulses & Nuts,Moong Dal,347,24,63,1.2,0,0,0,0,2
+Pulses & Nuts,Chana Dal,364,22,61,6,0,0,0,0,2
+Pulses & Nuts,Toor Dal,343,22,63,1.5,0,0,0,0,2
+Pulses & Nuts,Mash Dal,341,25,59,1.6,0,0,0,0,2
+Pulses & Nuts,Kabuli Chickpeas (Chana),364,19,61,6,0,0,0,0,2
+Pulses & Nuts,Black Chickpeas (Kala Chana),378,20,63,6,0,0,0,0,2
+Pulses & Nuts,Red Kidney Beans (Rajma),337,23,60,0.8,0,0,0,0,2
+Pulses & Nuts,Black-eyed Beans (Lobia),336,24,60,1.3,0,0,0,0,3
+Pulses & Nuts,Whole Moong,347,24,63,1.2,0,0,0,0,2
+Pulses & Nuts,Peanuts,567,26,16,49,0,0,0,0,3
+Pulses & Nuts,Almonds (Badam),579,21,22,50,0,0,0,0,4
+Pulses & Nuts,Cashews (Kaju),553,18,30,44,1,0,0,0,4
+Pulses & Nuts,Pistachios (Pista),560,20,28,45,1,0,0,0,4
+Pulses & Nuts,Walnuts (Akhrot),654,15,14,65,0,0,0,0,4
+Pulses & Nuts,Sesame Seeds (Til),573,18,23,50,0,0,0,0,3
+Pulses & Nuts,Raisins (Kishmish),299,3,79,0.5,9,0,0,0,4
+Pulses & Nuts,Desiccated Coconut,660,6.9,24,65,3,0,0,0,4
+Pulses & Nuts,Dried Green Peas (Sookha Matar),341,24.5,60,1.2,0,0,0,0,3
+Pulses & Nuts,Black Gram Whole (Sabut Mash),341,25,59,1.6,0,0,0,0,3
+Pulses & Nuts,Soya Chunks,345,52,33,0.5,0,0,0,0,4
+Pulses & Nuts,Pine Nuts (Chilgoza),673,14,13,68,0,0,0,0,4
+Pulses & Nuts,Melon Seeds (Magaz),557,28,15,47,0,0,0,0,4
+Pulses & Nuts,Pumpkin Seeds,559,30,11,49,0,0,0,0,4
+Pulses & Nuts,Sunflower Seeds,584,21,20,51,0,0,0,0,4
+Pulses & Nuts,Flaxseeds (Alsi),534,18,29,42,0,0,0,0,4
+Pulses & Nuts,Dried Apricots,241,3.4,63,0.5,8,0,2,0,3
+Pulses & Nuts,Fox Nuts (Makhana),347,9.7,77,0.1,0,0,0,0,4
+Oils & Sauces,Cooking Oil,884,0,0,100,0,0,0,0,1
+Oils & Sauces,Mustard Oil,884,0,0,100,0,0,0,1,3
+Oils & Sauces,Mayonnaise,680,1,0.6,75,0,2,2,0,4
+Oils & Sauces,Mint Chutney,50,2,8,1,1,3,3,4,2
+Oils & Sauces,Tamarind Chutney,120,1,30,0.5,6,2,7,1,3
+Oils & Sauces,Chilli Garlic Sauce,70,2,15,0.5,2,4,2,8,4
+Oils & Sauces,Tomato Paste,82,4.3,19,0.5,3,1,5,0,3
+Oils & Sauces,Coconut Milk,230,2.3,6,24,3,0,0,0,4
+Oils & Sauces,Mixed Pickle (Achar),100,2,10,6,0,6,6,5,2
+Oils & Sauces,Ginger Garlic Paste,70,2,10,2,0,1,0,3,1
+Oils & Sauces,Banaspati Ghee,884,0,0,100,0,0,0,0,3
+Oils & Sauces,Sunflower Oil,884,0,0,100,0,0,0,0,3
+Oils & Sauces,Corn Oil,884,0,0,100,0,0,0,0,3
+Oils & Sauces,Sesame Oil (Til ka Tel),884,0,0,100,0,0,0,0,4
+Oils & Sauces,Garlic Paste,100,4,18,0.5,0,1,0,3,3
+Oils & Sauces,Ginger Paste,60,2,13,0.8,0,0,0,4,3
+Oils & Sauces,Mango Pickle (Aam ka Achar),180,1,15,13,1,7,6,5,3
+Oils & Sauces,Lemon Pickle (Nimbu Achar),150,1,14,10,1,7,7,4,3
+Oils & Sauces,Green Chilli Pickle (Hari Mirch Achar),140,2,8,11,0,7,5,8,3
+Oils & Sauces,Garlic Sauce,300,1,12,28,1,5,2,2,3
+Oils & Sauces,Chilli Sauce,90,1.5,20,0.5,3,4,3,7,3
+Oils & Sauces,Rooh Afza Syrup,270,0,67,0,10,0,0,0,3
