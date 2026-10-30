@@ -20,6 +20,17 @@ select pg_temp.assert_true((select count(*) = 2 from public.profiles where user_
   ('10000000-0000-4000-8000-000000000001', '10000000-0000-4000-8000-000000000002')), 'signup profiles');
 select pg_temp.assert_true((select count(*) = 2 from public.preferences where user_id in
   ('10000000-0000-4000-8000-000000000001', '10000000-0000-4000-8000-000000000002')), 'signup preferences');
+-- 0003: username copied from signup metadata; optional tastes/calorie default to 'none'.
+insert into auth.users(id, email, raw_user_meta_data) values
+  ('10000000-0000-4000-8000-000000000003', 'rls-c@example.invalid', '{"username":"  Ayesha  "}');
+select pg_temp.assert_true((select display_name = 'Ayesha' from public.profiles
+  where user_id = '10000000-0000-4000-8000-000000000003'), 'signup username copied and trimmed');
+select pg_temp.assert_true((select sweet = 'none' and spicy = 'none' and calorie_tier = 'none' and not onboarded
+  and custom_allergens = '{}' from public.preferences where user_id = '10000000-0000-4000-8000-000000000003'),
+  'onboarding defaults');
+select pg_temp.assert_true((select count(*) = 3 from public.ingredients where 'tomato' = any(allergens)), 'tomato tags');
+select pg_temp.assert_true((select count(*) = 4 from public.ingredients where 'corn' = any(allergens)), 'corn tags');
+select pg_temp.assert_true((select count(*) = 6 from public.ingredients where 'citrus' = any(allergens)), 'citrus tags');
 
 set local role anon;
 select pg_temp.assert_true((select count(*) = 260 from public.ingredients), 'anonymous ingredient read');
@@ -71,7 +82,27 @@ do $$ begin
     update public.preferences set allergens = array['invented'];
     raise exception 'FAIL: unknown allergen allowed';
   exception when check_violation then null; end;
+  begin
+    update public.preferences set custom_allergens = array_fill('x'::text, array[21]);
+    raise exception 'FAIL: more than 20 custom allergen words allowed';
+  exception when check_violation then null; end;
+  begin
+    update public.preferences set custom_allergens = array[''];
+    raise exception 'FAIL: blank custom allergen word allowed';
+  exception when check_violation then null; end;
+  begin
+    update public.preferences set calorie_tier = 'huge';
+    raise exception 'FAIL: unknown calorie tier allowed';
+  exception when check_violation then null; end;
+  begin
+    update public.profiles set display_name = repeat('x', 31);
+    raise exception 'FAIL: overlong display name allowed';
+  exception when check_violation then null; end;
 end $$;
+update public.preferences set allergens = array['tomato','corn','legumes'], custom_allergens = array['prawns'],
+  calorie_tier = 'none', spicy = 'high', onboarded = true where user_id = auth.uid();
+select pg_temp.assert_true((select onboarded and allergens = array['tomato','corn','legumes']
+  from public.preferences), 'onboarding answers saved');
 
 select set_config('request.jwt.claim.sub', '10000000-0000-4000-8000-000000000002', true);
 select pg_temp.assert_true((select count(*) = 0 from public.pantry_items), 'cross-user pantry hidden');

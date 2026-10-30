@@ -561,7 +561,9 @@
     "sour": 4,
     "spicy": 0,
     "priority": 1,
-    "allergens": []
+    "allergens": [
+      "tomato"
+    ]
   },
   {
     "name": "Onion",
@@ -729,7 +731,9 @@
     "sour": 0,
     "spicy": 0,
     "priority": 2,
-    "allergens": []
+    "allergens": [
+      "brinjal"
+    ]
   },
   {
     "name": "Bottle Gourd (Lauki)",
@@ -1025,7 +1029,9 @@
     "sour": 8,
     "spicy": 0,
     "priority": 3,
-    "allergens": []
+    "allergens": [
+      "mango"
+    ]
   },
   {
     "name": "Raw Banana (Kela)",
@@ -1039,7 +1045,9 @@
     "sour": 0,
     "spicy": 0,
     "priority": 4,
-    "allergens": []
+    "allergens": [
+      "banana"
+    ]
   },
   {
     "name": "Corn (Makai)",
@@ -1053,7 +1061,9 @@
     "sour": 0,
     "spicy": 0,
     "priority": 3,
-    "allergens": []
+    "allergens": [
+      "corn"
+    ]
   },
   {
     "name": "Broccoli",
@@ -1165,7 +1175,9 @@
     "sour": 2,
     "spicy": 0,
     "priority": 2,
-    "allergens": []
+    "allergens": [
+      "mango"
+    ]
   },
   {
     "name": "Apple",
@@ -1193,7 +1205,9 @@
     "sour": 0,
     "spicy": 0,
     "priority": 2,
-    "allergens": []
+    "allergens": [
+      "banana"
+    ]
   },
   {
     "name": "Orange (Malta)",
@@ -1207,7 +1221,9 @@
     "sour": 5,
     "spicy": 0,
     "priority": 2,
-    "allergens": []
+    "allergens": [
+      "citrus"
+    ]
   },
   {
     "name": "Guava (Amrood)",
@@ -1291,7 +1307,9 @@
     "sour": 10,
     "spicy": 0,
     "priority": 2,
-    "allergens": []
+    "allergens": [
+      "citrus"
+    ]
   },
   {
     "name": "Pear (Nashpati)",
@@ -1403,7 +1421,9 @@
     "sour": 4,
     "spicy": 0,
     "priority": 4,
-    "allergens": []
+    "allergens": [
+      "strawberry"
+    ]
   },
   {
     "name": "Kinnow",
@@ -1417,7 +1437,9 @@
     "sour": 4,
     "spicy": 0,
     "priority": 2,
-    "allergens": []
+    "allergens": [
+      "citrus"
+    ]
   },
   {
     "name": "Sweet Lime (Mosambi)",
@@ -1431,7 +1453,9 @@
     "sour": 3,
     "spicy": 0,
     "priority": 3,
-    "allergens": []
+    "allergens": [
+      "citrus"
+    ]
   },
   {
     "name": "Lychee",
@@ -1585,7 +1609,9 @@
     "sour": 7,
     "spicy": 0,
     "priority": 4,
-    "allergens": []
+    "allergens": [
+      "citrus"
+    ]
   },
   {
     "name": "Fresh Coconut",
@@ -1599,7 +1625,9 @@
     "sour": 0,
     "spicy": 0,
     "priority": 3,
-    "allergens": []
+    "allergens": [
+      "coconut"
+    ]
   },
   {
     "name": "Jackfruit (Kathal)",
@@ -2083,7 +2111,9 @@
     "sour": 0,
     "spicy": 0,
     "priority": 4,
-    "allergens": []
+    "allergens": [
+      "corn"
+    ]
   },
   {
     "name": "Honey",
@@ -2156,7 +2186,9 @@
     "sour": 3,
     "spicy": 0,
     "priority": 2,
-    "allergens": []
+    "allergens": [
+      "tomato"
+    ]
   },
   {
     "name": "Rice Flour",
@@ -2230,7 +2262,9 @@
     "sour": 0,
     "spicy": 0,
     "priority": 3,
-    "allergens": []
+    "allergens": [
+      "corn"
+    ]
   },
   {
     "name": "Millet Flour (Bajra Atta)",
@@ -2648,7 +2682,9 @@
     "sour": 9,
     "spicy": 0,
     "priority": 3,
-    "allergens": []
+    "allergens": [
+      "mango"
+    ]
   },
   {
     "name": "Chaat Masala",
@@ -3310,7 +3346,9 @@
     "sour": 0,
     "spicy": 0,
     "priority": 4,
-    "allergens": []
+    "allergens": [
+      "coconut"
+    ]
   },
   {
     "name": "Dried Green Peas (Sookha Matar)",
@@ -3561,7 +3599,9 @@
     "sour": 5,
     "spicy": 0,
     "priority": 3,
-    "allergens": []
+    "allergens": [
+      "tomato"
+    ]
   },
   {
     "name": "Coconut Milk",
@@ -3575,7 +3615,9 @@
     "sour": 0,
     "spicy": 0,
     "priority": 4,
-    "allergens": []
+    "allergens": [
+      "coconut"
+    ]
   },
   {
     "name": "Mixed Pickle (Achar)",
@@ -3647,7 +3689,9 @@
     "sour": 0,
     "spicy": 0,
     "priority": 3,
-    "allergens": []
+    "allergens": [
+      "corn"
+    ]
   },
   {
     "name": "Sesame Oil (Til ka Tel)",
@@ -3706,6 +3750,7 @@
     "spicy": 5,
     "priority": 3,
     "allergens": [
+      "mango",
       "mustard"
     ]
   },
@@ -3722,6 +3767,7 @@
     "spicy": 4,
     "priority": 3,
     "allergens": [
+      "citrus",
       "mustard"
     ]
   },

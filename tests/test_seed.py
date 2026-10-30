@@ -9,8 +9,8 @@ seed = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(seed)
 
 @pytest.mark.parametrize("category,name,expected", [
-    ("Dairy", "Milk", ["milk"]), ("Dairy", "Coconut Milk", []),
-    ("Grocery", "Cornmeal (Makai Atta)", []), ("Grocery", "Millet Flour (Bajra Atta)", []),
+    ("Dairy", "Milk", ["milk"]), ("Dairy", "Coconut Milk", ["coconut"]),
+    ("Grocery", "Cornmeal (Makai Atta)", ["corn"]), ("Grocery", "Millet Flour (Bajra Atta)", []),
     ("Grocery", "Wheat Flour (Atta)", ["gluten"]),
     ("Grocery", "Cracked Wheat (Dalia)", ["gluten"]),
     ("Grocery", "Gram Flour (Besan)", ["legumes"]),
@@ -27,6 +27,23 @@ spec.loader.exec_module(seed)
     ("Vegetables", "Dill (Soya)", []), ("Vegetables", "Green Beans", []),
     ("Spices", "Cinnamon (Dalchini)", []),
     ("Grocery", "Notatta", []),
+    ("Vegetables", "Tomato", ["tomato"]), ("Oils & Sauces", "Tomato Paste", ["tomato"]),
+    ("Grocery", "Tomato Ketchup", ["tomato"]),
+    ("Vegetables", "Brinjal (Baingan)", ["brinjal"]),
+    ("Fruits", "Mango", ["mango"]), ("Vegetables", "Raw Mango (Kairi)", ["mango"]),
+    ("Spices", "Dried Mango Powder (Amchur)", ["mango"]),
+    ("Oils & Sauces", "Mango Pickle (Aam ka Achar)", ["mango", "mustard"]),
+    ("Fruits", "Orange (Malta)", ["citrus"]), ("Fruits", "Kinnow", ["citrus"]),
+    ("Fruits", "Sweet Lime (Mosambi)", ["citrus"]), ("Fruits", "Lemon", ["citrus"]),
+    ("Oils & Sauces", "Lemon Pickle (Nimbu Achar)", ["citrus", "mustard"]),
+    ("Fruits", "Amla (Gooseberry)", ["citrus"]),
+    ("Fruits", "Banana", ["banana"]), ("Vegetables", "Raw Banana (Kela)", ["banana"]),
+    ("Fruits", "Strawberry", ["strawberry"]),
+    ("Fruits", "Fresh Coconut", ["coconut"]), ("Pulses & Nuts", "Desiccated Coconut", ["coconut"]),
+    ("Oils & Sauces", "Coconut Milk", ["coconut"]),
+    ("Vegetables", "Corn (Makai)", ["corn"]), ("Grocery", "Corn Flour", ["corn"]),
+    ("Oils & Sauces", "Corn Oil", ["corn"]),
+    ("Spices", "Black Peppercorns", []), ("Vegetables", "Sweet Potato", []),
 ])
 def test_allergens(category, name, expected):
     assert seed.allergens_for(category, name) == expected

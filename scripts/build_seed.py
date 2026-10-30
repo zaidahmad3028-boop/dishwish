@@ -37,6 +37,14 @@ def allergens_for(category: str, name: str) -> list[str]:
         (("prawn", "oyster"), "shellfish"),
         (("mustard", "achar"), "mustard"),
         (("besan", "roasted chana", "papad"), "legumes"),
+        (("tomato",), "tomato"),
+        (("brinjal", "baingan"), "brinjal"),
+        (("mango",), "mango"),
+        (("orange", "malta", "kinnow", "sweet lime", "mosambi", "lemon", "nimbu", "amla"), "citrus"),
+        (("banana",), "banana"),
+        (("strawberr",), "strawberry"),
+        (("coconut",), "coconut"),
+        (("corn", "makai"), "corn"),
     ]:
         if starts(*terms):
             tags.add(tag)

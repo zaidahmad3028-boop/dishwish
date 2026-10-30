@@ -6,7 +6,8 @@ from pathlib import Path
 
 TASTES = ("sweet", "salty", "sour", "spicy")
 ALLERGENS = frozenset({"milk", "gluten", "eggs", "peanuts", "tree_nuts", "sesame",
-                      "fish", "shellfish", "soy", "mustard", "legumes"})
+                      "fish", "shellfish", "soy", "mustard", "legumes", "tomato",
+                      "brinjal", "mango", "citrus", "banana", "strawberry", "coconut", "corn"})
 
 
 @dataclass(frozen=True)

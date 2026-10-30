@@ -1,6 +1,21 @@
 # Pantry2Plate PK
 
-A smart kitchen assistant for Pakistani homes. The app currently provides a React landing screen and a public FastAPI health endpoint. Step 2 adds the database schema, RLS policies, and a 260-ingredient seed. Step 3 adds public NetworkX ingredient recommendations. Pantry CRUD, authentication, recipes, nutrition calculations, shopping lists, saved dishes, sharing, PDF export, and installable PWA support remain for subsequent steps.
+A smart kitchen assistant for Pakistani homes. Steps 1–3 added the skeleton, the database schema/RLS with a 260-ingredient seed, and public NetworkX ingredient recommendations. Phase 1 adds email/password auth (Supabase), a 3-step onboarding (taste profile, allergen shield, calorie target) saved to `preferences`, the signed-in app shell, and Supabase JWT verification in the API. Pantry, recipes, nutrition, shopping, sharing, PDF export and PWA support follow in later phases.
+
+## Phase 1: auth + onboarding
+
+**Database (manual, SQL Editor):** run `supabase/migrations/0003_onboarding.sql`, then re-run `supabase/seed/seed.sql`, then `supabase/tests/rls_check.sql`. The order matters; see [supabase/README.md](supabase/README.md).
+
+**Web (`web/`):** React Router routes `/auth` (register/login), `/onboarding`, and the signed-in pages `/kitchen`, `/recipes`, `/pantry`, `/profile` behind `RequireAuth`. There's no top navbar. Signed-in pages use a slim left icon sidebar that becomes a bottom tab bar on mobile. Registration passes the username as `options.data.username` (copied into `profiles.display_name` by the signup trigger), then opens onboarding. Login opens `/kitchen`. Sessions persist via supabase-js. Each onboarding "Next" and the finish button upsert `preferences`. Free-text allergy words block any ingredient whose name contains them, and shellfish words also enable the `shellfish` tag. `web/vercel.json` rewrites deep links to `index.html`.
+
+**API (`api/`):** `core/auth.py` verifies Supabase access tokens. HS256 tokens use `SUPABASE_JWT_SECRET` (legacy). RS256/ES256/EdDSA tokens use public keys from `SUPABASE_URL/auth/v1/.well-known/jwks.json` (cached). Audience `authenticated`, issuer `SUPABASE_URL/auth/v1`, and expiry are enforced, and each algorithm is only checked against its own key type. `GET /api/me` is the first signed-in route. `/api/health` and `/api/recommend` stay public, and `/api/recommend` accepts the 19 allergen tags.
+
+**Tests:**
+
+```bash
+cd web && npm test                    # Vitest + Testing Library: auth, onboarding, routing, preference rules
+python -m pytest tests -q             # from the repo root: seed tags, recommender, JWT verification, /api/me
+```
 
 ## Structure
 
