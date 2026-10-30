@@ -1,6 +1,6 @@
 # Pantry2Plate PK
 
-A smart kitchen assistant for Pakistani homes. The app currently provides a React landing screen and a public FastAPI health endpoint. Step 2 adds the database schema, RLS policies, and a 260-ingredient seed. Pantry CRUD, authentication, the NetworkX engine, recipes, nutrition, shopping lists, saved dishes, sharing, PDF export, and installable PWA support are planned for subsequent steps.
+A smart kitchen assistant for Pakistani homes. The app currently provides a React landing screen and a public FastAPI health endpoint. Step 2 adds the database schema, RLS policies, and a 260-ingredient seed. Step 3 adds public NetworkX ingredient recommendations. Pantry CRUD, authentication, recipes, nutrition calculations, shopping lists, saved dishes, sharing, PDF export, and installable PWA support remain for subsequent steps.
 
 ## Structure
 
@@ -38,7 +38,7 @@ The current endpoint does not require environment variables; the `.env` template
 1. In `web`, run `npm run build`; it must complete successfully.
 2. Run the web development server and confirm the Pantry2Plate PK landing screen at both mobile and desktop widths.
 3. With the API running, run `curl http://localhost:8000/api/health`. Expected JSON: `{"status":"ok","service":"pantry2plate-pk-api"}`.
-4. API docs are available locally at `/docs`. No engine exists yet, so there is no engine test suite in this step; engine tests will accompany its implementation.
+4. API docs are available locally at `/docs`. Run `python -m pytest tests -q` from the repository root with the API virtual environment activated to check seed generation, engine behavior, endpoint validation, and CORS.
 
 ## Manual setup
 
@@ -73,3 +73,29 @@ python -m pytest tests -q
 ```
 
 The seed is deterministic and safe to run again: it updates ingredients by name without replacing IDs or deleting pantry references. Schema migrations run once. Nutrition values are supplied CSV data and have not been independently verified. Allergen tags implement the requested heuristic; packaged foods and cross-contamination require label checks. `legumes` is the stored tag for the requested lentil/chickpea allergen group, with the broader pulse matching specified for this dataset.
+
+## Step 3: ingredient recommendations
+
+The API now includes `engine/data.py`, `engine/recommender.py`, and `POST /api/recommend`. This endpoint is public: it only ranks a bundled public ingredient catalog and does not read user profiles, private pantry rows, or Supabase credentials. User-specific routes must verify Supabase JWTs when implemented. Run the API from `api/` with `uvicorn api.index:app --reload --port 8000`.
+
+```bash
+curl -X POST http://localhost:8000/api/recommend \
+  -H 'Content-Type: application/json' \
+  -d '{"selected_ingredients":["Mutton","Onion"],"taste_preferences":{"spicy":8,"sour":3},"excluded_allergens":["milk","peanuts"],"limit":5}'
+```
+
+Expected: HTTP 200 with a `recommendations` array of five results. Each result has `name`, `category`, `score`, `priority`, `allergens`, `taste_fit`, and per-selected-ingredient `contributions`. No selected ingredient or excluded allergen should appear among the results. Requests accept 1–20 distinct ingredient names (case-insensitive, trimmed), an optional limit of 1–50, optional taste targets from 0–10 for sweet/salty/sour/spicy, and optional allergen tags from the database vocabulary. Invalid names, duplicate selections, allergen-conflicting selections, and invalid ranges return HTTP 422. A valid request with no eligible candidates returns an empty array.
+
+The complete NetworkX graph has 260 nodes and 33,670 weighted edges. An edge weight is `0.6 × category affinity + 0.4 × taste similarity`, where taste similarity is `1 − mean absolute taste difference / 10`. The category-pair affinity table is explicit in `recommender.py`; unlisted pairs use 0.5. A candidate's cumulative score sums its edge weights to **every** selected ingredient, then multiplies by `0.75 + 0.25 × taste fit` when taste targets are provided. Taste fit measures distance to the requested targets. With no targets, the multiplier is 1. Ties use higher numeric priority first (5 before 1), then ingredient name. Scores are ranking units, not probabilities or clinical/nutrition advice. Weights are initial heuristics, not trained Pakistani cuisine pairing data; real-world taste quality remains unvalidated.
+
+Allergen filtering uses the supplied name-based tags and their documented limitations. The API refuses a selected ingredient that conflicts with an excluded allergen instead of silently accepting it. No recipe generation, nutrition calculation, shopping estimates, or authenticated pantry integration is included in this step.
+
+The catalog is bundled within `api/engine/ingredients.json` so a Vercel project rooted at `api` does not depend on a sibling checkout directory. After editing the source CSV, regenerate both artifacts and run the tests:
+
+```bash
+python scripts/build_seed.py
+python scripts/build_engine_data.py
+python -m pytest tests -q
+```
+
+`ALLOWED_ORIGINS` accepts comma-separated exact frontend origins (default `http://localhost:5173`). Set it to the deployed web origin for Vercel; redeploy the API to apply changes. No external deployment is performed by these commands.
