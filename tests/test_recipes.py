@@ -150,9 +150,10 @@ def test_steps_carry_real_quantities_on_first_mention():
     recipe = ENGINE.generate(["Mutton", "Onion"])["recipes"][1]  # salan
     grams = {r["name"]: r["grams"] for r in recipe["ingredients"]}
     text = " ".join(recipe["steps"])
-    assert f"{grams['Mutton']:g} g mutton" in text
-    assert f"{grams['Cooking Oil']:g} g cooking oil" in text
-    assert text.count("g mutton") == 1  # later mentions use the plain name
+    assert f"mutton ({grams['Mutton']:g} g)" in text
+    assert f"cooking oil ({grams['Cooking Oil']:g} g)" in text
+    assert text.count("mutton (") == 1  # later mentions use the plain name
+    assert "slit green chilli (" in " ".join(ENGINE.generate(["Mutton"])["recipes"][0]["steps"])
 
 
 def test_per_ingredient_breakdown_sums_to_totals():

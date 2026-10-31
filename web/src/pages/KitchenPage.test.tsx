@@ -184,3 +184,16 @@ describe('KitchenPage', () => {
     expect(await screen.findByText('Choose 1–12 ingredients')).toBeInTheDocument();
   });
 });
+
+describe('KitchenPage on phones', () => {
+  it('offers a floating generate bar once something is on the counter', async () => {
+    renderKitchen();
+    await screen.findByRole('button', { name: 'Add Chicken Breast' });
+    expect(screen.queryByRole('button', { name: /generate recipe with/i })).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Add Chicken Breast' }));
+    expect(screen.getByRole('link', { name: '1 on counter · see pairings' })).toHaveAttribute('href', '#counter-panel');
+    await userEvent.click(screen.getByRole('button', { name: 'Generate recipe with 1 picked' }));
+    expect(await screen.findByRole('article', { name: 'Chicken Breast Karahi' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /generate recipe with/i })).not.toBeInTheDocument();
+  });
+});

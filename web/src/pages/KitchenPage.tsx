@@ -101,6 +101,7 @@ export function KitchenPage() {
     try {
       setResult(await generateRecipes(session.access_token, picked, prefs, servings));
       setActive(0);
+      requestAnimationFrame(() => document.getElementById('recipe-results')?.scrollIntoView?.({ behavior: 'smooth', block: 'start' }));
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -153,7 +154,7 @@ export function KitchenPage() {
           )}
         </section>
 
-        <aside className="space-y-4 lg:sticky lg:top-6 lg:h-fit" aria-label="Kitchen counter panel">
+        <aside id="counter-panel" className="scroll-mt-4 space-y-4 lg:sticky lg:top-6 lg:h-fit" aria-label="Kitchen counter panel">
           <section className="glass p-5" aria-label="Kitchen Counter">
             <h2 className="font-display text-xl font-extrabold">Kitchen Counter</h2>
             <div className="mt-2 flex items-center justify-between text-xs text-stone-500">
@@ -242,9 +243,21 @@ export function KitchenPage() {
         </aside>
       </div>
 
+      {/* Phones: the counter panel sits below the ingredient grid, so keep it one tap away. */}
+      {picked.length > 0 && !result && (
+        <div className="glass fixed inset-x-3 bottom-24 z-20 flex items-center gap-3 rounded-[20px] px-4 py-2.5 lg:hidden">
+          <a href="#counter-panel" className="min-w-0 flex-1 truncate text-sm font-semibold">
+            {picked.length} on counter · see pairings
+          </a>
+          <button type="button" className="btn-primary px-4 py-2 text-sm" disabled={busy || !prefs} onClick={cook} aria-label={`Generate recipe with ${picked.length} picked`}>
+            <Sparkles size={16} />{busy ? 'Cooking…' : 'Generate'}
+          </button>
+        </div>
+      )}
+
       {result && (
         <>
-          <div className="flex flex-wrap gap-3" role="tablist" aria-label="Recipe options">
+          <div id="recipe-results" className="flex flex-wrap gap-3" role="tablist" aria-label="Recipe options">
             {result.recipes.map((r, n) => (
               <button key={r.fingerprint} type="button" role="tab" aria-selected={n === active} onClick={() => setActive(n)}
                 className={`glass px-4 py-3 text-left transition ${n === active ? 'ring-2 ring-rose-500' : 'opacity-80 hover:opacity-100'}`}>

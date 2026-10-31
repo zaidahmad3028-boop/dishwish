@@ -252,7 +252,7 @@ def format_grams(grams: float) -> str:
 def join(names: Sequence[str], grams: Mapping[str, float] | None = None) -> str:
     words = [n.lower() if n != n.upper() else n for n in names]
     if grams:
-        words = [f"{format_grams(grams[n])} {w}" for n, w in zip(names, words)]
+        words = [f"{w} ({format_grams(grams[n])})" for n, w in zip(names, words)]
     return words[0] if len(words) == 1 else ", ".join(words[:-1]) + " and " + words[-1]
 
 
@@ -444,7 +444,7 @@ class RecipeEngine:
         plain = {role: join(names) for role, names in names_by_role.items() if role != "main"}
         # The first mention of each role in the method carries its real quantity.
         with_qty = {role: join(names, grams_of) for role, names in names_by_role.items() if role != "main"}
-        plain["main"], with_qty["main"] = main_word, f"{format_grams(grams_of[main.name])} {main_word}"
+        plain["main"], with_qty["main"] = main_word, f"{main_word} ({format_grams(grams_of[main.name])})"
         if extras and "extras" not in plain:
             plain["extras"], with_qty["extras"] = join(extras), join(extras, grams_of)
         present = set(plain)  # steps that need a missing role are dropped; defaults only fill wording

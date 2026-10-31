@@ -22,7 +22,7 @@ Derived, not stored in the CSV:
 
 ## How the values were compiled
 
-Nutrition per 100 g was compiled from commonly published food-composition references (USDA FoodData Central-style values and South Asian food tables) for the closest matching raw ingredient. Taste intensities and priorities are editorial judgements for Pakistani home cooking. The values were compiled with AI assistance and then validated by hand on a sample of rows against published references. They are **approximate**: real values vary with variety, cut, brand, ripeness and cooking method. Do not use them for medical or clinical purposes.
+Nutrition per 100 g values are typical published food-composition values for the closest matching raw ingredient. Taste intensities and priorities are editorial judgements for Pakistani home cooking. The values were compiled with AI assistance and then validated by hand on a sample of rows against published references. They are **approximate**: real values vary with variety, cut, brand, ripeness and cooking method. Do not use them for medical or clinical purposes.
 
 ## Preprocessing
 
