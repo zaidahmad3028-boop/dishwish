@@ -144,3 +144,48 @@ def test_recipes_endpoint(client):
     bad = client.post("/api/recipes", json={"ingredients": ["Prawns"], "allergens": ["shellfish"]}, headers=auth)
     assert bad.status_code == 422 and "allergen shield" in bad.json()["detail"]
     assert client.post("/api/recipes", json={"ingredients": ["Beef"], "servings": "2"}, headers=auth).status_code == 422
+
+
+def test_steps_carry_real_quantities_on_first_mention():
+    recipe = ENGINE.generate(["Mutton", "Onion"])["recipes"][1]  # salan
+    grams = {r["name"]: r["grams"] for r in recipe["ingredients"]}
+    text = " ".join(recipe["steps"])
+    assert f"{grams['Mutton']:g} g mutton" in text
+    assert f"{grams['Cooking Oil']:g} g cooking oil" in text
+    assert text.count("g mutton") == 1  # later mentions use the plain name
+
+
+def test_per_ingredient_breakdown_sums_to_totals():
+    recipe = ENGINE.generate(["Chicken Breast", "Potato"], calorie_tier="high")["recipes"][0]
+    for key in ("kcal", "protein", "carbs", "fat"):
+        assert sum(r[key] for r in recipe["ingredients"]) == pytest.approx(recipe["nutrition"]["total"][key], abs=0.5)
+    for row in recipe["ingredients"]:
+        assert row["cost_pkr"] == round(row["price_pkr_per_kg"] * row["grams"] / 1000)
+    assert recipe["cost"]["total_pkr"] == sum(r["cost_pkr"] for r in recipe["ingredients"])
+    assert recipe["cost"]["per_serving_pkr"] == round(recipe["cost"]["total_pkr"] / 2)
+
+
+def test_taste_profile_follows_spice_level_and_stays_in_range():
+    spicy = {lvl: ENGINE.generate(["Beef"], tastes={"spicy": lvl})["recipes"][0]["taste"]["spicy"] for lvl in ("low", "medium", "high")}
+    assert spicy["low"] < spicy["medium"] < spicy["high"] <= 10
+    kheer = ENGINE.generate(["Milk", "Basmati Rice"])["recipes"][0]["taste"]
+    assert kheer["sweet"] > 5 and kheer["spicy"] < 1
+
+
+def test_match_rate_combines_taste_cosine_and_graph_pairing():
+    from engine.recommender import get_recommender
+    recipe = ENGINE.generate(["Mutton"], tastes={"spicy": "high"})["recipes"][0]
+    graph = get_recommender().graph
+    others = [r["name"] for r in recipe["ingredients"] if r["name"] != "Mutton"]
+    pairing = sum(graph["Mutton"][n]["weight"] for n in others) / len(others)
+    match = recipe["match"]
+    assert match["pairing"] == pytest.approx(pairing, abs=1e-3)
+    assert 0 < match["taste_similarity"] <= 1
+    assert match["percent"] == round(100 * (.5 * match["taste_similarity"] + .5 * match["pairing"]))
+    assert ENGINE.generate(["Mutton"])["recipes"][0]["match"]["taste_similarity"] is None
+
+
+def test_allergen_notice():
+    recipe = ENGINE.generate(["Chicken Breast"], allergens=["milk"], blocked_words=["garlic"])["recipes"][1]
+    assert recipe["allergens"]["avoided"] == ["milk"] and recipe["allergens"]["blocked_words"] == ["garlic"]
+    assert "tomato" in recipe["allergens"]["contains"] and "milk" not in recipe["allergens"]["contains"]

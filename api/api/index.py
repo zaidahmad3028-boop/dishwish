@@ -11,7 +11,7 @@ from core.auth import current_user
 from engine.recipes import RecipeError, get_recipe_engine
 from engine.recommender import get_recommender
 
-app = FastAPI(title="DishWish API", version="0.5.0")
+app = FastAPI(title="DishWish API", version="0.6.0")
 origins = [origin.strip() for origin in os.getenv("ALLOWED_ORIGINS", "http://localhost:5173").split(",") if origin.strip()]
 app.add_middleware(CORSMiddleware, allow_origins=origins, allow_methods=["GET", "POST"],
                    allow_headers=["Content-Type", "Authorization"])
@@ -88,6 +88,13 @@ class RecipeIngredient(BaseModel):
     category: str
     grams: float
     role: str
+    kcal: float
+    protein: float
+    carbs: float
+    fat: float
+    allergens: list[Allergen]
+    price_pkr_per_kg: float
+    cost_pkr: float
 
 
 class Macros(BaseModel):
@@ -103,6 +110,30 @@ class Nutrition(BaseModel):
     meal_target_kcal: int | None
 
 
+class TasteProfile(BaseModel):
+    sweet: float
+    salty: float
+    sour: float
+    spicy: float
+
+
+class Match(BaseModel):
+    percent: int
+    pairing: float
+    taste_similarity: float | None
+
+
+class AllergenNotice(BaseModel):
+    contains: list[Allergen]
+    avoided: list[Allergen]
+    blocked_words: list[str]
+
+
+class Cost(BaseModel):
+    total_pkr: int
+    per_serving_pkr: int
+
+
 class Recipe(BaseModel):
     title: str
     style: str
@@ -111,6 +142,10 @@ class Recipe(BaseModel):
     ingredients: list[RecipeIngredient]
     steps: list[str]
     nutrition: Nutrition
+    taste: TasteProfile
+    match: Match
+    allergens: AllergenNotice
+    cost: Cost
     fingerprint: str
 
 

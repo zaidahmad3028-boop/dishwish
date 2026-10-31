@@ -9,12 +9,16 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 import hashlib
 import json
+import math
+from string import Formatter
 
 from .data import ALLERGENS, TASTES, Ingredient, load_ingredients
+from .prices import cost_pkr, price_per_kg
 from .recommender import get_recommender
 
 LEVELS = ("low", "medium", "high")
 TIER_KCAL = {"low": 1200, "medium": 1500, "high": 1800}
+TASTE_TARGETS = {"low": 2.0, "medium": 5.0, "high": 8.0}
 MEALS_PER_DAY = 3
 
 # Kind of a main ingredient decides which styles fit it; earlier kinds win as the main.
@@ -241,9 +245,15 @@ def short_name(name: str) -> str:
     return name
 
 
-def join(names: Sequence[str]) -> str:
-    names = [n.lower() if n != n.upper() else n for n in names]
-    return names[0] if len(names) == 1 else ", ".join(names[:-1]) + " and " + names[-1]
+def format_grams(grams: float) -> str:
+    return f"{grams:g} g" if grams < 1000 else f"{grams / 1000:g} kg"
+
+
+def join(names: Sequence[str], grams: Mapping[str, float] | None = None) -> str:
+    words = [n.lower() if n != n.upper() else n for n in names]
+    if grams:
+        words = [f"{format_grams(grams[n])} {w}" for n, w in zip(names, words)]
+    return words[0] if len(words) == 1 else ", ".join(words[:-1]) + " and " + words[-1]
 
 
 def round_grams(grams: float) -> float:
@@ -315,7 +325,7 @@ class RecipeEngine:
 
         suggestions = []
         try:
-            targets = {t: {"low": 2.0, "medium": 5.0, "high": 8.0}[v] for t, v in tastes.items()}
+            targets = {t: TASTE_TARGETS[v] for t, v in tastes.items()}
             for row in get_recommender().recommend([i.name for i in chosen], taste_preferences=targets,
                                                    excluded_allergens=sorted(tags), limit=50):
                 item = self.catalog[row["name"]]
@@ -411,32 +421,48 @@ class RecipeEngine:
 
         ingredients = []
         totals = dict.fromkeys(("kcal", "protein", "carbs", "fat"), 0.0)
+        chosen_names = {c.name for c in chosen}
         for name, (role, grams, scalable) in rows.items():
             total_g = round_grams(grams * (scale if scalable else 1) * servings)
             item = self.catalog[name]
+            macros = {key: round(getattr(item, key) * total_g / 100, 1) for key in totals}
             for key in totals:
                 totals[key] += getattr(item, key) * total_g / 100
             ingredients.append({"name": name, "category": item.category, "grams": total_g,
-                                "role": "main" if role == "main" else ("yours" if name in {c.name for c in chosen} else role)})
+                                "role": "main" if role == "main" else ("yours" if name in chosen_names else role),
+                                **macros, "allergens": list(item.allergens),
+                                "price_pkr_per_kg": price_per_kg(item), "cost_pkr": round(cost_pkr(item, total_g))})
         order = {"main": 0, "yours": 1, "bulk": 2, "liquid": 2, "base": 3, "aromatic": 4, "sour": 5, "sweet": 5,
                  "heat": 6, "fat": 7, "spice": 8, "salt": 9, "garnish": 10}
         ingredients.sort(key=lambda r: (order.get(r["role"], 5), r["name"]))
+        grams_of = {i["name"]: i["grams"] for i in ingredients}
 
         names_by_role: dict[str, list[str]] = {}
         for name, (role, _, _) in rows.items():
             names_by_role.setdefault(role, []).append(name)
-        fields = {role: join(names) for role, names in names_by_role.items() if role != "main"}
-        fields["main"] = "eggs" if kind == "egg" else short_name(main.name).lower()
-        if extras and "extras" not in fields:
-            fields["extras"] = join(extras)
-        present = set(fields)  # steps that need a missing role are dropped; defaults only fill wording
-        fields.setdefault("salt", "salt")
-        fields.setdefault("aromatic", "the aromatics")
-        fields.setdefault("spice", "the spices")
-        fields.setdefault("garnish", "fresh herbs")
-        fields.setdefault("sweet", "sugar")
-        steps = [text.format(**fields) for needs, text in style.steps if all(n in present for n in needs)]
-        steps = [s[0].upper() + s[1:] for s in steps]
+        main_word = "eggs" if kind == "egg" else short_name(main.name).lower()
+        plain = {role: join(names) for role, names in names_by_role.items() if role != "main"}
+        # The first mention of each role in the method carries its real quantity.
+        with_qty = {role: join(names, grams_of) for role, names in names_by_role.items() if role != "main"}
+        plain["main"], with_qty["main"] = main_word, f"{format_grams(grams_of[main.name])} {main_word}"
+        if extras and "extras" not in plain:
+            plain["extras"], with_qty["extras"] = join(extras), join(extras, grams_of)
+        present = set(plain)  # steps that need a missing role are dropped; defaults only fill wording
+        for role, default in (("salt", "salt"), ("aromatic", "the aromatics"), ("spice", "the spices"),
+                              ("garnish", "fresh herbs"), ("sweet", "sugar")):
+            plain.setdefault(role, default)
+            with_qty.setdefault(role, default)
+        steps, mentioned = [], set()
+        for needs, text in style.steps:
+            if not all(n in present for n in needs):
+                continue
+            fields = {}
+            for _, field, _, _ in Formatter().parse(text):
+                if field:
+                    fields[field] = plain[field] if field in mentioned else with_qty[field]
+                    mentioned.add(field)
+            step = text.format(**fields)
+            steps.append(step[0].upper() + step[1:])
 
         per_serving = {k: round(v / servings, 1) for k, v in totals.items()}
         per_serving["kcal"] = round(totals["kcal"] / servings)
@@ -445,14 +471,61 @@ class RecipeEngine:
             title = "Doodh ki Kheer"
         fingerprint = hashlib.sha256(json.dumps(
             [style.key, servings, sorted((i["name"], i["grams"]) for i in ingredients)]).encode()).hexdigest()[:24]
+        taste = self._taste(ingredients, servings)
+        total_cost = sum(i["cost_pkr"] for i in ingredients)
         return {
             "title": title, "style": style.key, "servings": servings, "minutes": style.minutes,
             "ingredients": ingredients, "steps": steps,
             "nutrition": {"per_serving": per_serving,
                           "total": {k: round(v, 1) for k, v in totals.items()},
                           "meal_target_kcal": round(meal_kcal) if meal_kcal else None},
+            "taste": taste,
+            "match": self._match(main, ingredients, taste, tastes),
+            "allergens": {"contains": sorted({t for i in ingredients for t in i["allergens"]}),
+                          "avoided": sorted(tags), "blocked_words": list(words)},
+            "cost": {"total_pkr": round(total_cost), "per_serving_pkr": round(total_cost / servings)},
             "fingerprint": fingerprint,
         }
+
+    def _taste(self, ingredients: Sequence[dict], servings: int) -> dict[str, float]:
+        """0-10 perceived intensity per taste.
+
+        Each ingredient contributes its catalog intensity scaled by how much of it is in one
+        serving relative to a "fully tasted" amount (5 g of a spice, 20 g of a seasoning or
+        sour/heat ingredient, 60 g of anything else). Contributions combine like independent
+        chances, 1 - prod(1 - c), so several mild sources add up without passing 10.
+        """
+        out = {}
+        for t in TASTES:
+            remaining = 1.0
+            for row in ingredients:
+                item = self.catalog[row["name"]]
+                if item.category == "Spices" or item.name == "Salt":
+                    full = 5
+                elif (item.category == "Oils & Sauces" or item.name in GROCERY_SEASONINGS
+                      or row["role"] in ("heat", "sour", "sweet")):
+                    full = 20
+                else:
+                    full = 60
+                remaining *= 1 - getattr(item, t) / 10 * min(1.0, row["grams"] / servings / full)
+            out[t] = round(10 * (1 - remaining), 1)
+        return out
+
+    def _match(self, main: Ingredient, ingredients: Sequence[dict], taste: Mapping[str, float],
+               tastes: Mapping[str, str]) -> dict:
+        """Matching rate: cosine similarity to the user's taste targets plus mean NetworkX edge weight to the main."""
+        graph = get_recommender().graph
+        others = [i["name"] for i in ingredients if i["name"] != main.name]
+        pairing = sum(graph[main.name][n]["weight"] for n in others) / len(others) if others else 1.0
+        cosine = None
+        if tastes:
+            target = [TASTE_TARGETS[tastes[t]] if t in tastes else taste[t] for t in TASTES]
+            actual = [taste[t] for t in TASTES]
+            norm = math.hypot(*target) * math.hypot(*actual)
+            cosine = sum(a * b for a, b in zip(target, actual)) / norm if norm else 0.0
+        percent = round(100 * (pairing if cosine is None else .5 * cosine + .5 * pairing))
+        return {"percent": percent, "pairing": round(pairing, 3),
+                "taste_similarity": None if cosine is None else round(cosine, 3)}
 
 
 _engine: RecipeEngine | None = None
