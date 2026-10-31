@@ -6,6 +6,12 @@ _Last updated: 31 Oct 2026, branch `feature/full-app-v2` (not pushed yet)._
 
 Dish-Wish (Dream Recipe Creation) helps cooks turn the ingredients they have into Pakistani recipes that fit their taste, diet and allergies, with a Super Admin panel for managing the catalog, users, feedback and the recommendation engine.
 
+## Live deployment (Vercel, from `main`)
+
+- Web: https://dishwish-web.vercel.app (project `dishwish-web`, root `web/`)
+- API: https://dishwish-api.vercel.app (project `dishwish-api`, root `api/`; health at `/api/health`)
+- Owner still to add as Vercel environment variables (credentials are not entered by the assistant): `VITE_SUPABASE_ANON_KEY` on dishwish-web and `SUPABASE_ANON_KEY` on dishwish-api, then redeploy.
+
 ## Architecture
 
 React 19 + Vite + Tailwind (web/) · FastAPI + NetworkX (api/) · Supabase Postgres/Auth with row-level security (supabase/). Decision (approved by the owner): keep this stack instead of Django + MySQL; see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for how each requirement maps.
@@ -51,7 +57,7 @@ All applied on the live project (31 Oct 2026): 0001–0004, `seed/seed.sql` (8 c
 1. ~~Apply 0005 and seeds~~ (done 31 Oct 2026).
 2. Create the Super Admin (`scripts/create_admin.py` with the service-role key in `api/.env`, or `grant_super_admin` in SQL).
 3. Configure custom SMTP for confirmation and reset emails.
-4. Approve pushing `feature/full-app-v2` to GitHub.
+4. ~~Push to GitHub~~ (done: `main` deployed to Vercel). Add the anon key env vars on Vercel and the live URL to Supabase URL Configuration.
 
 ## Next step
 
