@@ -12,6 +12,7 @@ import { IMAGES, imageUrl } from '../lib/images';
 import { useKitchenData } from '../lib/useKitchenData';
 
 const QUICK_ADD = ['Chicken Breast', 'Tomato', 'Onion', 'Garlic'];
+const HERO_FADE = { maskImage: 'linear-gradient(to right, transparent, black 40%)', WebkitMaskImage: 'linear-gradient(to right, transparent, black 40%)' };
 const shortName = (n: string) => n.replace(/\s*\(.*\)$/, '').replace(/^Chicken Breast$/, 'Chicken');
 
 export function KitchenHomePage() {
@@ -68,9 +69,12 @@ export function KitchenHomePage() {
 
       <section className="card relative p-6 sm:p-8" aria-labelledby="counter-heading">
         {/* Photo on its own clipped layer, so the search dropdown below can still overflow the card. */}
-        <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[var(--radius-card)]" aria-hidden="true">
-          <div className="absolute inset-0 bg-cover bg-[position:70%_center]" style={{ backgroundImage: `url(${imageUrl(IMAGES.kitchenHero)})` }} />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#fffaf5] via-[#fffaf5]/90 to-[#fffaf5]/55 md:via-[#fffaf5]/80 md:to-transparent" />
+        <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[var(--radius-card)] bg-gradient-to-r from-[#fff7f2] via-[#fdebe4] to-[#f9dfd3]" aria-hidden="true">
+          {/* Wider screens: the whole photo docked on the right, its left edge fading into the card colour. */}
+          <div className="absolute inset-y-0 right-0 hidden aspect-[1600/908] h-full max-w-[42%] bg-cover bg-center md:block xl:max-w-[50%]"
+            style={{ backgroundImage: `url(${imageUrl(IMAGES.kitchenHero)})`, ...HERO_FADE }} />
+          {/* Phones: too narrow for a side photo, so a faint full-card photo instead. */}
+          <div className="absolute inset-0 bg-cover bg-center opacity-15 md:hidden" style={{ backgroundImage: `url(${imageUrl(IMAGES.kitchenHero)})` }} />
         </div>
         <div className="relative">
         <h2 id="counter-heading" className="font-display text-3xl font-extrabold sm:text-4xl">What’s on Your <span className="text-crimson">Counter?</span></h2>
