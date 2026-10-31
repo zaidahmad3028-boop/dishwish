@@ -69,3 +69,31 @@ def test_reject_invalid_numbers(tmp_path, field, value):
         writer.writerow(row)
     with pytest.raises(ValueError):
         seed.load_rows(path)
+
+
+SPEC_TAGS = {
+    "tomato": {"Tomato", "Tomato Paste", "Tomato Ketchup"},
+    "brinjal": {"Brinjal (Baingan)"},
+    "mango": {"Mango", "Raw Mango (Kairi)", "Dried Mango Powder (Amchur)", "Mango Pickle (Aam ka Achar)"},
+    "citrus": {"Orange (Malta)", "Kinnow", "Sweet Lime (Mosambi)", "Lemon", "Lemon Pickle (Nimbu Achar)", "Amla (Gooseberry)"},
+    "banana": {"Banana", "Raw Banana (Kela)"},
+    "strawberry": {"Strawberry"},
+    "coconut": {"Fresh Coconut", "Coconut Milk", "Desiccated Coconut"},
+    "corn": {"Corn (Makai)", "Corn Flour", "Cornmeal (Makai Atta)", "Corn Oil"},
+}
+
+
+@pytest.mark.parametrize("tag", sorted(SPEC_TAGS))
+def test_new_tags_cover_exactly_the_specified_catalog_rows(tag):
+    rows = seed.load_rows(ROOT / "supabase/seed/ingredients.csv")
+    tagged = {row["name"] for row in rows if tag in seed.allergens_for(row["category"], row["name"])}
+    assert tagged == SPEC_TAGS[tag]
+
+
+def test_allergen_migration_is_generated_update_only_and_in_sync():
+    sql = seed.build_allergen_migration(ROOT / "supabase/seed/ingredients.csv")
+    assert sql == (ROOT / "supabase/migrations/0004_allergen_tags.sql").read_text()
+    lowered = sql.lower()
+    assert "insert into" not in lowered and "delete from" not in lowered
+    assert "update public.ingredients" in lowered and "is distinct from" in lowered
+    assert sql.count("::text[])") == 260

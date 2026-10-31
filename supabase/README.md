@@ -1,5 +1,11 @@
 # Supabase database
 
+## Allergen tags (`0004_allergen_tags.sql`)
+
+`migrations/0004_allergen_tags.sql` re-tags the **existing** ingredient rows with the 19 allergen tags. It only runs `UPDATE … WHERE name = …`, so it never inserts duplicates or deletes anything, and it is safe to run more than once. It is generated from the same rules as the seed (`python scripts/build_seed.py` writes both). Run it after `0003_onboarding.sql`. If you already re-ran `seed/seed.sql` after 0003, your tags are current and 0004 changes 0 rows; running it anyway is harmless. Check: `select count(*) filter (where 'tomato' = any(allergens)), count(*) filter (where 'citrus' = any(allergens)), count(*) filter (where 'corn' = any(allergens)) from public.ingredients;` returns `3, 6, 4`.
+
+Full order for a new project: `0001_schema.sql` → `0002_rls.sql` → `0003_onboarding.sql` → `seed/seed.sql` → `0004_allergen_tags.sql` → `tests/rls_check.sql`.
+
 ## Phase 1 upgrade (auth + onboarding) — run in this order
 
 Your project already has `0001`, `0002` and the original seed. In SQL Editor, run each file in its own query:
@@ -16,7 +22,7 @@ Also confirm in **Authentication → Providers → Email** that **Confirm email*
 
 1. Create a project (yours is named `pantry2plate-pk`; the name does not matter to the app) in your existing Supabase organization, choosing Singapore or Mumbai. Enter the database password yourself and keep it out of git. Stop if the selected plan requires payment or an upgrade.
 2. In Authentication → Providers → Email, turn off **Confirm email**. Keep email/password enabled; no OTP or MFA is required by this app.
-3. In SQL Editor, open a new query and paste/run `migrations/0001_schema.sql`, then `migrations/0002_rls.sql`, then `migrations/0003_onboarding.sql`, then `seed/seed.sql`, in that order. Apply each migration once; the seed can be repeated. Do not concatenate these into an already-open transaction.
+3. In SQL Editor, open a new query and paste/run `migrations/0001_schema.sql`, then `migrations/0002_rls.sql`, then `migrations/0003_onboarding.sql`, then `seed/seed.sql`, then `migrations/0004_allergen_tags.sql`, in that order. Apply each migration once; the seed can be repeated. Do not concatenate these into an already-open transaction.
 4. In Table Editor, confirm **260 ingredients**, **8 categories**, and RLS enabled on all seven tables: `categories`, `ingredients`, `profiles`, `preferences`, `pantry_items`, `saved_recipes`, `shared_recipes`.
 5. Run `tests/rls_check.sql` in SQL Editor as the postgres/admin role. It creates two temporary test users inside a transaction, switches to `anon` and `authenticated`, tests access, and rolls back. Expected result: `PASS: counts, signup triggers, catalog access, owner isolation, public shares, and constraints`. On error, run `rollback;` before retrying; do not remove failed assertions. Test-only user UUIDs and emails must not already exist. The test expects the supplied seed without additional catalog rows.
 6. Verify counts and flags independently:
