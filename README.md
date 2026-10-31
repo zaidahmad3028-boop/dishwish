@@ -60,18 +60,20 @@ python -m venv .venv
 .venv/Scripts/activate            # macOS/Linux: source .venv/bin/activate
 pip install -r api/requirements.txt
 cd api
-# The API reads real environment variables (it does not load .env files):
-#   SUPABASE_URL, SUPABASE_JWT_SECRET, ALLOWED_ORIGINS=http://localhost:5173
+cp .env.example .env              # set SUPABASE_URL (enough for JWKS/ES256 projects); SUPABASE_JWT_SECRET only for legacy HS256
+# api/.env is read at startup for local runs; real environment variables (Vercel, shell) win. Lines still holding YOUR_ are ignored.
 uvicorn api.index:app --reload --port 8000
 ```
 
 ```bash
 # Web (terminal 2)
 cd web
-cp .env.example .env.local        # set VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, VITE_API_URL=http://localhost:8000
+cp .env.example .env              # set VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, VITE_API_URL=http://localhost:8000
 npm ci
 npm run dev
 ```
+
+After editing `.env`, restart the server. If a value still holds `YOUR_...`, the app shows an "Almost ready" setup screen.
 
 Production build: `npm run build`; preview with `npm run preview`. The service worker only registers in production builds.
 

@@ -7,9 +7,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, ConfigDict, Field
 
 # Vercel loads this file from the api project root; uvicorn uses api.index:app.
-from core.auth import current_user
-from engine.recipes import RecipeError, get_recipe_engine
-from engine.recommender import get_recommender
+from core.env import load_env_file
+
+load_env_file()
+
+from core.auth import current_user  # noqa: E402
+from engine.recipes import RecipeError, get_recipe_engine  # noqa: E402
+from engine.recommender import get_recommender  # noqa: E402
 
 app = FastAPI(title="DishWish API", version="0.6.0")
 origins = [origin.strip() for origin in os.getenv("ALLOWED_ORIGINS", "http://localhost:5173").split(",") if origin.strip()]
