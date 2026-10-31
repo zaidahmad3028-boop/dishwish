@@ -34,10 +34,15 @@ export function friendlyAuthError(message: string): string {
   }
   if (m.includes('invalid login credentials')) return 'That email and password don’t match. Please try again.';
   if (m.includes('email not confirmed')) return 'Please confirm your email first, then log in.';
+  if (m.includes('sending confirmation') || m.includes('error sending') || m.includes('not authorized')) {
+    return 'We couldn’t send the confirmation email. The app owner needs to turn off “Confirm email” in Supabase (Authentication → Sign In / Providers → Email) or set up custom SMTP.';
+  }
+  if (m.includes('email') && m.includes('invalid')) return 'That email address looks invalid. Please check it.';
   if (m.includes('rate limit') || m.includes('too many')) return 'Too many attempts. Please wait a minute and try again.';
   if (m.includes('password')) return 'Please choose a stronger password (at least 8 characters).';
   if (m.includes('fetch') || m.includes('network')) return 'Can’t reach the server. Check your connection and try again.';
-  return 'Something went wrong. Please try again.';
+  const detail = message.trim().slice(0, 160);
+  return detail ? `Something went wrong: ${detail}` : 'Something went wrong. Please try again.';
 }
 
 function FoodPlate() {

@@ -44,7 +44,11 @@ describe('friendlyAuthError', () => {
     ['Invalid login credentials', /don’t match/],
     ['Email rate limit exceeded', /Too many attempts/],
     ['Failed to fetch', /Can’t reach the server/],
-    ['weird', /Something went wrong/],
+    ['Error sending confirmation email', /couldn’t send the confirmation email.*Confirm email/],
+    ['Email address not authorized', /couldn’t send the confirmation email/],
+    ['Email address "x@y" is invalid', /looks invalid/],
+    ['Database error saving new user', /Something went wrong: Database error saving new user/],
+    ['', /^Something went wrong\. Please try again\.$/],
   ])('%s', (message, expected) => expect(friendlyAuthError(message)).toMatch(expected));
 });
 
