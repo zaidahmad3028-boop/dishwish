@@ -2,7 +2,7 @@
 import os
 from typing import Annotated, Literal
 
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Path, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -12,10 +12,12 @@ from core.env import load_env_file
 load_env_file()
 
 from core.auth import current_user  # noqa: E402
+from engine.catalog_db import get_engine  # noqa: E402
 from engine.recipes import RecipeError, get_recipe_engine  # noqa: E402
 from engine.recommender import get_recommender  # noqa: E402
+from engine.suitability import SuitabilityError  # noqa: E402
 
-app = FastAPI(title="DishWish API", version="0.6.0")
+app = FastAPI(title="DishWish API", version="0.7.0")
 origins = [origin.strip() for origin in os.getenv("ALLOWED_ORIGINS", "http://localhost:5173").split(",") if origin.strip()]
 app.add_middleware(CORSMiddleware, allow_origins=origins, allow_methods=["GET", "POST"],
                    allow_headers=["Content-Type", "Authorization"])
@@ -167,3 +169,52 @@ def recipes(body: RecipeRequest, claims: dict = Depends(current_user)) -> dict:
                                             servings=body.servings, limit=body.limit)
     except RecipeError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+# ---- Curated recipe recommendations (suitability engine) --------------------------------
+Diet = Literal["vegetarian", "gluten_free", "low_calorie", "high_protein"]
+
+
+class SuitabilityRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    ingredients: list[Annotated[str, Field(min_length=1, max_length=100)]] = Field(min_length=2, max_length=20)
+    tastes: dict[Taste, Level | None] = Field(default_factory=dict)
+    allergens: list[Allergen] = Field(default_factory=list, max_length=19)
+    blocked_words: list[Annotated[str, Field(min_length=1, max_length=40)]] = Field(default_factory=list, max_length=20)
+    diets: list[Diet] = Field(default_factory=list, max_length=4)
+    pantry: list[Annotated[str, Field(min_length=1, max_length=100)]] = Field(default_factory=list, max_length=300)
+    max_minutes: int | None = Field(default=None, ge=5, le=480, strict=True)
+    limit: int = Field(default=12, ge=1, le=40, strict=True)
+
+
+@app.post("/api/recommendations")
+def recommendations(body: SuitabilityRequest, claims: dict = Depends(current_user)) -> dict:
+    engine, data = get_engine()
+    try:
+        result = engine.recommend(body.ingredients, tastes=body.tastes, allergens=body.allergens,
+                                  blocked_words=body.blocked_words, diets=body.diets, pantry=body.pantry,
+                                  max_minutes=body.max_minutes, limit=body.limit)
+    except SuitabilityError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    return {**result, "data_source": data.source, "notes": data.notes}
+
+
+@app.get("/api/curated/{slug}")
+def curated_recipe(slug: Annotated[str, Path(pattern=r"^[a-z0-9-]{1,80}$")],
+                   have: Annotated[list[str], Query(max_length=320)] = []) -> dict:
+    engine, data = get_engine()
+    recipe = engine.detail(slug, selected=[h[:100] for h in have])
+    if recipe is None:
+        raise HTTPException(status_code=404, detail="Recipe not found")
+    return {**recipe, "data_source": data.source}
+
+
+@app.get("/api/compatibility/{name}")
+def compatibility(name: Annotated[str, Path(min_length=1, max_length=100)]) -> dict:
+    engine, _ = get_engine()
+    canonical = engine.canonical.get(name.casefold())
+    if canonical is None:
+        raise HTTPException(status_code=404, detail="Unknown ingredient")
+    neighbours = sorted(({"name": n, **{k: d[k] for k in ("weight", "relation", "evidence")}}
+                         for n, d in engine.graph[canonical].items()), key=lambda r: (-r["weight"], r["name"]))
+    return {"ingredient": canonical, "edges": neighbours}

@@ -10,3 +10,4 @@ __pycache__/
 !.env.example
 *.tsbuildinfo
 supabase/.temp/
+.admin-credentials.local
