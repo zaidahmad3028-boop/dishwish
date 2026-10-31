@@ -8,7 +8,9 @@ import { AuthPage } from './pages/AuthPage';
 import { OnboardingPage } from './pages/OnboardingPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { PantryPage } from './pages/PantryPage';
-import { KitchenPage, RecipesPage } from './pages/SectionPages';
+import { KitchenPage } from './pages/KitchenPage';
+import { RecipesPage, SavedRecipePage } from './pages/RecipesPage';
+import { SharePage } from './pages/SharePage';
 
 function SetupNotice() {
   return (
@@ -31,11 +33,13 @@ export function App() {
         <AuthProvider>
           <Routes>
             <Route path="/auth" element={<AuthPage />} />
+            <Route path="/share/:token" element={<SharePage />} />
             <Route element={<RequireAuth />}>
               <Route path="/onboarding" element={<OnboardingPage />} />
               <Route element={<AppShell />}>
                 <Route path="/kitchen" element={<KitchenPage />} />
                 <Route path="/recipes" element={<RecipesPage />} />
+                <Route path="/recipes/:id" element={<SavedRecipePage />} />
                 <Route path="/pantry" element={<PantryPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
               </Route>

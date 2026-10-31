@@ -8,9 +8,10 @@ from pydantic import BaseModel, ConfigDict, Field
 
 # Vercel loads this file from the api project root; uvicorn uses api.index:app.
 from core.auth import current_user
+from engine.recipes import RecipeError, get_recipe_engine
 from engine.recommender import get_recommender
 
-app = FastAPI(title="Pantry2Plate PK API", version="0.4.0")
+app = FastAPI(title="DishWish API", version="0.5.0")
 origins = [origin.strip() for origin in os.getenv("ALLOWED_ORIGINS", "http://localhost:5173").split(",") if origin.strip()]
 app.add_middleware(CORSMiddleware, allow_origins=origins, allow_methods=["GET", "POST"],
                    allow_headers=["Content-Type", "Authorization"])
@@ -19,6 +20,7 @@ Allergen = Literal["milk", "gluten", "eggs", "peanuts", "tree_nuts", "sesame",
                    "fish", "shellfish", "soy", "mustard", "legumes", "tomato",
                    "brinjal", "mango", "citrus", "banana", "strawberry", "coconut", "corn"]
 Taste = Literal["sweet", "salty", "sour", "spicy"]
+Level = Literal["low", "medium", "high"]
 Score = Annotated[float, Field(ge=0, le=10, allow_inf_nan=False)]
 
 
@@ -46,7 +48,7 @@ class RecommendResponse(BaseModel):
 
 @app.get("/api/health")
 def health() -> dict[str, str]:
-    return {"status": "ok", "service": "pantry2plate-pk-api"}
+    return {"status": "ok", "service": "dishwish-api"}
 
 
 class Me(BaseModel):
@@ -68,3 +70,61 @@ def recommend(body: RecommendRequest) -> dict:
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     return {"recommendations": rows}
+
+
+class RecipeRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    ingredients: list[Annotated[str, Field(min_length=1, max_length=100)]] = Field(min_length=1, max_length=12)
+    tastes: dict[Taste, Level | None] = Field(default_factory=dict)
+    allergens: list[Allergen] = Field(default_factory=list, max_length=19)
+    blocked_words: list[Annotated[str, Field(min_length=1, max_length=40)]] = Field(default_factory=list, max_length=20)
+    calorie_tier: Literal["low", "medium", "high"] | None = None
+    servings: int = Field(default=2, ge=1, le=8, strict=True)
+    limit: int = Field(default=3, ge=1, le=5, strict=True)
+
+
+class RecipeIngredient(BaseModel):
+    name: str
+    category: str
+    grams: float
+    role: str
+
+
+class Macros(BaseModel):
+    kcal: float
+    protein: float
+    carbs: float
+    fat: float
+
+
+class Nutrition(BaseModel):
+    per_serving: Macros
+    total: Macros
+    meal_target_kcal: int | None
+
+
+class Recipe(BaseModel):
+    title: str
+    style: str
+    servings: int
+    minutes: int
+    ingredients: list[RecipeIngredient]
+    steps: list[str]
+    nutrition: Nutrition
+    fingerprint: str
+
+
+class RecipeResponse(BaseModel):
+    recipes: list[Recipe]
+    suggestions: list[str]
+
+
+# Signed-in only: the body carries the user's own preferences, sent by the web app.
+@app.post("/api/recipes", response_model=RecipeResponse)
+def recipes(body: RecipeRequest, claims: dict = Depends(current_user)) -> dict:
+    try:
+        return get_recipe_engine().generate(body.ingredients, tastes=body.tastes, allergens=body.allergens,
+                                            blocked_words=body.blocked_words, calorie_tier=body.calorie_tier,
+                                            servings=body.servings, limit=body.limit)
+    except RecipeError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc

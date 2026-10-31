@@ -118,3 +118,22 @@ body {
     animation-duration: 0ms !important;
   }
 }
+
+/* "Download PDF" prints the recipe card alone: no navigation, backdrop or buttons. */
+@media print {
+  @page { margin: 14mm; }
+  :root { background: white; }
+  .print-hide, nav[aria-label="Main"] { display: none !important; }
+  .md\:pl-24 { padding-left: 0 !important; }
+  main { padding: 0 !important; max-width: none !important; }
+  .glass {
+    background: white !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    padding: 0 !important;
+  }
+  .print-area li, .print-area section { break-inside: avoid; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}

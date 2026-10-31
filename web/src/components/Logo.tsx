@@ -16,7 +16,7 @@ export function Logo() {
     <span className="inline-flex items-center gap-3">
       <LogoMark />
       <span className="font-display text-xl font-extrabold leading-none tracking-tight">
-        Pantry2Plate <span className="text-gradient">PK</span>
+        Dish<span className="text-gradient">Wish</span>
       </span>
     </span>
   );

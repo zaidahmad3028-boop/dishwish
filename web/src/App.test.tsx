@@ -4,12 +4,17 @@ import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { App } from './App';
 import { emptyPreferences } from './lib/preferences';
+import { CATALOG } from './test/catalogFixture';
 import { fakeSession, resetSupabaseMock, setSession, supabase } from './test/supabaseMock';
 
 vi.mock('./lib/supabase', () => import('./test/supabaseMock'));
 vi.mock('./lib/preferencesApi', () => ({
   loadPreferences: vi.fn(async () => ({ ...emptyPreferences(), allergens: ['milk'], customAllergens: ['prawns'], calorieTier: 'high' })),
   savePreferences: vi.fn(),
+}));
+vi.mock('./lib/pantryApi', async (orig) => ({
+  ...(await orig<typeof import('./lib/pantryApi')>()),
+  loadCatalog: vi.fn(async () => CATALOG), loadPantry: vi.fn(async () => []),
 }));
 
 const renderAt = (path: string) => render(<MemoryRouter initialEntries={[path]}><App /></MemoryRouter>);

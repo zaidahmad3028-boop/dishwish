@@ -1,4 +1,4 @@
-# Pantry2Plate PK
+# DishWish
 
 A smart kitchen assistant for Pakistani homes. Steps 1–3 added the skeleton, the database schema/RLS with a 260-ingredient seed, and public NetworkX ingredient recommendations. Phase 1 adds email/password auth (Supabase), a 3-step onboarding (taste profile, allergen shield, calorie target) saved to `preferences`, the signed-in app shell, and Supabase JWT verification in the API. Pantry, recipes, nutrition, shopping, sharing, PDF export and PWA support follow in later phases.
 
@@ -20,6 +20,18 @@ python -m pytest tests -q             # from the repo root: seed tags, recommend
 ## Phase 2: pantry
 
 `/pantry` lists the signed-in user's `pantry_items` grouped by category, with quantities in grams (1–100,000 g, edited inline, saved on blur/Enter). The add panel searches the public ingredient catalog by name and category. Ingredients caught by the allergen shield (tags or free-text words) can't be added, and any already in the pantry are flagged as blocked. Reads and writes go straight to Supabase under the existing owner-only RLS policies; no new SQL is needed.
+
+## Phase 3: recipes
+
+`POST /api/recipes` (signed-in only, Supabase JWT) turns 1–12 chosen ingredients into up to 3 Pakistani home-style recipes (karahi, salan, pulao, daal tadka, khichdi, bhuna, pakoray, chaat, lassi, raita, kheer, masala fry, anda bhurji), picked by the main ingredient. `api/engine/recipes.py` adds pantry staples from the catalog, skipping anything the allergen shield blocks (tags or free-text words) and dropping the method steps for staples it had to remove. It adjusts chillies, sourness, salt and sugar to the taste levels, and refuses a chosen ingredient that the shield blocks (422). It also suggests up to 3 ingredients that go well with the picks, using the NetworkX recommender. The body carries the user's preferences, sent by the web app. Output is deterministic, and the same inputs give the same `fingerprint`. The Kitchen page (`/kitchen`) picks from pantry chips or a catalog search, sets servings (1–8), and shows the options as tabs. Saved recipes live in `saved_recipes` (one row per user and fingerprint) and are listed at `/recipes` and `/recipes/:id`.
+
+## Phase 4: nutrition
+
+Each recipe shows kcal, protein, carbs and fat per serving, summed from the catalog's per-100 g values. It also shows the macro energy split, and, with a calorie target, the meal target (daily target ÷ 3) and the share of the day. Portions of the main and bulk ingredients are scaled (0.6–1.6×) toward the meal target. Every recipe screen ends with "Nutrition values are approximate. Not medical advice."
+
+## Phase 5: shopping list and sharing
+
+The shopping list compares each recipe ingredient with the pantry and lists only what's missing; small pinches of spice you don't track are left off. "Copy list" copies it as text, and "I bought these" tops the pantry up. "Share" stores an immutable snapshot of the recipe only, with no profile data, in `shared_recipes` and copies a `/share/<token>` link. That page is public: anyone with the link can read it, but only signed-in users can create shares, and only for themselves (existing RLS). No new SQL is needed for phases 3–5.
 
 ## Structure
 
@@ -55,8 +67,8 @@ The current endpoint does not require environment variables; the `.env` template
 ## Verify step 1
 
 1. In `web`, run `npm run build`; it must complete successfully.
-2. Run the web development server and confirm the Pantry2Plate PK landing screen at both mobile and desktop widths.
-3. With the API running, run `curl http://localhost:8000/api/health`. Expected JSON: `{"status":"ok","service":"pantry2plate-pk-api"}`.
+2. Run the web development server and confirm the DishWish landing screen at both mobile and desktop widths.
+3. With the API running, run `curl http://localhost:8000/api/health`. Expected JSON: `{"status":"ok","service":"dishwish-api"}`.
 4. API docs are available locally at `/docs`. Run `python -m pytest tests -q` from the repository root with the API virtual environment activated to check seed generation, engine behavior, endpoint validation, and CORS.
 
 ## Manual setup

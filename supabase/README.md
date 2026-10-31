@@ -14,7 +14,7 @@ Also confirm in **Authentication → Providers → Email** that **Confirm email*
 
 ## Original setup (steps 1–3, already done)
 
-1. Create `pantry2plate-pk` in your existing Supabase organization, choosing Singapore or Mumbai. Enter the database password yourself and keep it out of git. Stop if the selected plan requires payment or an upgrade.
+1. Create a project (yours is named `pantry2plate-pk`; the name does not matter to the app) in your existing Supabase organization, choosing Singapore or Mumbai. Enter the database password yourself and keep it out of git. Stop if the selected plan requires payment or an upgrade.
 2. In Authentication → Providers → Email, turn off **Confirm email**. Keep email/password enabled; no OTP or MFA is required by this app.
 3. In SQL Editor, open a new query and paste/run `migrations/0001_schema.sql`, then `migrations/0002_rls.sql`, then `migrations/0003_onboarding.sql`, then `seed/seed.sql`, in that order. Apply each migration once; the seed can be repeated. Do not concatenate these into an already-open transaction.
 4. In Table Editor, confirm **260 ingredients**, **8 categories**, and RLS enabled on all seven tables: `categories`, `ingredients`, `profiles`, `preferences`, `pantry_items`, `saved_recipes`, `shared_recipes`.
