@@ -121,7 +121,8 @@ body {
 
 /* "Download PDF" prints the recipe card alone: no navigation, backdrop or buttons. */
 @media print {
-  @page { margin: 14mm; }
+  @page { size: A4; margin: 14mm; }
+  html, body { width: 210mm; }
   :root { background: white; }
   .print-hide, nav[aria-label="Main"] { display: none !important; }
   .md\:pl-24 { padding-left: 0 !important; }
@@ -134,6 +135,11 @@ body {
     -webkit-backdrop-filter: none !important;
     padding: 0 !important;
   }
-  .print-area li, .print-area section { break-inside: avoid; }
+  .print-area li, .print-area section, .print-area tr { break-inside: avoid; }
+  .print-area h2, .print-area h3 { break-after: avoid; }
+  .print-area .overflow-x-auto { overflow: visible !important; }
+  .print-area table { min-width: 0 !important; font-size: 10pt; }
+  /* Two columns stay side by side on paper: method left, taste/nutrition right. */
+  .print-area .lg\:grid-cols-\[1fr_20rem\] { grid-template-columns: 1fr 17rem !important; }
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }

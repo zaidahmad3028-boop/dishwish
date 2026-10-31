@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ShieldCheck, SlidersHorizontal, Target, UserRound } from 'lucide-react';
+import { BookOpen, ShieldCheck, SlidersHorizontal, Target, UserRound } from 'lucide-react';
 import { useAuth } from '../auth/AuthProvider';
 import { displayName } from '../components/AppShell';
+import { SavedRecipesList } from '../components/SavedRecipesList';
 import { ALLERGEN_CHIPS, TASTES, kcalForTier, type Preferences } from '../lib/preferences';
 import { loadPreferences } from '../lib/preferencesApi';
 
@@ -31,6 +32,9 @@ export function ProfilePage() {
         <div className="min-w-0 flex-1">
           <h1 className="truncate font-display text-3xl font-extrabold tracking-tight">{displayName(user)}</h1>
           <p className="truncate text-stone-600">{user.email}</p>
+          {user.created_at && (
+            <p className="text-sm text-stone-500">Joined {new Date(user.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+          )}
         </div>
         <Link to="/onboarding" className="btn-primary"><SlidersHorizontal size={18} aria-hidden="true" />Edit preferences</Link>
       </section>
@@ -63,6 +67,11 @@ export function ProfilePage() {
           </section>
         </div>
       )}
+
+      <section className="glass p-6" aria-label="My saved dishes">
+        <h2 className="flex items-center gap-2 font-display text-xl font-extrabold"><BookOpen size={18} className="text-rose-700" aria-hidden="true" />My saved dishes</h2>
+        <SavedRecipesList userId={user.id} />
+      </section>
     </div>
   );
 }

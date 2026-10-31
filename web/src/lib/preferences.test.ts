@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  ALLERGEN_CHIPS, CALORIE_TIERS, effectiveAllergenTags, emptyPreferences, fromRow, isIngredientBlocked, mealSplit,
+  ALLERGEN_CHIPS, CALORIE_TIERS, blockReason, effectiveAllergenTags, emptyPreferences, fromRow, isIngredientBlocked, mealSplit,
   parseCustomAllergens, toRow,
 } from './preferences';
 
@@ -85,5 +85,15 @@ describe('row mapping', () => {
     expect(prefs.calorieTier).toBeNull();
     expect(prefs.allergens).toEqual(['milk']);
     expect(fromRow(null)).toEqual(emptyPreferences());
+  });
+});
+
+describe('blockReason', () => {
+  const prefs = { allergens: ['milk' as const], customAllergens: ['prawn', 'garlic'] };
+  it('names the tag or the free-text word that blocks an ingredient', () => {
+    expect(blockReason('Paneer', ['milk'], prefs)).toBe('Contains Milk & Dairy');
+    expect(blockReason('Prawns', ['shellfish'], prefs)).toBe('Contains Shellfish');
+    expect(blockReason('Ginger Garlic Paste', [], prefs)).toBe('Matches “garlic”');
+    expect(blockReason('Onion', [], prefs)).toBeNull();
   });
 });

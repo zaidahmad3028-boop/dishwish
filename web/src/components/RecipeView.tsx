@@ -1,8 +1,20 @@
 import { useState, type ReactNode } from 'react';
-import { Check, Clock, Copy, Download, Heart, Link2, ShoppingBasket, Users } from 'lucide-react';
-import type { Preferences } from '../lib/preferences';
+import { Check, Clock, Copy, Download, Heart, Link2, ShieldCheck, ShoppingBasket, Sparkles, Users, Wallet } from 'lucide-react';
+import { allergenLabel, type Preferences } from '../lib/preferences';
 import { formatGrams } from '../lib/pantryApi';
-import { dailyShare, macroShares, shoppingList, shoppingText, type Recipe, type ShoppingLine } from '../lib/recipes';
+import {
+  dailyShare, formatPkr, macroShares, shoppingList, shoppingText, shoppingTotal,
+  type Recipe, type ShoppingLine, type TasteProfile,
+} from '../lib/recipes';
+
+// FDA reference daily values used for "% DV" (2,000 kcal diet).
+const DAILY_VALUES = { protein: 50, carbs: 275, fat: 78 } as const;
+const TASTE_META: { key: keyof TasteProfile; label: string; color: string }[] = [
+  { key: 'sweet', label: 'Sweet', color: '#f472b6' },
+  { key: 'salty', label: 'Salty', color: '#60a5fa' },
+  { key: 'sour', label: 'Sour', color: '#facc15' },
+  { key: 'spicy', label: 'Spicy', color: '#dc2626' },
+];
 
 export function NutritionNote() {
   return <p className="mt-6 text-center text-xs text-stone-500">Nutrition values are approximate. Not medical advice.</p>;
@@ -25,6 +37,7 @@ export function NutritionPanel({ recipe, prefs }: { recipe: Recipe; prefs: Pick<
   const target = recipe.nutrition.meal_target_kcal;
   const ofDay = dailyShare(recipe, prefs);
   const fit = target ? Math.min(100, Math.round((m.kcal / target) * 100)) : null;
+  const dv = (key: keyof typeof DAILY_VALUES) => Math.round((m[key] / DAILY_VALUES[key]) * 100);
   return (
     <section aria-label="Nutrition per serving" className="rounded-[24px] bg-white/70 p-5">
       <h3 className="font-display text-lg font-extrabold">Nutrition per serving</h3>
@@ -35,12 +48,114 @@ export function NutritionPanel({ recipe, prefs }: { recipe: Recipe; prefs: Pick<
           <div className="mt-1 h-2 rounded-full bg-stone-200/70"><div className="h-2 rounded-full bg-emerald-400" style={{ width: `${fit}%` }} /></div>
         </div>
       )}
-      <div className="mt-4 space-y-3">
+      <p className="mt-4 text-xs font-semibold uppercase tracking-wider text-stone-500">Energy split</p>
+      <div className="mt-2 space-y-3">
         <Bar label="Protein" value={m.protein} unit="g" share={shares.protein} color="var(--color-mint)" />
         <Bar label="Carbs" value={m.carbs} unit="g" share={shares.carbs} color="var(--color-ember)" />
         <Bar label="Fat" value={m.fat} unit="g" share={shares.fat} color="var(--color-crimson)" />
       </div>
-      <p className="mt-3 text-xs text-stone-500">Whole recipe: {Math.round(recipe.nutrition.total.kcal)} kcal for {recipe.servings} serving{recipe.servings === 1 ? '' : 's'}.</p>
+      <table className="mt-4 w-full text-sm" aria-label="Daily value per serving">
+        <thead><tr className="text-left text-xs text-stone-500"><th className="font-semibold">Nutrient</th><th className="text-right font-semibold">Amount</th><th className="text-right font-semibold">% DV</th></tr></thead>
+        <tbody>
+          <tr><td>Energy</td><td className="text-right">{m.kcal} kcal</td><td className="text-right">{ofDay ?? Math.round((m.kcal / 2000) * 100)}%</td></tr>
+          <tr><td>Protein</td><td className="text-right">{m.protein} g</td><td className="text-right">{dv('protein')}%</td></tr>
+          <tr><td>Carbs</td><td className="text-right">{m.carbs} g</td><td className="text-right">{dv('carbs')}%</td></tr>
+          <tr><td>Fat</td><td className="text-right">{m.fat} g</td><td className="text-right">{dv('fat')}%</td></tr>
+        </tbody>
+      </table>
+      <p className="mt-2 text-xs text-stone-500">% DV for energy uses your calorie target when set, otherwise 2,000 kcal. Whole recipe: {Math.round(recipe.nutrition.total.kcal)} kcal for {recipe.servings} serving{recipe.servings === 1 ? '' : 's'}.</p>
+    </section>
+  );
+}
+
+export function TastePanel({ taste }: { taste: TasteProfile }) {
+  const total = TASTE_META.reduce((sum, t) => sum + taste[t.key], 0) || 1;
+  const r = 42, c = 2 * Math.PI * r;
+  let offset = 0;
+  return (
+    <section aria-label="Taste profile" className="rounded-[24px] bg-white/70 p-5">
+      <h3 className="font-display text-lg font-extrabold">Taste profile</h3>
+      <div className="mt-3 flex items-center gap-4">
+        <svg viewBox="0 0 110 110" className="h-28 w-28 shrink-0 -rotate-90" role="img"
+          aria-label={TASTE_META.map((t) => `${t.label} ${taste[t.key]} of 10`).join(', ')}>
+          <circle cx="55" cy="55" r={r} fill="none" stroke="rgb(231 229 228 / 0.7)" strokeWidth="14" />
+          {TASTE_META.map((t) => {
+            const len = (taste[t.key] / total) * c;
+            const el = <circle key={t.key} cx="55" cy="55" r={r} fill="none" stroke={t.color} strokeWidth="14" strokeDasharray={`${len} ${c - len}`} strokeDashoffset={-offset} />;
+            offset += len;
+            return el;
+          })}
+        </svg>
+        <ul className="flex-1 space-y-2 text-sm">
+          {TASTE_META.map((t) => (
+            <li key={t.key}>
+              <div className="flex justify-between"><span className="font-semibold">{t.label}</span><span>{taste[t.key].toFixed(1)}/10</span></div>
+              <div className="mt-0.5 h-1.5 rounded-full bg-stone-200/70"><div className="h-1.5 rounded-full" style={{ width: `${taste[t.key] * 10}%`, background: t.color }} /></div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  );
+}
+
+function BreakdownTable({ recipe }: { recipe: Recipe }) {
+  if (recipe.ingredients.some((i) => i.kcal === undefined)) return null;
+  const num = (v: number | undefined) => (v ?? 0).toLocaleString('en', { maximumFractionDigits: 1 });
+  const t = recipe.nutrition.total;
+  return (
+    <section aria-label="Nutrition breakdown" className="mt-6">
+      <h3 className="font-display text-xl font-extrabold">Nutrition breakdown</h3>
+      <div className="mt-3 overflow-x-auto rounded-2xl bg-white/60">
+        <table className="w-full min-w-[34rem] text-sm">
+          <thead>
+            <tr className="border-b border-stone-200 text-left text-xs uppercase tracking-wider text-stone-500">
+              <th className="px-3 py-2">Ingredient</th><th className="px-3 py-2 text-right">Amount</th><th className="px-3 py-2 text-right">kcal</th>
+              <th className="px-3 py-2 text-right">Protein g</th><th className="px-3 py-2 text-right">Carbs g</th><th className="px-3 py-2 text-right">Fat g</th>
+              <th className="px-3 py-2 text-right">Est. cost</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-stone-200/70">
+            {recipe.ingredients.map((i) => (
+              <tr key={i.name}>
+                <td className="px-3 py-1.5">{i.name}</td><td className="px-3 py-1.5 text-right">{formatGrams(i.grams)}</td>
+                <td className="px-3 py-1.5 text-right">{num(i.kcal)}</td><td className="px-3 py-1.5 text-right">{num(i.protein)}</td>
+                <td className="px-3 py-1.5 text-right">{num(i.carbs)}</td><td className="px-3 py-1.5 text-right">{num(i.fat)}</td>
+                <td className="px-3 py-1.5 text-right">{i.cost_pkr !== undefined ? formatPkr(i.cost_pkr) : '–'}</td>
+              </tr>
+            ))}
+          </tbody>
+          <tfoot className="border-t border-stone-300 font-semibold">
+            <tr>
+              <td className="px-3 py-1.5">Total</td><td />
+              <td className="px-3 py-1.5 text-right">{num(t.kcal)}</td><td className="px-3 py-1.5 text-right">{num(t.protein)}</td>
+              <td className="px-3 py-1.5 text-right">{num(t.carbs)}</td><td className="px-3 py-1.5 text-right">{num(t.fat)}</td>
+              <td className="px-3 py-1.5 text-right">{recipe.cost ? formatPkr(recipe.cost.total_pkr) : '–'}</td>
+            </tr>
+            <tr className="text-stone-600">
+              <td className="px-3 py-1.5">Per serving</td><td />
+              <td className="px-3 py-1.5 text-right">{num(recipe.nutrition.per_serving.kcal)}</td><td className="px-3 py-1.5 text-right">{num(recipe.nutrition.per_serving.protein)}</td>
+              <td className="px-3 py-1.5 text-right">{num(recipe.nutrition.per_serving.carbs)}</td><td className="px-3 py-1.5 text-right">{num(recipe.nutrition.per_serving.fat)}</td>
+              <td className="px-3 py-1.5 text-right">{recipe.cost ? formatPkr(recipe.cost.per_serving_pkr) : '–'}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+  );
+}
+
+function AllergenNotice({ recipe }: { recipe: Recipe }) {
+  const a = recipe.allergens;
+  if (!a) return null;
+  const avoided = [...a.avoided.map(allergenLabel), ...a.blocked_words.map((w) => `“${w}”`)];
+  return (
+    <section aria-label="Allergen notice" className="mt-4 flex gap-3 rounded-[20px] border border-emerald-200 bg-emerald-50/80 p-4 text-sm text-emerald-900">
+      <ShieldCheck size={20} className="shrink-0" aria-hidden="true" />
+      <div>
+        <p><strong>Allergen Shield:</strong> {avoided.length ? `kept out ${avoided.join(', ')}.` : 'no allergens set.'}</p>
+        <p className="mt-0.5">{a.contains.length ? `Contains: ${a.contains.map(allergenLabel).join(', ')}.` : 'No tagged allergens in this recipe.'} Check packaged ingredient labels for traces.</p>
+      </div>
     </section>
   );
 }
@@ -50,6 +165,7 @@ function ShoppingPanel({ recipe, lines, onAddToPantry }: { recipe: Recipe; lines
   if (lines.length === 0) {
     return <p className="flex items-center gap-2 rounded-[24px] bg-emerald-50/90 p-4 text-sm font-semibold text-emerald-800"><Check size={18} />You have everything for this recipe.</p>;
   }
+  const total = shoppingTotal(lines);
   const copy = async () => {
     try { await navigator.clipboard.writeText(shoppingText(recipe, lines)); setStatus('List copied.'); } catch { setStatus('Copy is not available in this browser.'); }
   };
@@ -63,11 +179,15 @@ function ShoppingPanel({ recipe, lines, onAddToPantry }: { recipe: Recipe; lines
       <ul className="mt-3 space-y-1.5 text-sm">
         {lines.map((l) => (
           <li key={l.name} className="flex justify-between gap-3">
-            <span>{l.name}</span>
-            <span className="font-semibold">{formatGrams(l.buyG)}{l.haveG > 0 && <span className="font-normal text-stone-500"> (have {formatGrams(l.haveG)})</span>}</span>
+            <span>{l.name} <span className="text-stone-500">{formatGrams(l.buyG)}{l.haveG > 0 && ` (have ${formatGrams(l.haveG)})`}</span></span>
+            {l.costPkr !== null && <span className="shrink-0 font-semibold">{formatPkr(l.costPkr)}</span>}
           </li>
         ))}
       </ul>
+      {total !== null && (
+        <p className="mt-3 flex justify-between border-t border-stone-200 pt-2 text-sm font-semibold"><span>Estimated total</span><span>{formatPkr(total)}</span></p>
+      )}
+      <p className="mt-1 text-xs text-stone-500">Prices are rough market estimates in PKR and vary by city and season.</p>
       <div className="print-hide mt-4 flex flex-wrap gap-2">
         <button type="button" className="btn-ghost px-3 py-1.5 text-sm" onClick={copy}><Copy size={16} />Copy list</button>
         {onAddToPantry && <button type="button" className="btn-ghost px-3 py-1.5 text-sm" onClick={bought}><Check size={16} />I bought these</button>}
@@ -79,10 +199,13 @@ function ShoppingPanel({ recipe, lines, onAddToPantry }: { recipe: Recipe; lines
 
 export interface RecipeActions {
   onSave?: () => Promise<void>;
-  saved?: boolean;
+  // new: not saved yet · saved: saved just now · exists: was already in the profile
+  saveState?: 'new' | 'saved' | 'exists';
   onShare?: () => Promise<string>;
   onAddToPantry?: (lines: ShoppingLine[]) => Promise<void>;
 }
+
+const SAVE_LABEL = { new: 'Save to Profile', saved: 'Saved to Profile', exists: 'Already saved' } as const;
 
 export function RecipeView({ recipe, prefs, pantryByName, actions = {}, children }: {
   recipe: Recipe;
@@ -95,6 +218,7 @@ export function RecipeView({ recipe, prefs, pantryByName, actions = {}, children
   const [message, setMessage] = useState('');
   const [link, setLink] = useState('');
   const lines = pantryByName ? shoppingList(recipe, pantryByName) : null;
+  const saveState = actions.saveState ?? 'new';
 
   const run = async (fn: () => Promise<void>) => {
     setBusy(true); setMessage('');
@@ -110,22 +234,31 @@ export function RecipeView({ recipe, prefs, pantryByName, actions = {}, children
     <article className="print-area glass p-6 sm:p-8" aria-label={recipe.title}>
       {children}
       <h2 className="font-display text-3xl font-extrabold tracking-tight sm:text-4xl">{recipe.title}</h2>
-      <p className="mt-2 flex flex-wrap gap-4 text-sm text-stone-600">
+      <p className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-stone-600">
         <span className="inline-flex items-center gap-1.5"><Clock size={16} />{recipe.minutes} min</span>
         <span className="inline-flex items-center gap-1.5"><Users size={16} />Serves {recipe.servings}</span>
+        {recipe.match && <span className="inline-flex items-center gap-1.5 font-semibold text-emerald-700"><Sparkles size={16} />{recipe.match.percent}% match</span>}
+        {recipe.cost && <span className="inline-flex items-center gap-1.5"><Wallet size={16} />~{formatPkr(recipe.cost.per_serving_pkr)} per serving</span>}
       </p>
+      {recipe.match && (
+        <p className="mt-1 text-xs text-stone-500">
+          Match = {recipe.match.taste_similarity !== null ? `taste similarity ${Math.round(recipe.match.taste_similarity * 100)}% and ` : ''}ingredient pairing {Math.round(recipe.match.pairing * 100)}%.
+        </p>
+      )}
 
       <div className="print-hide mt-4 flex flex-wrap gap-2">
         {actions.onSave && (
-          <button type="button" className={actions.saved ? 'btn-ghost' : 'btn-primary'} disabled={busy || actions.saved} onClick={() => run(actions.onSave!)}>
-            <Heart size={18} fill={actions.saved ? 'currentColor' : 'none'} />{actions.saved ? 'Saved' : 'Save recipe'}
+          <button type="button" className={saveState === 'new' ? 'btn-primary' : 'btn-ghost'} disabled={busy || saveState !== 'new'} onClick={() => run(actions.onSave!)}>
+            <Heart size={18} fill={saveState === 'new' ? 'none' : 'currentColor'} />{SAVE_LABEL[saveState]}
           </button>
         )}
-        {actions.onShare && <button type="button" className="btn-ghost" disabled={busy} onClick={share}><Link2 size={18} />Share</button>}
+        {actions.onShare && <button type="button" className="btn-ghost" disabled={busy} onClick={share}><Link2 size={18} />Share Link</button>}
         <button type="button" className="btn-ghost" onClick={() => window.print()}><Download size={18} />Download PDF</button>
       </div>
       {message && <p role="status" className="print-hide mt-2 text-sm text-stone-600">{message}</p>}
       {link && <input readOnly className="field print-hide mt-2 text-sm" value={link} aria-label="Share link" onFocus={(e) => e.target.select()} />}
+
+      <AllergenNotice recipe={recipe} />
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_20rem]">
         <div>
@@ -157,10 +290,12 @@ export function RecipeView({ recipe, prefs, pantryByName, actions = {}, children
           </ol>
         </div>
         <div className="space-y-4">
+          {recipe.taste && <TastePanel taste={recipe.taste} />}
           <NutritionPanel recipe={recipe} prefs={prefs} />
           {lines && <ShoppingPanel recipe={recipe} lines={lines} onAddToPantry={actions.onAddToPantry} />}
         </div>
       </div>
+      <BreakdownTable recipe={recipe} />
       <NutritionNote />
     </article>
   );

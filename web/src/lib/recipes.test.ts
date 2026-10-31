@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { emptyPreferences } from './preferences';
-import { dailyShare, generateRecipes, macroShares, recipeRequest, shoppingList, shoppingText } from './recipes';
-import { KARAHI } from '../test/recipeFixture';
+import { dailyShare, generateRecipes, macroShares, recipeRequest, shoppingList, shoppingText, shoppingTotal } from './recipes';
+import { KARAHI, OLD_SAVED } from '../test/recipeFixture';
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -56,10 +56,18 @@ describe('shoppingList', () => {
   it('lists only what is missing and skips unowned pinches of spice', () => {
     const lines = shoppingList(KARAHI, new Map([['Chicken Breast', 200], ['Onion', 500]]));
     expect(lines).toEqual([
-      { name: 'Chicken Breast', needG: 350, haveG: 200, buyG: 150 },
-      { name: 'Tomato', needG: 100, haveG: 0, buyG: 100 },
-      { name: 'Cooking Oil', needG: 20, haveG: 0, buyG: 20 },
+      { name: 'Chicken Breast', needG: 350, haveG: 200, buyG: 150, costPkr: 113 },
+      { name: 'Tomato', needG: 100, haveG: 0, buyG: 100, costPkr: 16 },
+      { name: 'Cooking Oil', needG: 20, haveG: 0, buyG: 20, costPkr: 11 },
     ]);
-    expect(shoppingText(KARAHI, lines)).toBe('Shopping list: Chicken Breast Karahi\n- Chicken Breast: 150 g\n- Tomato: 100 g\n- Cooking Oil: 20 g');
+    expect(shoppingTotal(lines)).toBe(140);
+    expect(shoppingText(KARAHI, lines)).toBe(
+      'Shopping list: Chicken Breast Karahi\n- Chicken Breast: 150 g (~Rs 113)\n- Tomato: 100 g (~Rs 16)\n- Cooking Oil: 20 g (~Rs 11)\nEstimated total: Rs 140');
+  });
+
+  it('has no cost for recipes saved before prices existed', () => {
+    const lines = shoppingList(OLD_SAVED, new Map());
+    expect(lines[0].costPkr).toBeNull();
+    expect(shoppingTotal(lines)).toBeNull();
   });
 });

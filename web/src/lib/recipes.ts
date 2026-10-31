@@ -5,7 +5,17 @@ export interface RecipeIngredient {
   category: string;
   grams: number;
   role: string;
+  // Added in v0.6 of the API; recipes saved earlier don't have them.
+  kcal?: number;
+  protein?: number;
+  carbs?: number;
+  fat?: number;
+  allergens?: string[];
+  price_pkr_per_kg?: number;
+  cost_pkr?: number;
 }
+
+export type TasteProfile = Record<'sweet' | 'salty' | 'sour' | 'spicy', number>;
 
 export interface Macros {
   kcal: number;
@@ -22,6 +32,10 @@ export interface Recipe {
   ingredients: RecipeIngredient[];
   steps: string[];
   nutrition: { per_serving: Macros; total: Macros; meal_target_kcal: number | null };
+  taste?: TasteProfile;
+  match?: { percent: number; pairing: number; taste_similarity: number | null };
+  allergens?: { contains: string[]; avoided: string[]; blocked_words: string[] };
+  cost?: { total_pkr: number; per_serving_pkr: number };
   fingerprint: string;
 }
 
@@ -82,6 +96,7 @@ export interface ShoppingLine {
   needG: number;
   haveG: number;
   buyG: number;
+  costPkr: number | null;
 }
 
 // Spices and salt under 5 g count as "in the masala box" and are left off the list.
@@ -91,7 +106,9 @@ export function shoppingList(recipe: Recipe, pantryByName: ReadonlyMap<string, n
   return recipe.ingredients
     .map((i) => {
       const haveG = pantryByName.get(i.name) ?? 0;
-      return { name: i.name, needG: i.grams, haveG, buyG: Math.max(0, Math.ceil(i.grams - haveG)) };
+      const buyG = Math.max(0, Math.ceil(i.grams - haveG));
+      const costPkr = i.price_pkr_per_kg === undefined ? null : Math.round((i.price_pkr_per_kg * buyG) / 1000);
+      return { name: i.name, needG: i.grams, haveG, buyG, costPkr };
     })
     .filter((line) => line.buyG > 0 && !(line.needG < PINCH_G && line.haveG === 0 && isPinch(recipe, line.name)));
 }
@@ -101,6 +118,17 @@ function isPinch(recipe: Recipe, name: string): boolean {
   return role === 'spice' || role === 'salt';
 }
 
+export function shoppingTotal(lines: ShoppingLine[]): number | null {
+  return lines.every((l) => l.costPkr !== null) ? lines.reduce((sum, l) => sum + (l.costPkr ?? 0), 0) : null;
+}
+
+export const formatPkr = (pkr: number) => `Rs ${Math.round(pkr).toLocaleString('en-PK')}`;
+
 export function shoppingText(recipe: Recipe, lines: ShoppingLine[]): string {
-  return [`Shopping list: ${recipe.title}`, ...lines.map((l) => `- ${l.name}: ${l.buyG} g`)].join('\n');
+  const total = shoppingTotal(lines);
+  return [
+    `Shopping list: ${recipe.title}`,
+    ...lines.map((l) => `- ${l.name}: ${l.buyG} g${l.costPkr !== null ? ` (~${formatPkr(l.costPkr)})` : ''}`),
+    ...(total !== null ? [`Estimated total: ${formatPkr(total)}`] : []),
+  ].join('\n');
 }

@@ -11,15 +11,22 @@ export interface SavedRecipe {
 const toSaved = (r: { id: string; title: string; created_at: string; data: Recipe }): SavedRecipe =>
   ({ id: r.id, title: r.title, createdAt: r.created_at, recipe: r.data });
 
-// Saving the same recipe twice updates the one row (unique user_id + fingerprint).
-export async function saveRecipe(userId: string, recipe: Recipe): Promise<SavedRecipe> {
-  const { data, error } = await supabase
+// Stores the exact recipe JSON once per user; a second save of the same recipe
+// (unique user_id + fingerprint) reports "exists" instead of writing again.
+export async function saveRecipe(userId: string, recipe: Recipe): Promise<'saved' | 'exists'> {
+  const { error } = await supabase
     .from('saved_recipes')
-    .upsert({ user_id: userId, title: recipe.title, fingerprint: recipe.fingerprint, data: recipe }, { onConflict: 'user_id,fingerprint' })
-    .select('id, title, created_at, data')
-    .single();
+    .insert({ user_id: userId, title: recipe.title, fingerprint: recipe.fingerprint, data: recipe });
+  if (!error) return 'saved';
+  if (error.code === '23505') return 'exists';
+  throw new Error(error.message);
+}
+
+export async function isRecipeSaved(userId: string, fingerprint: string): Promise<boolean> {
+  const { data, error } = await supabase
+    .from('saved_recipes').select('id').eq('user_id', userId).eq('fingerprint', fingerprint).maybeSingle();
   if (error) throw new Error(error.message);
-  return toSaved(data);
+  return Boolean(data);
 }
 
 export async function listSavedRecipes(userId: string): Promise<SavedRecipe[]> {
@@ -61,4 +68,4 @@ export async function loadSharedRecipe(token: string): Promise<Recipe | null> {
   return (data?.data as Recipe | undefined) ?? null;
 }
 
-export const shareUrl = (token: string) => `${window.location.origin}/share/${token}`;
+export const shareUrl = (token: string) => `${window.location.origin}/r/${token}`;

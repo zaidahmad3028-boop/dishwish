@@ -162,3 +162,27 @@ export function fromRow(row: Partial<PreferencesRow> | null | undefined): Prefer
     onboarded: row.onboarded ?? false,
   };
 }
+
+const TAG_LABELS: Record<string, string> = Object.fromEntries(
+  ALLERGEN_CHIPS.map((c) => [c.tag, c.label]).concat([['shellfish', 'Shellfish']]),
+);
+
+export function allergenLabel(tag: string): string {
+  return TAG_LABELS[tag] ?? tag;
+}
+
+// Why the shield blocks an ingredient, for the kitchen card; null when it is allowed.
+export function blockReason(
+  name: string,
+  ingredientTags: readonly string[],
+  prefs: Pick<Preferences, 'allergens' | 'customAllergens'>,
+): string | null {
+  const tags = effectiveAllergenTags(prefs);
+  const tag = ingredientTags.find((t) => tags.includes(t as AllergenTag));
+  if (tag) return `Contains ${allergenLabel(tag)}`;
+  const lower = name.toLowerCase();
+  const word = prefs.customAllergens.find((w) => lower.includes(w));
+  return word ? `Matches “${word}”` : null;
+}
+
+export const TASTE_SCORES: Record<Level, number> = { low: 2, medium: 5, high: 8 };

@@ -12,6 +12,10 @@ vi.mock('./lib/preferencesApi', () => ({
   loadPreferences: vi.fn(async () => ({ ...emptyPreferences(), allergens: ['milk'], customAllergens: ['prawns'], calorieTier: 'high' })),
   savePreferences: vi.fn(),
 }));
+vi.mock('./lib/recipesApi', async (orig) => ({
+  ...(await orig<typeof import('./lib/recipesApi')>()),
+  listSavedRecipes: vi.fn(async () => []),
+}));
 vi.mock('./lib/pantryApi', async (orig) => ({
   ...(await orig<typeof import('./lib/pantryApi')>()),
   loadCatalog: vi.fn(async () => CATALOG), loadPantry: vi.fn(async () => []),

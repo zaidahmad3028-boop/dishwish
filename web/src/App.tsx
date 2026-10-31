@@ -33,6 +33,7 @@ export function App() {
         <AuthProvider>
           <Routes>
             <Route path="/auth" element={<AuthPage />} />
+            <Route path="/r/:token" element={<SharePage />} />
             <Route path="/share/:token" element={<SharePage />} />
             <Route element={<RequireAuth />}>
               <Route path="/onboarding" element={<OnboardingPage />} />
