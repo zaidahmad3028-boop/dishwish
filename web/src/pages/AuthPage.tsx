@@ -1,11 +1,11 @@
 import { useState, type FormEvent, type ReactNode } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, Flame, Loader2, ShieldCheck, Sparkles, Target } from 'lucide-react';
+import { ArrowLeft, Eye, EyeOff, Flame, Loader2, ShieldCheck, Sparkles, Target } from 'lucide-react';
 import { useAuth } from '../auth/AuthProvider';
 import { Logo } from '../components/Logo';
 import { supabase } from '../lib/supabase';
 
-type Mode = 'register' | 'login';
+export type Mode = 'register' | 'login' | 'forgot';
 type Field = 'email' | 'username' | 'password' | 'confirm';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -14,6 +14,7 @@ const USERNAME_RE = /^[\p{L}\p{N}_.\- ]{3,30}$/u;
 export function validate(mode: Mode, values: Record<Field, string>): Partial<Record<Field, string>> {
   const errors: Partial<Record<Field, string>> = {};
   if (!EMAIL_RE.test(values.email.trim())) errors.email = 'Enter a valid email address, like ayesha@example.com.';
+  if (mode === 'forgot') return errors;
   if (mode === 'login') {
     if (!values.password) errors.password = 'Enter your password.';
     return errors;
@@ -32,10 +33,11 @@ export function friendlyAuthError(message: string): string {
   if (m.includes('already registered') || m.includes('already exists')) {
     return 'An account with this email already exists. Try logging in instead.';
   }
-  if (m.includes('invalid login credentials')) return 'That email and password don’t match. Please try again.';
+  // Supabase deliberately doesn't say whether the email or the password was wrong.
+  if (m.includes('invalid login credentials')) return 'Wrong email or password. Please try again.';
   if (m.includes('email not confirmed')) return 'Please confirm your email first, then log in.';
   if (m.includes('sending confirmation') || m.includes('error sending') || m.includes('not authorized')) {
-    return 'We couldn’t send the confirmation email. The app owner needs to turn off “Confirm email” in Supabase (Authentication → Sign In / Providers → Email) or set up custom SMTP.';
+    return 'We couldn’t send the email. Supabase’s built-in email only reaches project team members, so the app owner needs to set up custom SMTP (or turn off “Confirm email” for sign-up).';
   }
   if (m.includes('email') && m.includes('invalid')) return 'That email address looks invalid. Please check it.';
   if (m.includes('rate limit') || m.includes('too many')) return 'Too many attempts. Please wait a minute and try again.';
@@ -92,8 +94,8 @@ function BrandPanel() {
   );
 }
 
-function TextField(props: {
-  id: Field; label: string; type?: string; value: string; error?: string; autoComplete: string;
+export function TextField(props: {
+  id: string; label: string; type?: string; value: string; error?: string; autoComplete: string;
   onChange: (v: string) => void; onBlur: () => void; trailing?: ReactNode;
 }) {
   const errorId = `${props.id}-error`;
@@ -136,8 +138,10 @@ export function AuthPage() {
   const set = (f: Field) => (v: string) => { setValues((s) => ({ ...s, [f]: v })); setFormError(null); };
   const blur = (f: Field) => () => setTouched((t) => ({ ...t, [f]: true }));
 
+  // Passwords never carry over between forms; the email does.
   const switchMode = (next: Mode) => {
-    setMode(next); setSubmitted(false); setTouched({}); setFormError(null); setNotice(null);
+    setMode(next); setSubmitted(false); setTouched({}); setFormError(null); setNotice(null); setShowPassword(false);
+    setValues((s) => ({ ...s, password: '', confirm: '' }));
   };
 
   async function onSubmit(e: FormEvent) {
@@ -149,7 +153,11 @@ export function AuthPage() {
     setFormError(null);
     try {
       const email = values.email.trim();
-      if (mode === 'register') {
+      if (mode === 'forgot') {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/reset-password` });
+        if (error) throw error;
+        setNotice(`If an account exists for ${email}, we’ve sent a password reset link. Check your inbox and spam folder.`);
+      } else if (mode === 'register') {
         const { data, error } = await supabase.auth.signUp({
           email, password: values.password, options: { data: { username: values.username.trim() } },
         });
@@ -163,7 +171,10 @@ export function AuthPage() {
         setNotice('Account created. Check your inbox to confirm your email, then log in.');
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password: values.password });
-        if (error) throw error;
+        if (error) {
+          setValues((s) => ({ ...s, password: '' }));
+          throw error;
+        }
         const from = (location.state as { from?: string } | null)?.from;
         navigate(from && from !== '/auth' ? from : '/kitchen', { replace: true });
         return;
@@ -186,6 +197,12 @@ export function AuthPage() {
     <main className="mx-auto grid min-h-dvh max-w-6xl items-center gap-10 px-5 py-10 lg:grid-cols-2 lg:px-8">
       <BrandPanel />
       <section className="glass p-6 sm:p-9" aria-labelledby="auth-title">
+        {mode === 'forgot' ? (
+          <button type="button" onClick={() => switchMode('login')}
+            className="mb-6 inline-flex items-center gap-1.5 text-sm font-semibold text-stone-600 hover:text-stone-900">
+            <ArrowLeft size={16} aria-hidden="true" /> Back to login
+          </button>
+        ) : (
         <div className="mb-7 grid grid-cols-2 rounded-full bg-stone-900/5 p-1" role="tablist" aria-label="Account">
           {(['register', 'login'] as const).map((m) => (
             <button key={m} type="button" role="tab" aria-selected={mode === m} onClick={() => switchMode(m)}
@@ -194,11 +211,16 @@ export function AuthPage() {
             </button>
           ))}
         </div>
+        )}
         <h2 id="auth-title" className="font-display text-3xl font-extrabold tracking-tight">
-          {mode === 'register' ? 'Create your account' : 'Welcome back'}
+          {{ register: 'Create your account', login: 'Welcome back', forgot: 'Reset your password' }[mode]}
         </h2>
         <p className="mt-1 text-stone-600">
-          {mode === 'register' ? 'Set up your kitchen in under a minute.' : 'Log in to open your kitchen.'}
+          {{
+            register: 'Set up your kitchen in under a minute.',
+            login: 'Log in to open your kitchen.',
+            forgot: 'Enter your account email and we’ll send you a link to set a new password.',
+          }[mode]}
         </p>
         <form className="mt-6 space-y-4" onSubmit={onSubmit} noValidate>
           <TextField id="email" label="Email" type="email" autoComplete="email" value={values.email}
@@ -207,9 +229,18 @@ export function AuthPage() {
             <TextField id="username" label="Username" autoComplete="username" value={values.username}
               onChange={set('username')} onBlur={blur('username')} error={shown('username')} />
           )}
-          <TextField id="password" label="Password" type={showPassword ? 'text' : 'password'}
-            autoComplete={mode === 'register' ? 'new-password' : 'current-password'} value={values.password}
-            onChange={set('password')} onBlur={blur('password')} error={shown('password')} trailing={eye} />
+          {mode !== 'forgot' && (
+            <TextField id="password" label="Password" type={showPassword ? 'text' : 'password'}
+              autoComplete={mode === 'register' ? 'new-password' : 'current-password'} value={values.password}
+              onChange={set('password')} onBlur={blur('password')} error={shown('password')} trailing={eye} />
+          )}
+          {mode === 'login' && (
+            <div className="-mt-1 text-right">
+              <button type="button" onClick={() => switchMode('forgot')} className="text-sm font-semibold text-rose-700 hover:text-rose-900 hover:underline">
+                Forgot password?
+              </button>
+            </div>
+          )}
           {mode === 'register' && (
             <TextField id="confirm" label="Confirm password" type={showPassword ? 'text' : 'password'}
               autoComplete="new-password" value={values.confirm}
@@ -219,7 +250,7 @@ export function AuthPage() {
           {notice && <p role="status" className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800">{notice}</p>}
           <button type="submit" className="btn-primary w-full" disabled={busy}>
             {busy && <Loader2 size={18} className="animate-spin" aria-hidden="true" />}
-            {mode === 'register' ? 'Create account' : 'Log in'}
+            {{ register: 'Create account', login: 'Log in', forgot: 'Send reset link' }[mode]}
           </button>
         </form>
       </section>

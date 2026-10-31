@@ -10,6 +10,7 @@ import { ProfilePage } from './pages/ProfilePage';
 import { PantryPage } from './pages/PantryPage';
 import { KitchenPage } from './pages/KitchenPage';
 import { RecipesPage, SavedRecipePage } from './pages/RecipesPage';
+import { ResetPasswordPage } from './pages/ResetPasswordPage';
 import { SharePage } from './pages/SharePage';
 
 function SetupNotice() {
@@ -33,6 +34,7 @@ export function App() {
         <AuthProvider>
           <Routes>
             <Route path="/auth" element={<AuthPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/r/:token" element={<SharePage />} />
             <Route path="/share/:token" element={<SharePage />} />
             <Route element={<RequireAuth />}>

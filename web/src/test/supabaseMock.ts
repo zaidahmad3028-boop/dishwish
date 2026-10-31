@@ -31,6 +31,8 @@ export const supabase = {
     }),
     signUp: vi.fn(),
     signInWithPassword: vi.fn(),
+    resetPasswordForEmail: vi.fn(async () => ({ data: {}, error: null })),
+    updateUser: vi.fn(async (): Promise<{ data: object; error: Error | null }> => ({ data: {}, error: null })),
     signOut: vi.fn(async () => { setSession(null); return { error: null }; }),
   },
 };
@@ -40,5 +42,7 @@ export function resetSupabaseMock() {
   listeners.clear();
   supabase.auth.signUp.mockReset();
   supabase.auth.signInWithPassword.mockReset();
+  supabase.auth.resetPasswordForEmail.mockClear();
+  supabase.auth.updateUser.mockClear();
   supabase.auth.signOut.mockClear();
 }

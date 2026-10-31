@@ -20,7 +20,7 @@ docs/      DATASET.md
 
 - **Auth:** Supabase email + password (no OTP). The API verifies Supabase access tokens: HS256 with `SUPABASE_JWT_SECRET` (legacy), or RS256/ES256/EdDSA via the project's JWKS (`SUPABASE_URL/auth/v1/.well-known/jwks.json`). Audience `authenticated`, issuer and expiry are enforced (`api/core/auth.py`).
 - **Data access:** the browser talks to Supabase directly under row-level security: each user sees only their own preferences, pantry and saved recipes. Shared recipes are public read-only snapshots.
-- **Pages:** `/auth` (register/login), `/onboarding` (taste → allergen shield → calorie target), and the signed-in `/kitchen`, `/recipes`, `/recipes/:id`, `/pantry`, `/profile`. `/r/:token` is a public shared recipe. There's no top navbar: signed-in pages use a slim left icon sidebar that becomes a bottom tab bar on mobile.
+- **Pages:** `/auth` (register/login/forgot password), `/reset-password` (target of the reset email link; add it under Supabase **Authentication → URL Configuration → Redirect URLs** for each web origin), `/onboarding` (taste → allergen shield → calorie target), and the signed-in `/kitchen`, `/recipes`, `/recipes/:id`, `/pantry`, `/profile`. `/r/:token` is a public shared recipe. There's no top navbar: signed-in pages use a slim left icon sidebar that becomes a bottom tab bar on mobile.
 
 ## How the NetworkX graph works
 
