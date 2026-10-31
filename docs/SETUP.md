@@ -30,17 +30,18 @@ In Supabase **SQL Editor**, run each file in its own query (see [DATABASE.md](DA
 
 Email confirmation and password reset need custom SMTP: see [AUTH_EMAIL.md](AUTH_EMAIL.md).
 
-## 4. Super Admin
+## 4. Accounts from your terminal (Super Admin and users)
 
-Option A (script, creates `admin@dishwish.local` with a random password):
+Put the **service_role / secret key** in `api/.env` as `SUPABASE_SERVICE_ROLE_KEY` (Supabase → Project Settings → API keys). It's server-only: never put it in `web/.env`, Vercel's web project, a chat or git. Then, from the repo root:
 
 ```bash
-api/venv/Scripts/python scripts/create_admin.py
+api/venv/Scripts/python scripts/create_admin.py --email you@example.com --ask-password
+api/venv/Scripts/python scripts/create_admin.py --email cook@example.com --role user --ask-password
 ```
 
-It needs `SUPABASE_SERVICE_ROLE_KEY` in `api/.env`, writes the password only to `.admin-credentials.local` (git-ignored, never printed) and never resets an existing account's password. Open that file to read the password, sign in, then change it in **System Settings → Security**.
+You type the password twice (hidden). The account is created already confirmed; `--role super_admin` (the default) also grants the Super Admin role. Running it again for an existing account changes the password to the one you type. Without `--ask-password`, a random password is written to `.admin-credentials.local` (git-ignored).
 
-Option B (promote an account you already registered): in SQL Editor run `select public.grant_super_admin('you@example.com');`.
+Promote an existing account in SQL instead: `select public.grant_super_admin('you@example.com');`
 
 Super Admins land on `/admin` after login; everyone else lands on `/kitchen`.
 
