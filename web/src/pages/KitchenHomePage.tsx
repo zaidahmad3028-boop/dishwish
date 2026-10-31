@@ -8,6 +8,7 @@ import { Card, EmptyState, ErrorNote, PageHeader, Spinner, formatDate } from '..
 import { DIETS, listCuratedRecipes, listEvents, trendingRecipes, type CuratedSummary, type RecipeEvent } from '../lib/curatedApi';
 import { allergenLabel, blockReason, effectiveAllergenTags } from '../lib/preferences';
 import { presetActive, TASTE_PRESETS, togglePreset, useSeedTastes, useSelection } from '../lib/selection';
+import { IMAGES, imageUrl } from '../lib/images';
 import { useKitchenData } from '../lib/useKitchenData';
 
 const QUICK_ADD = ['Chicken Breast', 'Tomato', 'Onion', 'Garlic'];
@@ -65,8 +66,13 @@ export function KitchenHomePage() {
         </p>
       )}
 
-      <section className="card relative overflow-hidden p-6 sm:p-8" aria-labelledby="counter-heading">
-        <div className="pointer-events-none absolute -right-10 -top-10 hidden h-64 w-64 rounded-full bg-gradient-to-br from-ember/40 to-crimson/30 blur-2xl md:block" aria-hidden="true" />
+      <section className="card relative p-6 sm:p-8" aria-labelledby="counter-heading">
+        {/* Photo on its own clipped layer, so the search dropdown below can still overflow the card. */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[var(--radius-card)]" aria-hidden="true">
+          <div className="absolute inset-0 bg-cover bg-[position:70%_center]" style={{ backgroundImage: `url(${imageUrl(IMAGES.kitchenHero)})` }} />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#fffaf5] via-[#fffaf5]/90 to-[#fffaf5]/55 md:via-[#fffaf5]/80 md:to-transparent" />
+        </div>
+        <div className="relative">
         <h2 id="counter-heading" className="font-display text-3xl font-extrabold sm:text-4xl">What’s on Your <span className="text-crimson">Counter?</span></h2>
         <p className="mt-2 text-stone-600">Add ingredients, choose your taste, and get personalised recipe recommendations.</p>
         <div className="relative mt-5 max-w-2xl">
@@ -119,6 +125,7 @@ export function KitchenHomePage() {
             </ul>
           </div>
         )}
+        </div>
       </section>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

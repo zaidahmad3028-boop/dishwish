@@ -106,3 +106,11 @@ describe('admin validation', () => {
     expect(toCsv([{ name: '=HYPERLINK("x")', note: 'a,b' }])).toBe('name,note\n"\'=HYPERLINK(""x"")","a,b"');
   });
 });
+
+describe('image urls', () => {
+  it('serves bundled images unless an R2 base url is configured', async () => {
+    const { imageUrl, IMAGES } = await import('./images');
+    expect(imageUrl(IMAGES.kitchenHero)).toBe('/images/kitchen/counter-hero.webp');
+    expect(imageUrl('/kitchen/x.webp')).toBe('/images/kitchen/x.webp');
+  });
+});
