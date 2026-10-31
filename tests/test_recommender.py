@@ -44,7 +44,7 @@ def test_real_catalog_cumulative_scores():
 def test_second_selection_changes_ranking_not_just_last_selection():
     engine = Recommender([item('A'), item('B'), item('X'), item('Y')])
     # Controlled weighted graph to prove cumulative ranking independently of heuristic.
-    for left, right, weight in [('A','X',.9), ('B','X',.1), ('A','Y',.6), ('B','Y',.8)]:
+    for left, right, weight in [('A','B',0), ('A','X',.9), ('B','X',.1), ('A','Y',.6), ('B','Y',.8), ('X','Y',0)]:
         engine.graph[left][right]['weight'] = weight
     assert engine.recommend(['A'])[0]['name'] == 'X'
     rows = engine.recommend(['A','B'])
@@ -121,3 +121,25 @@ def test_cors(client):
     r=client.options('/api/recommend',headers={'Origin':'https://untrusted.invalid',
         'Access-Control-Request-Method':'POST'})
     assert 'access-control-allow-origin' not in r.headers
+
+
+def test_edge_weight_formula_and_bounds():
+    from engine.cooking import cook_affinity
+    from engine.recommender import category_affinity, pair_weight, taste_harmony, taste_similarity
+    catalog = {i.name: i for i in load_ingredients()}
+    graph = get_recommender().graph
+    for u, v in [('Mutton', 'Onion'), ('Mango', 'Milk'), ('Basmati Rice', 'Salt'), ('Prawns', 'White Sugar')]:
+        a, b = catalog[u], catalog[v]
+        cook = cook_affinity(a, b)
+        expected = (.35 * max(category_affinity(a, b), .9 * cook) + .35 * cook
+                    + .20 * taste_similarity(a, b) + .10 * taste_harmony(a, b))
+        assert graph[u][v]['weight'] == pytest.approx(expected) == pytest.approx(pair_weight(b, a))
+    weights = [d['weight'] for _, _, d in graph.edges(data=True)]
+    assert 0 <= min(weights) and max(weights) <= 1
+
+
+def test_cooking_affinity_ranks_real_pairings_higher():
+    graph = get_recommender().graph
+    assert graph['Mutton']['Onion']['weight'] > graph['Mutton']['Mango']['weight']
+    assert graph['Basmati Rice']['Green Cardamom (Elaichi)']['weight'] > graph['Basmati Rice']['Mayonnaise']['weight']
+    assert graph['Milk']['White Sugar']['weight'] > graph['Milk']['Prawns']['weight']

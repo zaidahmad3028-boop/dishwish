@@ -10,6 +10,7 @@ import math
 
 import networkx as nx
 
+from .cooking import cook_affinity
 from .data import ALLERGENS, TASTES, Ingredient, load_ingredients
 
 # Unordered category pair affinities. Unlisted pairs use the conservative default.
@@ -27,10 +28,25 @@ CATEGORY_AFFINITY = {
 }
 
 
+def category_affinity(left: Ingredient, right: Ingredient) -> float:
+    return CATEGORY_AFFINITY.get(frozenset((left.category, right.category)), .5)
+
+
+def taste_similarity(left: Ingredient, right: Ingredient) -> float:
+    return 1 - sum(abs(getattr(left, t) - getattr(right, t)) for t in TASTES) / 40
+
+
+def taste_harmony(left: Ingredient, right: Ingredient) -> float:
+    """Balance of the pair's combined flavour: 1 when the four tastes even out, 0 when one dominates fully."""
+    combined = [(getattr(left, t) + getattr(right, t)) / 2 for t in TASTES]
+    return 1 - (max(combined) - min(combined)) / 10
+
+
 def pair_weight(left: Ingredient, right: Ingredient) -> float:
-    affinity = CATEGORY_AFFINITY.get(frozenset((left.category, right.category)), .5)
-    taste_similarity = 1 - sum(abs(getattr(left, t) - getattr(right, t)) for t in TASTES) / 40
-    return .6 * affinity + .4 * taste_similarity
+    """w(u,v) = 0.35·max(cat, 0.9·cook) + 0.35·cook + 0.20·taste + 0.10·harmony, all terms in [0, 1]."""
+    cook = cook_affinity(left, right)
+    return (.35 * max(category_affinity(left, right), .9 * cook) + .35 * cook
+            + .20 * taste_similarity(left, right) + .10 * taste_harmony(left, right))
 
 
 class Recommender:
