@@ -7,7 +7,8 @@ import { supabaseConfigured } from './lib/supabase';
 import { AuthPage } from './pages/AuthPage';
 import { OnboardingPage } from './pages/OnboardingPage';
 import { ProfilePage } from './pages/ProfilePage';
-import { KitchenPage, PantryPage, RecipesPage } from './pages/SectionPages';
+import { PantryPage } from './pages/PantryPage';
+import { KitchenPage, RecipesPage } from './pages/SectionPages';
 
 function SetupNotice() {
   return (

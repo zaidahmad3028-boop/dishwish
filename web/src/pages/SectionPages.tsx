@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, CookingPot, Refrigerator } from 'lucide-react';
+import { BookOpen, CookingPot } from 'lucide-react';
 import { useAuth } from '../auth/AuthProvider';
 import { displayName } from '../components/AppShell';
 import { loadPreferences } from '../lib/preferencesApi';
@@ -43,8 +43,4 @@ export function KitchenPage() {
 
 export function RecipesPage() {
   return <Section icon={<BookOpen size={28} />} title="Recipes" intro="Your saved and shared recipes will live here." />;
-}
-
-export function PantryPage() {
-  return <Section icon={<Refrigerator size={28} />} title="Pantry" intro="Track what you have at home, with quantities in grams." />;
 }

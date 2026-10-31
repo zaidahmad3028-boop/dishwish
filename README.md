@@ -17,6 +17,10 @@ cd web && npm test                    # Vitest + Testing Library: auth, onboardi
 python -m pytest tests -q             # from the repo root: seed tags, recommender, JWT verification, /api/me
 ```
 
+## Phase 2: pantry
+
+`/pantry` lists the signed-in user's `pantry_items` grouped by category, with quantities in grams (1–100,000 g, edited inline, saved on blur/Enter). The add panel searches the public ingredient catalog by name and category. Ingredients caught by the allergen shield (tags or free-text words) can't be added, and any already in the pantry are flagged as blocked. Reads and writes go straight to Supabase under the existing owner-only RLS policies; no new SQL is needed.
+
 ## Structure
 
 - `web/`: React + TypeScript + Vite + Tailwind; Vercel frontend project.
