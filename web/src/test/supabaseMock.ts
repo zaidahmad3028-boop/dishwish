@@ -21,6 +21,7 @@ export function setSession(session: Session | null) {
 }
 
 export const supabaseConfigured = true;
+export const authFlags = { passwordRecovery: false };
 
 export const supabase = {
   auth: {
@@ -31,9 +32,11 @@ export const supabase = {
     }),
     signUp: vi.fn(),
     signInWithPassword: vi.fn(),
-    resetPasswordForEmail: vi.fn(async () => ({ data: {}, error: null })),
+    resetPasswordForEmail: vi.fn(async (): Promise<{ data: object; error: Error | null }> => ({ data: {}, error: null })),
+    resend: vi.fn(async (): Promise<{ data: object; error: Error | null }> => ({ data: {}, error: null })),
+    verifyOtp: vi.fn(async (): Promise<{ data: object; error: Error | null }> => ({ data: {}, error: null })),
     updateUser: vi.fn(async (): Promise<{ data: object; error: Error | null }> => ({ data: {}, error: null })),
-    signOut: vi.fn(async () => { setSession(null); return { error: null }; }),
+    signOut: vi.fn(async (opts?: { scope?: string }) => { if (opts?.scope !== 'others') setSession(null); return { error: null }; }),
   },
 };
 
@@ -44,5 +47,8 @@ export function resetSupabaseMock() {
   supabase.auth.signInWithPassword.mockReset();
   supabase.auth.resetPasswordForEmail.mockClear();
   supabase.auth.updateUser.mockClear();
+  supabase.auth.resend.mockClear();
+  supabase.auth.verifyOtp.mockClear();
+  authFlags.passwordRecovery = false;
   supabase.auth.signOut.mockClear();
 }

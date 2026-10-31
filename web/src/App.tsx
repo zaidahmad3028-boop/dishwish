@@ -1,9 +1,11 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
+import type { ReactNode } from 'react';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { AuthProvider } from './auth/AuthProvider';
 import { RequireAuth } from './auth/RequireAuth';
 import { AppShell } from './components/AppShell';
 import { Backdrop } from './components/Backdrop';
 import { supabaseConfigured } from './lib/supabase';
+import { AuthConfirmPage } from './pages/AuthConfirmPage';
 import { AuthPage } from './pages/AuthPage';
 import { OnboardingPage } from './pages/OnboardingPage';
 import { ProfilePage } from './pages/ProfilePage';
@@ -26,14 +28,25 @@ function SetupNotice() {
   );
 }
 
+// Email links that land on the wrong path (e.g. Site URL fallback) still reach /auth/confirm.
+// It replaces the routes for that render so no other redirect (e.g. "*" → /kitchen) can win.
+function AuthLinkRedirect({ children }: { children: ReactNode }) {
+  const { pathname, search, hash } = useLocation();
+  const isAuthLink = /[?&#](token_hash|code|error_code)=/.test(search + hash);
+  if (!isAuthLink || pathname === '/auth/confirm' || pathname.startsWith('/r/') || pathname.startsWith('/share/')) return children;
+  return <Navigate to={`/auth/confirm${search}${hash}`} replace />;
+}
+
 export function App() {
   return (
     <>
       <Backdrop />
       {supabaseConfigured ? (
         <AuthProvider>
+          <AuthLinkRedirect>
           <Routes>
             <Route path="/auth" element={<AuthPage />} />
+            <Route path="/auth/confirm" element={<AuthConfirmPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/r/:token" element={<SharePage />} />
             <Route path="/share/:token" element={<SharePage />} />
@@ -49,6 +62,7 @@ export function App() {
             </Route>
             <Route path="*" element={<Navigate to="/kitchen" replace />} />
           </Routes>
+          </AuthLinkRedirect>
         </AuthProvider>
       ) : <SetupNotice />}
     </>

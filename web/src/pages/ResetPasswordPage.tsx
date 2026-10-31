@@ -14,8 +14,7 @@ export function validateNewPassword(password: string, confirm: string) {
   return errors;
 }
 
-// Landing page for the reset link: Supabase signs the user in from the URL
-// (detectSessionInUrl), then we let them choose a new password.
+// Reached from /auth/confirm after a valid reset link signs the user in.
 export function ResetPasswordPage() {
   const { session, loading } = useAuth();
   const navigate = useNavigate();
@@ -40,7 +39,9 @@ export function ResetPasswordPage() {
       setBusy(false);
       return;
     }
-    navigate('/kitchen', { replace: true });
+    // Sign out every other device that might still hold the old password's session.
+    await supabase.auth.signOut({ scope: 'others' }).catch(() => {});
+    navigate('/kitchen', { replace: true, state: { notice: 'Password updated.' } });
   }
 
   const eye = (
@@ -61,7 +62,8 @@ export function ResetPasswordPage() {
         ) : !session ? (
           <div className="mt-3 space-y-4">
             <p role="alert" className="text-stone-700">This reset link is invalid or has expired. Please request a new one.</p>
-            <Link to="/auth" className="btn-primary w-full">Back to login</Link>
+            <Link to="/auth?mode=forgot" className="btn-primary w-full">Request a new link</Link>
+            <Link to="/auth?mode=login" className="block text-center text-sm font-semibold text-stone-600 hover:text-stone-900">Back to login</Link>
           </div>
         ) : (
           <form className="mt-6 space-y-4" onSubmit={onSubmit} noValidate>

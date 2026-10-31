@@ -41,12 +41,15 @@ describe('validate', () => {
 describe('friendlyAuthError', () => {
   it.each([
     ['User already registered', /already exists/],
-    ['Invalid login credentials', /^Wrong email or password\. Please try again\.$/],
-    ['Email rate limit exceeded', /Too many attempts/],
+    ['Invalid login credentials', /^Incorrect email or password\. Please try again\.$/],
+    ['Email not confirmed', /isn’t confirmed yet/],
+    ['email rate limit exceeded', /sent too many emails recently/],
+    ['Request rate limit reached', /Too many attempts/],
+    ['For security purposes, you can only request this after 37 seconds.', /wait 37 seconds/],
     ['Failed to fetch', /Can’t reach the server/],
-    ['Error sending confirmation email', /couldn’t send the email.*custom SMTP/],
-    ['Error sending recovery email', /couldn’t send the email/],
-    ['Email address not authorized', /couldn’t send the email/],
+    ['Error sending confirmation email', /couldn’t send the email right now/],
+    ['Error sending recovery email', /couldn’t send the email right now/],
+    ['Email link is invalid or has expired', /invalid or has expired/],
     ['Email address "x@y" is invalid', /looks invalid/],
     ['Database error saving new user', /Something went wrong: Database error saving new user/],
     ['', /^Something went wrong\. Please try again\.$/],
@@ -89,7 +92,8 @@ describe('AuthPage', () => {
     await userEvent.click(screen.getByRole('button', { name: /create account/i }));
     expect(await screen.findByText('Onboarding screen')).toBeInTheDocument();
     expect(supabase.auth.signUp).toHaveBeenCalledWith({
-      email: 'ayesha@example.com', password: 'secret123', options: { data: { username: 'Ayesha' } },
+      email: 'ayesha@example.com', password: 'secret123',
+      options: { data: { username: 'Ayesha' }, emailRedirectTo: `${window.location.origin}/auth/confirm` },
     });
   });
 
@@ -135,7 +139,7 @@ describe('AuthPage', () => {
     expect(screen.getByLabelText(/^password$/i)).toHaveValue('');
   });
 
-  it('clears the password after an email-confirm sign-up sends the user to Login', async () => {
+  it('shows "Check your inbox" with a timed resend after an email-confirm sign-up', async () => {
     supabase.auth.signUp.mockResolvedValue({ data: { session: null, user: {} }, error: null });
     renderAuth();
     await fill(/^email$/i, 'ayesha@example.com');
@@ -143,20 +147,49 @@ describe('AuthPage', () => {
     await fill(/^password$/i, 'secret123');
     await fill(/confirm password/i, 'secret123');
     await userEvent.click(screen.getByRole('button', { name: /create account/i }));
-    expect(await screen.findByRole('status')).toHaveTextContent(/check your inbox/i);
-    expect(screen.getByRole('tab', { name: 'Login' })).toHaveAttribute('aria-selected', 'true');
+    expect(await screen.findByRole('heading', { name: 'Check your inbox' })).toBeInTheDocument();
+    expect(screen.getByText(/confirmation link to/)).toHaveTextContent('ayesha@example.com');
+    expect(screen.getByRole('button', { name: /resend email in \d+s/i })).toBeDisabled();
+    await userEvent.click(screen.getByRole('button', { name: /back to login/i }));
+    expect(screen.getByRole('heading', { name: 'Welcome back' })).toBeInTheDocument();
     expect(screen.getByLabelText(/^password$/i)).toHaveValue('');
   });
 
-  it('says wrong password and empties the field on a failed login', async () => {
+  it('says the password is incorrect and empties the field on a failed login', async () => {
     supabase.auth.signInWithPassword.mockResolvedValue({ data: {}, error: new Error('Invalid login credentials') });
     renderAuth();
     await userEvent.click(await screen.findByRole('tab', { name: 'Login' }));
     await fill(/^email$/i, 'ayesha@example.com');
     await fill(/^password$/i, 'wrongpass');
     await userEvent.click(screen.getByRole('button', { name: /log in/i }));
-    expect(await screen.findByRole('alert')).toHaveTextContent('Wrong email or password. Please try again.');
+    expect(await screen.findByRole('alert')).toHaveTextContent('Incorrect email or password. Please try again.');
     expect(screen.getByLabelText(/^password$/i)).toHaveValue('');
+  });
+
+  it('offers to resend the confirmation email when the email is not confirmed', async () => {
+    supabase.auth.signInWithPassword.mockResolvedValue({ data: {}, error: new Error('Email not confirmed') });
+    renderAuth('/auth?mode=login');
+    await fill(/^email$/i, 'ayesha@example.com');
+    await fill(/^password$/i, 'secret123');
+    await userEvent.click(screen.getByRole('button', { name: /log in/i }));
+    expect(await screen.findByRole('alert')).toHaveTextContent(/isn’t confirmed yet/);
+    await userEvent.click(screen.getByRole('button', { name: /resend confirmation email/i }));
+    expect(supabase.auth.resend).toHaveBeenCalledWith({
+      type: 'signup', email: 'ayesha@example.com', options: { emailRedirectTo: `${window.location.origin}/auth/confirm` },
+    });
+    expect(await screen.findByRole('heading', { name: 'Check your inbox' })).toBeInTheDocument();
+  });
+
+  it('counts down when Supabase asks the user to wait', async () => {
+    supabase.auth.signInWithPassword.mockResolvedValue({
+      data: {}, error: new Error('For security purposes, you can only request this after 42 seconds.'),
+    });
+    renderAuth('/auth?mode=login');
+    await fill(/^email$/i, 'ayesha@example.com');
+    await fill(/^password$/i, 'secret123');
+    await userEvent.click(screen.getByRole('button', { name: /log in/i }));
+    expect(await screen.findByRole('alert')).toHaveTextContent('wait 42 seconds');
+    expect(screen.getByRole('button', { name: /try again in 4\ds/i })).toBeDisabled();
   });
 
   it('sends a reset link from "Forgot password?"', async () => {
@@ -170,10 +203,14 @@ describe('AuthPage', () => {
     expect(screen.getByLabelText(/^email$/i)).toHaveValue('ayesha@example.com');
     await userEvent.click(screen.getByRole('button', { name: /send reset link/i }));
     expect(supabase.auth.resetPasswordForEmail).toHaveBeenCalledWith(
-      'ayesha@example.com', { redirectTo: `${window.location.origin}/reset-password` });
-    expect(await screen.findByRole('status')).toHaveTextContent(/sent a password reset link/);
-    await userEvent.click(screen.getByRole('button', { name: /back to login/i }));
-    expect(screen.getByRole('heading', { name: 'Welcome back' })).toBeInTheDocument();
+      'ayesha@example.com', { redirectTo: `${window.location.origin}/auth/confirm` });
+    expect(await screen.findByRole('heading', { name: 'Check your inbox' })).toBeInTheDocument();
+    expect(screen.getByText(/link to set a new password/)).toBeInTheDocument();
+  });
+
+  it('opens straight on the forgot-password form from ?mode=forgot', async () => {
+    renderAuth('/auth?mode=forgot');
+    expect(await screen.findByRole('heading', { name: 'Reset your password' })).toBeInTheDocument();
   });
 
   it('validates the email before sending a reset link', async () => {

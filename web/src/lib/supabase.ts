@@ -11,5 +11,13 @@ export const supabaseConfigured = isRealEnvValue(url) && isRealEnvValue(anonKey)
 // Placeholders keep the module importable when env vars are missing; the app
 // shows a setup notice instead of calling Supabase in that case.
 export const supabase = createClient(supabaseConfigured && url ? url : 'http://localhost:54321', supabaseConfigured && anonKey ? anonKey : 'missing-anon-key', {
-  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
+  // PKCE keeps tokens out of URLs; email links use token_hash (see /auth/confirm).
+  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'pkce' },
+});
+
+// Set when a reset link signs the user in, so /auth/confirm can route to /reset-password
+// even if the event fired before the page subscribed.
+export const authFlags = { passwordRecovery: false };
+supabase.auth.onAuthStateChange((event) => {
+  if (event === 'PASSWORD_RECOVERY') authFlags.passwordRecovery = true;
 });

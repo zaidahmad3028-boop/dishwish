@@ -34,6 +34,7 @@ describe('ResetPasswordPage', () => {
   it('explains an invalid or expired link', async () => {
     renderReset();
     expect(await screen.findByRole('alert')).toHaveTextContent(/invalid or has expired/);
+    expect(screen.getByRole('link', { name: /request a new link/i })).toHaveAttribute('href', '/auth?mode=forgot');
     await userEvent.click(screen.getByRole('link', { name: /back to login/i }));
     expect(screen.getByText('Auth screen')).toBeInTheDocument();
   });
@@ -45,6 +46,7 @@ describe('ResetPasswordPage', () => {
     await userEvent.type(screen.getByLabelText('Confirm new password'), 'brandnew123');
     await userEvent.click(screen.getByRole('button', { name: /save new password/i }));
     expect(supabase.auth.updateUser).toHaveBeenCalledWith({ password: 'brandnew123' });
+    expect(supabase.auth.signOut).toHaveBeenCalledWith({ scope: 'others' });
     expect(await screen.findByText('Kitchen screen')).toBeInTheDocument();
   });
 

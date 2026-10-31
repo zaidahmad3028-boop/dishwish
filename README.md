@@ -18,7 +18,7 @@ scripts/   build_seed.py (CSV → seed.sql + 0004 migration), build_engine_data.
 docs/      DATASET.md
 ```
 
-- **Auth:** Supabase email + password (no OTP). The API verifies Supabase access tokens: HS256 with `SUPABASE_JWT_SECRET` (legacy), or RS256/ES256/EdDSA via the project's JWKS (`SUPABASE_URL/auth/v1/.well-known/jwks.json`). Audience `authenticated`, issuer and expiry are enforced (`api/core/auth.py`).
+- **Auth:** Supabase email + password with email confirmation and password reset (PKCE; email links verified at `/auth/confirm`). Real emails need custom SMTP: see [docs/AUTH_EMAIL.md](docs/AUTH_EMAIL.md). The API verifies Supabase access tokens: HS256 with `SUPABASE_JWT_SECRET` (legacy), or RS256/ES256/EdDSA via the project's JWKS (`SUPABASE_URL/auth/v1/.well-known/jwks.json`). Audience `authenticated`, issuer and expiry are enforced (`api/core/auth.py`).
 - **Data access:** the browser talks to Supabase directly under row-level security: each user sees only their own preferences, pantry and saved recipes. Shared recipes are public read-only snapshots.
 - **Pages:** `/auth` (register/login/forgot password), `/reset-password` (target of the reset email link; add it under Supabase **Authentication → URL Configuration → Redirect URLs** for each web origin), `/onboarding` (taste → allergen shield → calorie target), and the signed-in `/kitchen`, `/recipes`, `/recipes/:id`, `/pantry`, `/profile`. `/r/:token` is a public shared recipe. There's no top navbar: signed-in pages use a slim left icon sidebar that becomes a bottom tab bar on mobile.
 
@@ -93,7 +93,7 @@ cd web && npm test                 # Vitest + Testing Library: auth, onboarding,
 5. `supabase/migrations/0004_allergen_tags.sql`: UPDATE-only re-tagging of existing rows; safe to run more than once.
 6. `supabase/tests/rls_check.sql`: optional; expects one `PASS: …` row.
 
-Run each file in its own query. Turn **Confirm email** off under Authentication → Providers → Email. Details: [supabase/README.md](supabase/README.md).
+Run each file in its own query. For sign-up and reset emails (custom SMTP, templates, redirect URLs), follow [docs/AUTH_EMAIL.md](docs/AUTH_EMAIL.md). Details: [supabase/README.md](supabase/README.md).
 
 ## Deploy order (Vercel, auto-deploys from `main`)
 
