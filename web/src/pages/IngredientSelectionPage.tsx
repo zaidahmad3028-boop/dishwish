@@ -6,7 +6,7 @@ import { IngredientBadge } from '../components/DishArt';
 import { Card, ErrorNote, PageHeader, SearchBox, Spinner } from '../components/ui';
 import { checkCompatibility, compatibilityVerdict, DIETS, type CompatibilityReport } from '../lib/curatedApi';
 import { blockReason } from '../lib/preferences';
-import { MAX_SELECTED, presetActive, TASTE_PRESETS, togglePreset, useSelection } from '../lib/selection';
+import { MAX_SELECTED, presetActive, TASTE_PRESETS, togglePreset, useSeedTastes, useSelection } from '../lib/selection';
 import { useKitchenData } from '../lib/useKitchenData';
 
 const PAGE = 30;
@@ -42,6 +42,7 @@ export function IngredientSelectionPage() {
   const navigate = useNavigate();
   const { catalog, prefs, error } = useKitchenData(session?.user.id);
   const { selection, add, remove, clear, setTastes, toggleDiet } = useSelection();
+  useSeedTastes(prefs?.tastes);
   const [category, setCategory] = useState('All');
   const [query, setQuery] = useState('');
   const [limit, setLimit] = useState(PAGE);
@@ -94,7 +95,7 @@ export function IngredientSelectionPage() {
       {error && <ErrorNote>{error}</ErrorNote>}
       {catalog === null ? <Spinner label="Loading ingredients" /> : (
         <div className="grid gap-6 xl:grid-cols-[15rem_minmax(0,1fr)_22rem]">
-          <Card title="Categories" className="h-fit">
+          <Card title="Categories" className="h-fit min-w-0">
             <ul className="flex gap-2 overflow-x-auto xl:flex-col" role="tablist" aria-label="Ingredient categories">
               {categories.map(([name, count]) => (
                 <li key={name}>

@@ -7,7 +7,7 @@ import { DishArt, IngredientBadge } from '../components/DishArt';
 import { Card, EmptyState, ErrorNote, PageHeader, Spinner, formatDate } from '../components/ui';
 import { DIETS, listCuratedRecipes, listEvents, trendingRecipes, type CuratedSummary, type RecipeEvent } from '../lib/curatedApi';
 import { allergenLabel, blockReason, effectiveAllergenTags } from '../lib/preferences';
-import { presetActive, TASTE_PRESETS, togglePreset, useSelection } from '../lib/selection';
+import { presetActive, TASTE_PRESETS, togglePreset, useSeedTastes, useSelection } from '../lib/selection';
 import { useKitchenData } from '../lib/useKitchenData';
 
 const QUICK_ADD = ['Chicken Breast', 'Tomato', 'Onion', 'Garlic'];
@@ -19,6 +19,7 @@ export function KitchenHomePage() {
   const navigate = useNavigate();
   const { catalog, prefs, error } = useKitchenData(userId);
   const { selection, add, remove, setTastes, toggleDiet } = useSelection();
+  useSeedTastes(prefs?.tastes);
   const [query, setQuery] = useState('');
   const [message, setMessage] = useState('');
   const [popular, setPopular] = useState<{ trending: boolean; items: (CuratedSummary & { uses?: number })[] } | null>(null);

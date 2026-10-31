@@ -1,6 +1,10 @@
-# DishWish
+# Dish-Wish · Dream Recipe Creation
 
-A kitchen assistant for Pakistani homes. Tell it what's on your counter, and it suggests what pairs well and cooks up recipes that fit your taste, allergen shield and calorie target. Recipes come with real quantities, nutrition, an estimated PKR shopping list, a share link and a PDF. Recipes are rule-based and deterministic; no external language model is used.
+A kitchen assistant for Pakistani homes, with two experiences: a **Registered User** dashboard (Kitchen → Ingredient Selection → Recommendations → Recipe Details → My Recipes, plus Pantry, Profile and Settings) and a **Super Admin** panel (dashboard, users, ingredients and compatibility graph, recipes, analytics, feedback, system settings and audit log).
+
+- Start here: [PROJECT_STATUS.md](PROJECT_STATUS.md) · [docs/SETUP.md](docs/SETUP.md) · [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) · [docs/DATABASE.md](docs/DATABASE.md) · [docs/API.md](docs/API.md) · [docs/RECOMMENDATION_ENGINE.md](docs/RECOMMENDATION_ENGINE.md) · [docs/TESTING.md](docs/TESTING.md)
+
+The original kitchen assistant: Tell it what's on your counter, and it suggests what pairs well and cooks up recipes that fit your taste, allergen shield and calorie target. Recipes come with real quantities, nutrition, an estimated PKR shopping list, a share link and a PDF. Recipes are rule-based and deterministic; no external language model is used.
 
 ## Architecture
 
@@ -20,7 +24,7 @@ docs/      DATASET.md
 
 - **Auth:** Supabase email + password with email confirmation and password reset (PKCE; email links verified at `/auth/confirm`). Real emails need custom SMTP: see [docs/AUTH_EMAIL.md](docs/AUTH_EMAIL.md). The API verifies Supabase access tokens: HS256 with `SUPABASE_JWT_SECRET` (legacy), or RS256/ES256/EdDSA via the project's JWKS (`SUPABASE_URL/auth/v1/.well-known/jwks.json`). Audience `authenticated`, issuer and expiry are enforced (`api/core/auth.py`).
 - **Data access:** the browser talks to Supabase directly under row-level security: each user sees only their own preferences, pantry and saved recipes. Shared recipes are public read-only snapshots.
-- **Pages:** `/auth` (register/login/forgot password), `/reset-password` (target of the reset email link; add it under Supabase **Authentication → URL Configuration → Redirect URLs** for each web origin), `/onboarding` (taste → allergen shield → calorie target), and the signed-in `/kitchen`, `/recipes`, `/recipes/:id`, `/pantry`, `/profile`. `/r/:token` is a public shared recipe. There's no top navbar: signed-in pages use a slim left icon sidebar that becomes a bottom tab bar on mobile.
+- **Pages:** see the route table in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Signed-in pages use a sidebar (a drawer on phones). The template generator described below now lives at `/create`; curated recommendations are at `/recommendations`.
 
 ## How the NetworkX graph works
 

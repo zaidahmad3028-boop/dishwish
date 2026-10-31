@@ -20,8 +20,8 @@ function Slider({ label, value, min, max, step, onChange, format = (v: number) =
   label: string; value: number; min: number; max: number; step: number; onChange: (v: number) => void; format?: (v: number) => string;
 }) {
   return (
-    <label className="grid grid-cols-[11rem_1fr_3.5rem] items-center gap-3 text-sm">
-      <span className="font-semibold">{label}</span>
+    <label className="grid grid-cols-[1fr_3.5rem] items-center gap-x-3 gap-y-1 text-sm sm:grid-cols-[11rem_1fr_3.5rem]">
+      <span className="col-span-2 font-semibold sm:col-span-1">{label}</span>
       <input type="range" min={min} max={max} step={step} value={value} onChange={(e) => onChange(Number(e.target.value))} className="accent-crimson" />
       <span className="rounded-lg bg-white px-2 py-1 text-center font-semibold shadow-sm">{format(value)}</span>
     </label>
@@ -100,7 +100,7 @@ export function AdminSettingsPage() {
           <p className="mt-2 text-sm">Super Admins: <strong>{status?.admins ?? '…'}</strong></p>
           <p className="mt-2 text-xs text-stone-500">Promoting an account is done server-side only (scripts/create_admin.py or the SQL function grant_super_admin), never from the browser.</p>
         </Card>
-        <Card title="Recent Audit Activity" icon={FileText} className="xl:col-span-3">{audit ? auditTable(audit) : <Spinner />}</Card>
+        <Card title="Recent Audit Activity" icon={FileText} className="min-w-0 xl:col-span-3">{audit ? auditTable(audit) : <Spinner />}</Card>
       </div>
     ),
     engine: !engine ? <Spinner /> : (
@@ -157,7 +157,7 @@ export function AdminSettingsPage() {
         </Card>
       </div>
     ),
-    audit: <Card title="Audit Logs (latest 100)" icon={FileText}>{audit ? auditTable(audit) : <Spinner />}</Card>,
+    audit: <Card title="Audit Logs (latest 100)" icon={FileText} className="min-w-0">{audit ? auditTable(audit) : <Spinner />}</Card>,
     about: (
       <Card title="About Dish-Wish" icon={Info}>
         <p className="text-sm">Dish-Wish · Dream Recipe Creation. React + Vite web app, FastAPI recommendation API (NetworkX compatibility graph) and Supabase (Postgres, Auth, row-level security).</p>

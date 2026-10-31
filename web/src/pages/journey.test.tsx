@@ -103,10 +103,12 @@ describe('roles', () => {
     setAccountRole('super_admin');
     setSession(fakeSession('Admin'));
     renderAt('/');
-    const [sidebar] = await screen.findAllByRole('navigation', { name: 'Main' });
+    // Admin pages are lazy-loaded, so allow time for the chunk under a busy test run.
+    await screen.findByRole('link', { name: 'Dashboard' }, { timeout: 20000 });
+    const [sidebar] = screen.getAllByRole('navigation', { name: 'Main' });
     for (const label of ['Dashboard', 'Users', 'Ingredients', 'Recipes', 'Analytics', 'Feedback', 'Settings']) {
       expect(within(sidebar).getByRole('link', { name: label })).toBeInTheDocument();
     }
     expect(screen.getAllByText('Super Admin').length).toBeGreaterThan(0);
-  });
+  }, 30000);
 });

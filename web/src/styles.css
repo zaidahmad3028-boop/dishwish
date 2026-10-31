@@ -233,6 +233,9 @@ body {
   outline-offset: 2px;
 }
 
+/* Grid items may shrink below their content width, so wide tables scroll inside their card on phones. */
+.grid > * { min-width: 0; }
+
 /* Appearance setting: "Large text" scales the whole interface. */
 :root[data-text-size="large"] { font-size: 112.5%; }
 

@@ -58,7 +58,7 @@ export function AdminUsersPage() {
       {error && <div className="mt-4"><ErrorNote>{error}</ErrorNote></div>}
 
       <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_20rem]">
-        <Card>
+        <Card className="min-w-0">
           <div className="mb-4 flex flex-wrap gap-2">
             <SearchBox value={search} onChange={setSearch} label="Search users" placeholder="Search users by name or email..." />
             <select className="select" value={status} onChange={(e) => setStatus(e.target.value)} aria-label="Status filter">

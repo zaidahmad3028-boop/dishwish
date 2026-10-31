@@ -248,7 +248,7 @@ export function SettingsPage() {
 
   return (
     <>
-      <PageHeader title="Set" accent="tings" subtitle="Manage your profile, preferences, diet, allergies, notifications and account security." />
+      <PageHeader title="Your" accent="Settings" subtitle="Manage your profile, preferences, diet, allergies, notifications and account security." />
       <div role="tablist" aria-label="Settings sections" className="mb-6 flex flex-wrap gap-2">
         {TABS.map(({ key, label, icon: Icon }) => (
           <button key={key} type="button" role="tab" aria-selected={tab === key} className="pill" onClick={() => setParams(key === 'profile' ? {} : { tab: key })}>

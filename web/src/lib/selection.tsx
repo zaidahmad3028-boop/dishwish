@@ -82,3 +82,15 @@ export function togglePreset(tastes: Selection['tastes'], preset: (typeof TASTE_
   for (const [k, v] of Object.entries(preset.apply) as [TasteKey, Level | null][]) next[k] = on ? null : v;
   return next;
 }
+
+// Start each session from the cook's saved tastes until they pick their own for this search.
+export function useSeedTastes(saved: Selection['tastes'] | undefined) {
+  const { selection, setTastes } = useSelection();
+  const untouched = Object.values(selection.tastes).every((v) => v === null);
+  const hasSaved = saved && Object.values(saved).some((v) => v !== null);
+  useEffect(() => {
+    if (untouched && hasSaved) setTastes(saved);
+    // Only when saved preferences first arrive.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasSaved]);
+}
