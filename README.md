@@ -33,6 +33,10 @@ Each recipe shows kcal, protein, carbs and fat per serving, summed from the cata
 
 The shopping list compares each recipe ingredient with the pantry and lists only what's missing; small pinches of spice you don't track are left off. "Copy list" copies it as text, and "I bought these" tops the pantry up. "Share" stores an immutable snapshot of the recipe only, with no profile data, in `shared_recipes` and copies a `/share/<token>` link. That page is public: anyone with the link can read it, but only signed-in users can create shares, and only for themselves (existing RLS). No new SQL is needed for phases 3–5.
 
+## Phase 6: PDF export and installable app
+
+"Download PDF" on any recipe opens the browser's print dialog with a print stylesheet that hides navigation, the backdrop and buttons, so "Save as PDF" gives a clean one-recipe document; no extra library is needed. The web app is a PWA: `web/public/manifest.webmanifest` (standalone, starts at `/kitchen`, 192/512 and maskable icons) and `web/public/sw.js`. The service worker is registered in production builds only. It caches the app shell and hashed assets so the app opens offline, and it never caches Supabase or API requests. `web/vercel.json` serves `sw.js` with `no-cache` so updates roll out on the next visit.
+
 ## Structure
 
 - `web/`: React + TypeScript + Vite + Tailwind; Vercel frontend project.
@@ -62,7 +66,7 @@ cp .env.example .env
 uvicorn api.index:app --reload --port 8000
 ```
 
-The current endpoint does not require environment variables; the `.env` template is reserved for later integration and is not loaded by this skeleton. Environment templates reserve names for later steps; no Supabase connection or JWT verification is implemented yet. Future user routes must verify Supabase JWTs. `/api/health` intentionally remains public.
+Set `SUPABASE_URL` and `SUPABASE_JWT_SECRET` in the API's environment (see `api/.env.example`) so signed-in routes (`/api/me`, `/api/recipes`) can verify Supabase tokens; `/api/health` and `/api/recommend` stay public. In `web/.env.local` set `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` and `VITE_API_URL=http://localhost:8000`.
 
 ## Verify step 1
 
