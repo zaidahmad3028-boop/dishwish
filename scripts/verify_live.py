@@ -33,11 +33,11 @@ def main() -> int:
     with httpx.Client(timeout=20) as client:
         for table, expected in EXPECTED.items():
             r = client.get(f"{url}/rest/v1/{table}?select=*&limit=1", headers=headers)
-            total = int(r.headers.get("content-range", "*/-1").split("/")[-1]) if r.status_code == 200 else -1
+            total = int(r.headers.get("content-range", "*/-1").split("/")[-1]) if r.status_code in (200, 206) else -1
             check(total >= expected, f"{table}: {total} rows (expected at least {expected})")
         for table in PRIVATE:
             r = client.get(f"{url}/rest/v1/{table}?select=*&limit=1", headers=headers)
-            check(r.status_code in (401, 403) or (r.status_code == 200 and r.json() == []), f"{table} closed to anonymous (HTTP {r.status_code})")
+            check(r.status_code in (401, 403) or (r.status_code in (200, 206) and r.json() == []), f"{table} closed to anonymous (HTTP {r.status_code})")
         r = client.get(f"{url}/rest/v1/app_settings?select=key", headers=headers)
         check(r.status_code == 200 and {"recommendation", "general"} <= {s["key"] for s in r.json()}, "public settings readable")
         r = client.post(f"{url}/rest/v1/rpc/admin_overview", headers=headers, json={"days": 30})

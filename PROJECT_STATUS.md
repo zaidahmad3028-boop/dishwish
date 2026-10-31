@@ -28,7 +28,7 @@ React 19 + Vite + Tailwind (web/) · FastAPI + NetworkX (api/) · Supabase Postg
 
 ## Database migrations
 
-0001–0004 (existing, applied on the live project) and **0005_admin_recipes.sql** + **seed/recipes.sql** (new, not yet applied on the live project: the owner runs them in SQL Editor, see [docs/SETUP.md](docs/SETUP.md)).
+All applied on the live project (31 Oct 2026): 0001–0004, `seed/seed.sql` (8 categories, 260 ingredients), **0005_admin_recipes.sql**, `seed/recipes.sql` (35 recipes, 159 steps, 334 edges). A pre-0005 snapshot is in schema `backup_pre_0005` (2 profiles, 2 preferences). `tests/admin_check.sql` returned PASS on the live database and `scripts/verify_live.py` passes 18/18.
 
 ## Tests (last run 31 Oct 2026)
 
@@ -44,12 +44,11 @@ React 19 + Vite + Tailwind (web/) · FastAPI + NetworkX (api/) · Supabase Postg
 - Recipe imagery uses category illustrations unless an admin adds an https image URL (no stock photos are passed off as the dish).
 - Allergen tags are rule-based; cross-contact can't be ruled out (shown to users).
 - Main JS bundle is ~720 kB (Supabase client + app); admin pages and charts load separately.
-- The live Supabase project still had an empty catalog at the last check; run the seeds.
 - Email delivery depends on custom SMTP being configured in Supabase.
 
 ## Blockers needing the owner
 
-1. Run `0005_admin_recipes.sql` and `seed/recipes.sql` (and `seed/seed.sql` if the catalog is still empty) in Supabase SQL Editor.
+1. ~~Apply 0005 and seeds~~ (done 31 Oct 2026).
 2. Create the Super Admin (`scripts/create_admin.py` with the service-role key in `api/.env`, or `grant_super_admin` in SQL).
 3. Configure custom SMTP for confirmation and reset emails.
 4. Approve pushing `feature/full-app-v2` to GitHub.
