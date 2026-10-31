@@ -1,15 +1,20 @@
 import { supabase } from './supabase';
+import type { CuratedSnapshot } from './curatedApi';
 import type { Recipe } from './recipes';
 
+// `recipe` is the full generated recipe, or a small snapshot pointing at a curated recipe.
 export interface SavedRecipe {
   id: string;
   title: string;
   createdAt: string;
-  recipe: Recipe;
+  favorite?: boolean;
+  recipe: Recipe | CuratedSnapshot;
 }
 
-const toSaved = (r: { id: string; title: string; created_at: string; data: Recipe }): SavedRecipe =>
-  ({ id: r.id, title: r.title, createdAt: r.created_at, recipe: r.data });
+export const isGenerated = (r: Recipe | CuratedSnapshot): r is Recipe => (r as CuratedSnapshot).kind !== 'curated';
+
+const toSaved = (r: { id: string; title: string; created_at: string; favorite?: boolean; data: Recipe | CuratedSnapshot }): SavedRecipe =>
+  ({ id: r.id, title: r.title, createdAt: r.created_at, favorite: r.favorite ?? false, recipe: r.data });
 
 // Stores the exact recipe JSON once per user; a second save of the same recipe
 // (unique user_id + fingerprint) reports "exists" instead of writing again.
@@ -32,7 +37,7 @@ export async function isRecipeSaved(userId: string, fingerprint: string): Promis
 export async function listSavedRecipes(userId: string): Promise<SavedRecipe[]> {
   const { data, error } = await supabase
     .from('saved_recipes')
-    .select('id, title, created_at, data')
+    .select('id, title, created_at, favorite, data')
     .eq('user_id', userId)
     .order('created_at', { ascending: false });
   if (error) throw new Error(error.message);

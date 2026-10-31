@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Trash2 } from 'lucide-react';
-import { deleteSavedRecipe, listSavedRecipes, type SavedRecipe } from '../lib/recipesApi';
+import { isCuratedSnapshot } from '../lib/curatedApi';
+import { deleteSavedRecipe, isGenerated, listSavedRecipes, type SavedRecipe } from '../lib/recipesApi';
 
 // The signed-in user's own saved dishes (RLS limits rows to them), newest first.
 export function SavedRecipesList({ userId }: { userId: string }) {
@@ -29,10 +30,10 @@ export function SavedRecipesList({ userId }: { userId: string }) {
         <ul className="mt-4 grid gap-3 sm:grid-cols-2" aria-label="Saved dishes">
           {saved.map((r) => (
             <li key={r.id} className="flex items-center gap-3 rounded-[24px] bg-white/70 p-4">
-              <Link to={`/recipes/${r.id}`} className="min-w-0 flex-1">
+              <Link to={isCuratedSnapshot(r.recipe) ? `/recipe/${r.recipe.slug}` : `/recipes/${r.id}`} className="min-w-0 flex-1">
                 <span className="block font-display text-lg font-extrabold">{r.title}</span>
                 <span className="text-sm text-stone-600">
-                  {r.recipe.nutrition.per_serving.kcal} kcal per serving · {r.recipe.minutes} min · serves {r.recipe.servings}
+                  {isGenerated(r.recipe) && `${r.recipe.nutrition.per_serving.kcal} kcal per serving · `}{r.recipe.minutes} min · serves {r.recipe.servings}
                 </span>
                 <span className="block text-xs text-stone-500">Saved {new Date(r.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
               </Link>

@@ -16,6 +16,7 @@ function renderAuth(initial = '/auth') {
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/onboarding" element={<p>Onboarding screen</p>} />
           <Route path="/kitchen" element={<p>Kitchen screen</p>} />
+          <Route path="/" element={<p>Kitchen screen</p>} />
         </Routes>
       </AuthProvider>
     </MemoryRouter>,

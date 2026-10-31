@@ -201,7 +201,7 @@ export function AuthPage() {
 
   // Already signed in (e.g. reload on /auth): go straight to the app. Skipped while a
   // submit is in flight so registration can route to onboarding instead.
-  if (!loading && session && !busy) return <Navigate to="/kitchen" replace />;
+  if (!loading && session && !busy) return <Navigate to="/" replace />;
 
   const errors = validate(mode, values);
   const shown = (f: Field) => ((submitted || touched[f]) ? errors[f] : undefined);
@@ -255,7 +255,7 @@ export function AuthPage() {
           throw error;
         }
         const from = (location.state as { from?: string } | null)?.from;
-        navigate(from && from !== '/auth' ? from : '/kitchen', { replace: true });
+        navigate(from && from !== '/auth' ? from : '/', { replace: true });
         return;
       }
     } catch (err) {

@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, BookOpen } from 'lucide-react';
 import { useAuth } from '../auth/AuthProvider';
 import { FullPageSpinner } from '../auth/RequireAuth';
 import { RecipeView } from '../components/RecipeView';
 import { SavedRecipesList } from '../components/SavedRecipesList';
-import { getSavedRecipe, shareRecipe, shareUrl, type SavedRecipe } from '../lib/recipesApi';
+import { getSavedRecipe, isGenerated, shareRecipe, shareUrl, type SavedRecipe } from '../lib/recipesApi';
 import { useKitchenData } from '../lib/useKitchenData';
 
 export function RecipesPage() {
@@ -41,9 +41,12 @@ export function SavedRecipePage() {
       </section>
     );
   }
+  const recipe = saved.recipe;
+  // Curated recipes are stored as a pointer; show the live curated page instead.
+  if (!isGenerated(recipe)) return <Navigate to={`/recipe/${recipe.slug}`} replace />;
   return (
-    <RecipeView recipe={saved.recipe} prefs={prefs} pantryByName={pantryByName} actions={{
-      onShare: async () => shareUrl(await shareRecipe(userId, saved.recipe)),
+    <RecipeView recipe={recipe} prefs={prefs} pantryByName={pantryByName} actions={{
+      onShare: async () => shareUrl(await shareRecipe(userId, recipe)),
       onAddToPantry: addBought,
     }}>
       <button type="button" onClick={() => navigate('/recipes')} className="print-hide mb-4 inline-flex items-center gap-1.5 text-sm font-semibold text-stone-600 hover:text-stone-900">

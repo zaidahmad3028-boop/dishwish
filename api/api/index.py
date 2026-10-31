@@ -218,3 +218,30 @@ def compatibility(name: Annotated[str, Path(min_length=1, max_length=100)]) -> d
     neighbours = sorted(({"name": n, **{k: d[k] for k in ("weight", "relation", "evidence")}}
                          for n, d in engine.graph[canonical].items()), key=lambda r: (-r["weight"], r["name"]))
     return {"ingredient": canonical, "edges": neighbours}
+
+
+class CompatibilityCheck(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    ingredients: list[Annotated[str, Field(min_length=1, max_length=100)]] = Field(min_length=1, max_length=20)
+    allergens: list[Allergen] = Field(default_factory=list, max_length=19)
+    blocked_words: list[Annotated[str, Field(min_length=1, max_length=40)]] = Field(default_factory=list, max_length=20)
+
+
+@app.post("/api/compatibility/check")
+def compatibility_check(body: CompatibilityCheck) -> dict:
+    """Pairwise compatibility of a selection plus graph-suggested additions (no recipes involved)."""
+    engine, _ = get_engine()
+    try:
+        names = engine.resolve(body.ingredients, minimum=1)
+    except SuitabilityError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    pairs = []
+    for i, left in enumerate(names):
+        for right in names[i + 1:]:
+            weight, evidence = engine.compatibility(left, right)
+            pairs.append({"a": left, "b": right, "weight": weight, "evidence": evidence,
+                          "stored": "heuristic" not in evidence})
+    words = [w.strip().casefold() for w in body.blocked_words if w.strip()]
+    stored = [p["weight"] for p in pairs if p["stored"]]
+    return {"pairs": pairs, "average": round(sum(p["weight"] for p in pairs) / len(pairs), 3) if pairs else None,
+            "stored_pairs": len(stored), "suggestions": engine.suggest_additions(names, set(body.allergens), words)}

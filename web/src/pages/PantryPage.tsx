@@ -1,7 +1,11 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
-import { Plus, Refrigerator, Search, ShieldAlert, Trash2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { AlertTriangle, CheckCircle2, ChefHat, Package, Plus, Refrigerator, Search, ShieldAlert, Sparkles, Trash2 } from 'lucide-react';
 import { useAuth } from '../auth/AuthProvider';
 import { FullPageSpinner } from '../auth/RequireAuth';
+import { IngredientBadge } from '../components/DishArt';
+import { PageHeader, StatCard } from '../components/ui';
+import { useSelection } from '../lib/selection';
 import { isIngredientBlocked, type Preferences } from '../lib/preferences';
 import { loadPreferences } from '../lib/preferencesApi';
 import {
@@ -10,6 +14,10 @@ import {
 } from '../lib/pantryApi';
 
 const DEFAULT_GRAMS = '250';
+export const LOW_STOCK_G = 100;
+// Pantry staples never drive a recipe search on their own.
+const MAIN_CATEGORIES = ['Meat', 'Vegetables', 'Pulses & Nuts', 'Dairy', 'Grocery', 'Fruits'];
+export const stockStatus = (grams: number) => (grams <= 0 ? 'out' : grams < LOW_STOCK_G ? 'low' : 'in');
 
 function QuantityEditor({ grams, onSave, label }: { grams: number; onSave: (g: number) => Promise<void>; label: string }) {
   const [text, setText] = useState(String(grams));
@@ -42,6 +50,10 @@ export function PantryPage() {
   const [category, setCategory] = useState('All');
   const [grams, setGrams] = useState(DEFAULT_GRAMS);
   const [error, setError] = useState('');
+  const [status, setStatus] = useState<'all' | 'in' | 'low'>('all');
+  const [filter, setFilter] = useState('');
+  const navigate = useNavigate();
+  const selection = useSelection();
 
   useEffect(() => {
     if (!userId) return;
@@ -95,18 +107,53 @@ export function PantryPage() {
     if (!item) continue;
     grouped.set(item.category, [...(grouped.get(item.category) ?? []), { item, grams: p.quantityG }]);
   }
-  const groups = [...grouped.entries()].sort(([a], [b]) => a.localeCompare(b));
+  const fq = filter.trim().toLowerCase();
+  const groups = [...grouped.entries()].sort(([a], [b]) => a.localeCompare(b))
+    .map(([cat, rows]) => [cat, rows.filter((r) => (status === 'all' || stockStatus(r.grams) === status) && (!fq || r.item.name.toLowerCase().includes(fq)))] as const)
+    .filter(([, rows]) => rows.length > 0);
+  const lowCount = pantry.filter((p) => stockStatus(p.quantityG) === 'low').length;
+
+  // "Recipe ideas from your pantry": main pantry items become the selection.
+  const cookWithPantry = () => {
+    const names = pantry.map((p) => byId.get(p.ingredientId)).filter((i): i is Ingredient => Boolean(i) && MAIN_CATEGORIES.includes(i!.category) && !blocked(i!))
+      .sort((a, b) => MAIN_CATEGORIES.indexOf(a.category) - MAIN_CATEGORIES.indexOf(b.category)).slice(0, 8).map((i) => i.name);
+    if (names.length < 2) { setError('Add at least 2 main ingredients (meat, vegetables, daal…) to get pantry recipe ideas.'); return; }
+    selection.setIngredients(names);
+    navigate('/recommendations');
+  };
 
   return (
+    <>
+    <PageHeader title="My" accent="Pantry" icon={Refrigerator} subtitle="Keep track of your ingredients and quantities, and get recipe ideas from what you have." />
+    <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <StatCard icon={Package} value={pantry.length} label="Total Items" />
+      <StatCard icon={CheckCircle2} value={pantry.length - lowCount} label="In Stock" tone="green" />
+      <StatCard icon={AlertTriangle} value={lowCount} label={`Low Stock (< ${LOW_STOCK_G} g)`} tone="amber" />
+      <button type="button" onClick={cookWithPantry} className="card flex items-center gap-4 p-4 text-left transition hover:-translate-y-0.5">
+        <span className="grid h-12 w-12 place-items-center rounded-full bg-gradient-to-br from-crimson to-ember text-white"><ChefHat size={24} /></span>
+        <span><span className="block font-display text-lg font-bold">Recipe ideas</span><span className="text-sm text-stone-600">Cook with my pantry</span></span>
+      </button>
+    </div>
     <div className="grid gap-6 lg:grid-cols-[1.1fr_1fr]">
-      <section className="glass p-6 sm:p-8">
-        <span className="grid h-12 w-12 place-items-center rounded-2xl bg-white/80 text-rose-700 shadow-sm"><Refrigerator size={24} /></span>
-        <h1 className="mt-4 font-display text-4xl font-extrabold tracking-tight">Pantry</h1>
+      <section className="card p-6 sm:p-8" aria-label="Your pantry items">
+        <h2 className="card-title"><Sparkles size={20} className="text-crimson" />Your Pantry Items</h2>
         <p className="mt-1 text-stone-600">{pantry.length === 0 ? 'Add what you have at home, in grams.' : `${pantry.length} item${pantry.length === 1 ? '' : 's'} at home`}</p>
+        {pantry.length > 0 && (
+          <div className="mt-4 flex flex-wrap gap-2">
+            <label className="relative min-w-0 flex-1"><span className="sr-only">Filter your pantry</span>
+              <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
+              <input className="field py-2 pl-9" placeholder="Filter your pantry" value={filter} onChange={(e) => setFilter(e.target.value)} /></label>
+            <select className="select" value={status} onChange={(e) => setStatus(e.target.value as typeof status)} aria-label="Stock status">
+              <option value="all">All Status</option><option value="in">In Stock</option><option value="low">Low Stock</option>
+            </select>
+          </div>
+        )}
 
         {error && <p role="alert" className="mt-4 rounded-2xl bg-rose-50 px-4 py-3 text-sm text-rose-800">{error}</p>}
 
-        {groups.length === 0 ? (
+        {groups.length === 0 && pantry.length > 0 ? (
+          <p className="mt-6 text-center text-sm text-stone-500">No pantry items match this filter.</p>
+        ) : groups.length === 0 ? (
           <p className="mt-8 rounded-[24px] border border-dashed border-stone-300 p-6 text-center text-stone-500">Your pantry is empty. Search for an ingredient to add it.</p>
         ) : (
           <div className="mt-6 space-y-5">
@@ -116,8 +163,10 @@ export function PantryPage() {
                 <ul className="mt-2 divide-y divide-stone-200/70 rounded-2xl bg-white/60">
                   {rows.sort((a, b) => a.item.name.localeCompare(b.item.name)).map(({ item, grams: g }) => (
                     <li key={item.id} className="flex flex-wrap items-center gap-3 px-4 py-2.5">
+                      <IngredientBadge name={item.name} category={item.category} size={32} />
                       <span className="min-w-0 flex-1 font-medium">
                         {item.name}
+                        <span className={`badge ml-2 ${stockStatus(g) === 'low' ? 'badge-amber' : 'badge-green'}`}>{stockStatus(g) === 'low' ? 'Low Stock' : 'In Stock'}</span>
                         {blocked(item) && <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800"><ShieldAlert size={12} />Blocked</span>}
                       </span>
                       <QuantityEditor grams={g} label={`${item.name} grams`} onSave={(v) => update(item.id, v)} />
@@ -134,8 +183,8 @@ export function PantryPage() {
         )}
       </section>
 
-      <section className="glass h-fit p-6 sm:p-8">
-        <h2 className="font-display text-2xl font-extrabold">Add ingredients</h2>
+      <section className="card h-fit p-6 sm:p-8">
+        <h2 className="card-title"><Plus size={20} className="text-crimson" />Add Ingredient</h2>
         <form onSubmit={onSearch} className="mt-4 grid gap-3 sm:grid-cols-[1fr_auto]">
           <label className="relative">
             <span className="sr-only">Search ingredients</span>
@@ -176,5 +225,6 @@ export function PantryPage() {
         <p className="mt-4 text-xs text-stone-500">Quantities are in grams (1,000 g = 1 kg). Recipes use them to show what you still need to buy.</p>
       </section>
     </div>
+    </>
   );
 }

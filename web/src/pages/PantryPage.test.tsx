@@ -4,6 +4,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AuthProvider } from '../auth/AuthProvider';
 import { emptyPreferences } from '../lib/preferences';
+import { SelectionProvider } from '../lib/selection';
 import * as pantryApi from '../lib/pantryApi';
 import { CATALOG } from '../test/catalogFixture';
 import { fakeSession, resetSupabaseMock, setSession } from '../test/supabaseMock';
@@ -24,7 +25,7 @@ vi.mock('../lib/pantryApi', async (importOriginal) => ({
 
 const renderPantry = () => render(
   <MemoryRouter initialEntries={['/pantry']}>
-    <AuthProvider><Routes><Route path="/pantry" element={<PantryPage />} /></Routes></AuthProvider>
+    <AuthProvider><SelectionProvider><Routes><Route path="/pantry" element={<PantryPage />} /></Routes></SelectionProvider></AuthProvider>
   </MemoryRouter>,
 );
 

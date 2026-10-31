@@ -88,6 +88,18 @@ insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, 
   select least(a.id, b.id), greatest(a.id, b.id), 0.9, 'complementary', 'admin check'
   from public.ingredients a, public.ingredients b where a.name = 'Mango' and b.name = 'Yogurt (Dahi)'
   on conflict (ingredient_a, ingredient_b) do update set weight = 0.9;
+select public.admin_save_recipe(jsonb_build_object('slug', 'admin-check-dish', 'name', 'Admin Check Dish', 'category', 'Snacks',
+  'minutes', 10, 'servings', 2, 'taste', '{"sweet":1,"salty":5,"sour":2,"spicy":3}'::jsonb, 'status', 'draft',
+  'ingredients', jsonb_build_array(jsonb_build_object('ingredient_id', (select id from public.ingredients where name = 'Potato'), 'grams', 200, 'display', '2')),
+  'steps', jsonb_build_array('Boil.', 'Serve.')));
+select pg_temp.assert_true((select count(*) = 2 from public.recipe_steps s join public.curated_recipes r on r.id = s.recipe_id where r.slug = 'admin-check-dish'), 'admin saves recipe with steps');
+do $$ begin
+  begin perform public.admin_save_recipe('{"slug":"bad-dish","name":"Bad","category":"Snacks","minutes":5,"servings":1,"taste":{},"ingredients":[],"steps":["x"]}'::jsonb);
+    raise exception 'FAIL: recipe without ingredients accepted';
+  exception when raise_exception then
+    if sqlerrm like 'FAIL%' then raise; end if;
+  end;
+end $$;
 select pg_temp.assert_true((select count(*) >= 4 from public.admin_audit_log), 'admin actions audited');
 select pg_temp.assert_true((select count(*) = 1 from public.admin_audit_log where action = 'set_status'), 'status change audited');
 reset role;

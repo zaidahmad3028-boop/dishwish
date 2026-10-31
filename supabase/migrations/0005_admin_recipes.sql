@@ -310,6 +310,21 @@ $$;
 revoke all on function public.delete_my_account() from public, anon;
 grant execute on function public.delete_my_account() to authenticated;
 
+-- Favourites are a flag on the cook's own saved recipe.
+alter table public.saved_recipes add column favorite boolean not null default false;
+
+-- Trending for every signed-in cook: aggregate counts only, never who cooked what.
+create function public.trending_recipes(days integer default 30, lim integer default 6)
+returns table(recipe_slug text, recipe_name text, uses bigint)
+language sql stable security definer set search_path = '' as $$
+  select e.recipe_slug, max(e.recipe_name), count(*)
+  from public.recipe_events e join public.curated_recipes r on r.slug = e.recipe_slug and r.status = 'published'
+  where e.created_at >= now() - make_interval(days => greatest(1, least(days, 365)))
+  group by e.recipe_slug order by 3 desc, 2 limit greatest(1, least(lim, 20));
+$$;
+revoke all on function public.trending_recipes(integer, integer) from public, anon;
+grant execute on function public.trending_recipes(integer, integer) to authenticated;
+
 -- ---------- Admin RPCs (each checks is_admin and raises 42501 otherwise) -----------------
 create function public.require_admin() returns void
 language plpgsql stable security definer set search_path = '' as $$
@@ -507,13 +522,56 @@ begin
 end;
 $$;
 
+-- Create or update a curated recipe with its ingredients and steps in one transaction.
+-- payload: {id?, slug, name, description, category, cuisine, minutes, servings, taste, image_url, status,
+--           ingredients: [{ingredient_id, grams, display}], steps: [text]}
+create function public.admin_save_recipe(payload jsonb) returns bigint
+language plpgsql security definer set search_path = '' as $$
+declare rid bigint := nullif(payload ->> 'id', '')::bigint; line jsonb; step text; pos integer := 0;
+begin
+  perform public.require_admin();
+  if jsonb_array_length(coalesce(payload -> 'ingredients', '[]')) < 1 then raise exception 'A recipe needs at least one ingredient'; end if;
+  if jsonb_array_length(coalesce(payload -> 'steps', '[]')) < 1 then raise exception 'A recipe needs at least one step'; end if;
+  if rid is null then
+    insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, image_url, status, source, created_by)
+    values (payload ->> 'slug', payload ->> 'name', coalesce(payload ->> 'description', ''), payload ->> 'category',
+            coalesce(payload ->> 'cuisine', 'Pakistani'), (payload ->> 'minutes')::integer, (payload ->> 'servings')::integer,
+            payload -> 'taste', nullif(payload ->> 'image_url', ''), coalesce(payload ->> 'status', 'draft'),
+            coalesce(payload ->> 'source', 'curated'), (select auth.uid()))
+    returning id into rid;
+  else
+    update public.curated_recipes set slug = payload ->> 'slug', name = payload ->> 'name',
+      description = coalesce(payload ->> 'description', ''), category = payload ->> 'category',
+      cuisine = coalesce(payload ->> 'cuisine', 'Pakistani'), minutes = (payload ->> 'minutes')::integer,
+      servings = (payload ->> 'servings')::integer, taste = payload -> 'taste', image_url = nullif(payload ->> 'image_url', ''),
+      status = coalesce(payload ->> 'status', status)
+    where id = rid;
+    if not found then raise exception 'Recipe not found'; end if;
+    delete from public.recipe_ingredients where recipe_id = rid;
+    delete from public.recipe_steps where recipe_id = rid;
+  end if;
+  for line in select * from jsonb_array_elements(payload -> 'ingredients') loop
+    pos := pos + 1;
+    insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+    values (rid, (line ->> 'ingredient_id')::bigint, pos, (line ->> 'grams')::numeric, coalesce(line ->> 'display', ''));
+  end loop;
+  pos := 0;
+  for step in select * from jsonb_array_elements_text(payload -> 'steps') loop
+    pos := pos + 1;
+    insert into public.recipe_steps(recipe_id, position, body) values (rid, pos, step);
+  end loop;
+  return rid;
+end;
+$$;
+
 do $$
 declare fn text;
 begin
   foreach fn in array array['admin_overview(integer)', 'admin_timeseries(integer)', 'admin_top_ingredients(integer, integer)',
     'admin_top_recipes(integer, integer)', 'admin_category_usage(integer)', 'admin_preference_stats()',
     'admin_list_users(text, text, integer, integer)', 'admin_set_user_status(uuid, text)',
-    'admin_list_feedback(text, text, text, integer, integer)', 'admin_ingredient_usage()', 'admin_system_status()'] loop
+    'admin_list_feedback(text, text, text, integer, integer)', 'admin_ingredient_usage()', 'admin_system_status()',
+    'admin_save_recipe(jsonb)'] loop
     execute format('revoke all on function public.%s from public, anon', fn);
     execute format('grant execute on function public.%s to authenticated', fn);
   end loop;

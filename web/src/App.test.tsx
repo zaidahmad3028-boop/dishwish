@@ -34,13 +34,14 @@ describe('routing', () => {
   it('shows the app shell with sidebar navigation and no header', async () => {
     setSession(fakeSession('Ayesha'));
     renderAt('/kitchen');
-    expect(await screen.findByRole('heading', { name: 'Salaam, Ayesha!' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Your Kitchen' })).toBeInTheDocument();
+    expect(screen.getByText(/Salaam, Ayesha!/)).toBeInTheDocument();
     const [sidebar] = screen.getAllByRole('navigation', { name: 'Main' });
-    for (const label of ['Kitchen', 'Recipes', 'Pantry', 'Profile']) {
+    for (const label of ['Kitchen', 'Ingredient Selection', 'Recommendations', 'My Recipes', 'My Pantry', 'Profile', 'Settings']) {
       expect(within(sidebar).getByRole('link', { name: label })).toBeInTheDocument();
     }
-    expect(screen.queryByRole('banner')).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /sign up|register/i })).not.toBeInTheDocument();
+    expect(within(sidebar).queryByRole('link', { name: 'Users' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /sign up|create account/i })).not.toBeInTheDocument();
     // Mocked preferences are not onboarded yet, so the kitchen offers to finish setup.
     expect(await screen.findByRole('link', { name: 'Finish setting up' })).toHaveAttribute('href', '/onboarding');
   });
@@ -58,7 +59,8 @@ describe('routing', () => {
   it('logs out back to the auth page', async () => {
     setSession(fakeSession());
     renderAt('/kitchen');
-    await userEvent.click((await screen.findAllByRole('button', { name: /log out/i }))[0]);
+    await userEvent.click((await screen.findAllByRole('button', { name: /registered user/i }))[0]);
+    await userEvent.click(screen.getAllByRole('menuitem', { name: /log out/i })[0]);
     expect(supabase.auth.signOut).toHaveBeenCalled();
     expect(await screen.findByRole('heading', { name: /cook your dream recipe/i })).toBeInTheDocument();
   });

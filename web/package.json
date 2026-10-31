@@ -16,7 +16,8 @@
     "lucide-react": "^1.65.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router-dom": "^7.18.5"
+    "react-router-dom": "^7.18.5",
+    "recharts": "^2.15.4"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.14",
