@@ -335,9 +335,10 @@ def write_outputs(sources: dict) -> None:
         f"export const RECIPE_PHOTO_SLUGS: readonly string[] = {json.dumps(have['recipes'])};\n"
         f"export const INGREDIENT_PHOTO_SLUGS: readonly string[] = {json.dumps(have['ingredients'])};\n", encoding="utf-8")
     lines = ["# Image credits", "",
-             "Recipe and ingredient photos come from Wikimedia Commons under the licences below, cropped and resized",
-             "(changes made). Not listed here: the 261 ingredient pictures and Chicken Karahi, Chicken Biryani, Chicken Qorma and the Kitchen banner,",
-             "were supplied by the project owner.", "", "| Image | Source file | Author | Licence |", "|---|---|---|---|"]
+             "Ingredient pictures and most dish pictures were AI-generated with ChatGPT from the project owner's designs,",
+             "then cut out or cropped. Chicken Karahi, Chicken Biryani, Chicken Qorma, the Kitchen banner and 17 ingredient",
+             "pictures come from the owner's own design images. Any photos from Wikimedia Commons are listed below with",
+             "their licences (cropped and resized).", "", "| Image | Source file | Author | Licence |", "|---|---|---|---|"]
     for key in sorted(sources):
         s = sources[key]
         if not s.get("chosen") or not (IMAGES / f"{key}.webp").exists():
