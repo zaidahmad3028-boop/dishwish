@@ -12,6 +12,7 @@ import time
 
 import httpx
 
+from .categories import kind_for
 from .data import Ingredient, load_ingredients
 from .suitability import CuratedRecipe, Edge, EngineData, RecipeLine, SuitabilityEngine, bundled_recipes, cooccurrence_edges
 
@@ -56,8 +57,11 @@ def fetch_database(url: str, key: str, client: httpx.Client | None = None) -> En
             client.close()
 
     names = {r["id"]: r["name"] for r in rows}
+    # The database holds display categories; the engine reasons with cooking kinds.
+    known = {i.name: i.category for i in load_ingredients()}
     ingredients = tuple(Ingredient(
-        name=r["name"], category=categories.get(r["category_id"], "Other"), kcal=float(r["kcal"]), protein=float(r["protein"]),
+        name=r["name"], category=kind_for(categories.get(r["category_id"], "Other"), r["name"], known),
+        group=categories.get(r["category_id"], "Other"), kcal=float(r["kcal"]), protein=float(r["protein"]),
         carbs=float(r["carbs"]), fat=float(r["fat"]), sweet=r["sweet"], salty=r["salty"], sour=r["sour"], spicy=r["spicy"],
         allergens=tuple(r["allergens"] or ()), priority=r["priority"]) for r in rows)
     by_recipe: dict[int, list] = {}

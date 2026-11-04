@@ -2,7 +2,11 @@
 import os
 from typing import Annotated, Literal
 
-from fastapi import Depends, FastAPI, HTTPException, Path, Query
+import re
+import secrets
+
+from fastapi import Depends, FastAPI, HTTPException, Path, Query, Request
+from fastapi.concurrency import run_in_threadpool
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -11,7 +15,8 @@ from core.env import load_env_file
 
 load_env_file()
 
-from core.auth import current_user  # noqa: E402
+from core.auth import current_admin, current_user  # noqa: E402
+from core import r2  # noqa: E402
 from engine.catalog_db import get_engine  # noqa: E402
 from engine.recipes import RecipeError, get_recipe_engine  # noqa: E402
 from engine.recommender import get_recommender  # noqa: E402
@@ -172,7 +177,7 @@ def recipes(body: RecipeRequest, claims: dict = Depends(current_user)) -> dict:
 
 
 # ---- Curated recipe recommendations (suitability engine) --------------------------------
-Diet = Literal["vegetarian", "gluten_free", "low_calorie", "high_protein"]
+Diet = Literal["vegetarian", "vegan", "gluten_free", "low_calorie", "high_protein"]
 
 
 class SuitabilityRequest(BaseModel):
@@ -245,3 +250,49 @@ def compatibility_check(body: CompatibilityCheck) -> dict:
     stored = [p["weight"] for p in pairs if p["stored"]]
     return {"pairs": pairs, "average": round(sum(p["weight"] for p in pairs) / len(pairs), 3) if pairs else None,
             "stored_pairs": len(stored), "suggestions": engine.suggest_additions(names, set(body.allergens), words)}
+
+
+@app.get("/api/uploads/status")
+def upload_status() -> dict:
+    """Whether image uploads to Cloudflare R2 are configured on this API (no secrets are returned)."""
+    config = r2.load_config()
+    return {"configured": config is not None, "public_url": config.public_url if config else None}
+
+
+@app.post("/api/uploads/image")
+async def upload_image(request: Request, folder: Literal["recipes", "ingredients"],
+                       name: Annotated[str, Query(pattern=r"^[a-z0-9-]{1,80}$")],
+                       claims: dict = Depends(current_admin)) -> dict:
+    """Super Admin only: store one recipe/ingredient image (raw body: WebP, JPEG or PNG, max 3 MB) in R2."""
+    return await _store_image(request, f"{folder}/{name}")
+
+
+@app.post("/api/uploads/avatar")
+async def upload_avatar(request: Request, claims: dict = Depends(current_user)) -> dict:
+    """Any signed-in user: store their own profile photo in R2 under avatars/<their user id>-…"""
+    user_id = re.sub(r"[^a-zA-Z0-9-]", "", str(claims.get("sub", "")))[:64]
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Sign in required")
+    return await _store_image(request, f"avatars/{user_id}")
+
+
+async def _store_image(request: Request, prefix: str) -> dict:
+    config = r2.load_config()
+    if config is None:
+        raise HTTPException(status_code=503, detail="Image storage is not configured (R2_* settings on the API)")
+    declared = request.headers.get("content-length")
+    if declared and declared.isdigit() and int(declared) > r2.MAX_IMAGE_BYTES:
+        raise HTTPException(status_code=413, detail="Image is larger than 3 MB")
+    body = await request.body()
+    if len(body) > r2.MAX_IMAGE_BYTES:
+        raise HTTPException(status_code=413, detail="Image is larger than 3 MB")
+    kind = r2.sniff_image(body)
+    if kind is None:
+        raise HTTPException(status_code=415, detail="Use a WebP, JPEG or PNG image")
+    # A fresh suffix per upload: the URL never changes content, so it can be cached forever.
+    key = f"{prefix}-{secrets.token_hex(4)}.{r2.IMAGE_TYPES[kind]}"
+    try:
+        url = await run_in_threadpool(r2.put_object, config, key, body, kind)
+    except r2.R2Error as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+    return {"url": url, "key": key, "content_type": kind, "bytes": len(body)}

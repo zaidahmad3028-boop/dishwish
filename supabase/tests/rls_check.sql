@@ -11,8 +11,8 @@ select pg_temp.assert_true((select count(*) = 7 and bool_and(c.relrowsecurity)
   where n.nspname = 'public' and c.relname in
   ('categories','ingredients','profiles','preferences','pantry_items','saved_recipes','shared_recipes')),
   'all seven tables exist with RLS enabled');
-select pg_temp.assert_true((select count(*) = 260 from public.ingredients), '260 seeded ingredients');
-select pg_temp.assert_true((select count(*) = 8 from public.categories), 'eight seeded categories');
+select pg_temp.assert_true((select count(*) = 261 from public.ingredients), '261 seeded ingredients');
+select pg_temp.assert_true((select count(*) = 13 from public.categories), 'thirteen seeded categories');
 insert into auth.users(id, email) values
   ('10000000-0000-4000-8000-000000000001', 'rls-a@example.invalid'),
   ('10000000-0000-4000-8000-000000000002', 'rls-b@example.invalid');
@@ -33,8 +33,8 @@ select pg_temp.assert_true((select count(*) = 4 from public.ingredients where 'c
 select pg_temp.assert_true((select count(*) = 6 from public.ingredients where 'citrus' = any(allergens)), 'citrus tags');
 
 set local role anon;
-select pg_temp.assert_true((select count(*) = 260 from public.ingredients), 'anonymous ingredient read');
-select pg_temp.assert_true((select count(*) = 8 from public.categories), 'anonymous category read');
+select pg_temp.assert_true((select count(*) = 261 from public.ingredients), 'anonymous ingredient read');
+select pg_temp.assert_true((select count(*) = 13 from public.categories), 'anonymous category read');
 do $$ begin
   begin
     perform * from public.profiles;

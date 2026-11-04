@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Archive, CheckCircle2, ChefHat, Clock, Download, Eye, FileEdit, Pencil, Plus, Star, Trash2, Utensils, X } from 'lucide-react';
+import { Archive, CheckCircle2, ChefHat, Clock, Download, Eye, FileEdit, Pencil, Plus, Star, Trash2, Upload, Utensils, X } from 'lucide-react';
 import { Legend, PALETTE } from '../../components/charts';
 import { DishArt } from '../../components/DishArt';
+import { recipeImage } from '../../lib/images';
+import { uploadImage } from '../../lib/uploads';
 import { Card, Donut, EmptyState, ErrorNote, Modal, Notice, PageHeader, Pagination, SearchBox, Spinner, StatCard, STATUS_BADGE, downloadFile, toCsv } from '../../components/ui';
 import {
   deleteRecipe, listIngredients, listRecipes, recipeParts, recipeRatings, RECIPE_CATEGORIES, saveRecipe, setRecipeStatus, topRecipes, validateRecipe,
@@ -29,6 +31,8 @@ export function AdminRecipesPage() {
   const [confirmDelete, setConfirmDelete] = useState<AdminRecipe | null>(null);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
 
   const load = useCallback(() => {
     Promise.all([listRecipes(), recipeRatings().catch(() => ({})), topRecipes(365, 50).catch(() => [])])
@@ -65,6 +69,14 @@ export function AdminRecipesPage() {
     run(async () => { await saveRecipe(draft); setDraft(null); }, draft.id ? 'Recipe updated.' : 'Recipe created.');
   };
   const set = (patch: Partial<RecipeDraft>) => setDraft((d) => (d ? { ...d, ...patch } : d));
+  const uploadPhoto = (file: File) => {
+    setUploading(true);
+    setUploadError('');
+    uploadImage(file, 'recipes', draft?.slug || draft?.name || 'recipe')
+      .then((url) => set({ image_url: url }))
+      .catch((e: Error) => setUploadError(e.message))
+      .finally(() => setUploading(false));
+  };
 
   if (!recipes) return error ? <ErrorNote>{error}</ErrorNote> : <Spinner label="Loading recipes" />;
 
@@ -107,7 +119,7 @@ export function AdminRecipesPage() {
                 <tbody>
                   {filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((r) => (
                     <tr key={r.id}>
-                      <td><span className="flex items-center gap-2"><DishArt category={r.category} imageUrl={r.image_url} name={r.name} className="h-10 !w-14" />
+                      <td><span className="flex items-center gap-2"><DishArt category={r.category} imageUrl={recipeImage(r.slug, r.image_url)} name={r.name} className="!w-16 shrink-0 !rounded-lg" />
                         <span><strong>{r.name}</strong><span className="block text-xs text-stone-500">{r.slug} · {r.source === 'curated' ? 'Curated' : 'User-generated'}</span></span></span></td>
                       <td>{r.category}</td><td>{r.cuisine}</td><td>{r.minutes} min</td>
                       <td>{ratings[r.slug] ? <>★ {ratings[r.slug].avg.toFixed(1)} ({ratings[r.slug].count})</> : '—'}</td>
@@ -135,7 +147,7 @@ export function AdminRecipesPage() {
           <Card title="Recipe Preview" icon={Eye}>
             {!preview ? <p className="text-sm text-stone-500">Choose the eye icon on a recipe.</p> : (
               <div>
-                <DishArt category={preview.category} imageUrl={preview.image_url} name={preview.name} className="h-36" />
+                <DishArt category={preview.category} imageUrl={recipeImage(preview.slug, preview.image_url)} name={preview.name} />
                 <p className="mt-2 flex items-center justify-between font-display text-lg font-bold">{preview.name}<span className={`badge ${STATUS_BADGE[preview.status]}`}>{preview.status}</span></p>
                 <p className="text-sm text-stone-600">{preview.description}</p>
                 <p className="mt-2 flex gap-3 text-xs"><span className="inline-flex items-center gap-1"><Clock size={13} />{preview.minutes} min</span><span>{preview.servings} servings</span>
@@ -169,7 +181,22 @@ export function AdminRecipesPage() {
               <label className="text-sm font-semibold">Servings<input className="field mt-1" type="number" min={1} max={20} value={draft.servings} onChange={(e) => set({ servings: Number(e.target.value) })} /></label>
               <label className="text-sm font-semibold">Status<select className="field mt-1" value={draft.status} onChange={(e) => set({ status: e.target.value as AdminRecipe['status'] })}>
                 <option value="draft">Draft (hidden)</option><option value="published">Published</option><option value="archived">Archived</option></select></label>
-              <label className="text-sm font-semibold">Image URL (optional, https)<input className="field mt-1" value={draft.image_url ?? ''} onChange={(e) => set({ image_url: e.target.value || null })} /></label>
+              <div className="text-sm font-semibold sm:col-span-2">
+                <label htmlFor="recipe-image-url">Photo (optional: upload, or paste an https URL)</label>
+                <div className="mt-1 flex flex-wrap items-start gap-3">
+                  <div className="w-36 shrink-0"><DishArt category={draft.category} imageUrl={recipeImage(draft.slug, draft.image_url)} name={draft.name || 'New recipe'} /></div>
+                  <div className="min-w-0 flex-1 space-y-2">
+                    <input id="recipe-image-url" className="field" value={draft.image_url ?? ''} placeholder="https://…" onChange={(e) => set({ image_url: e.target.value || null })} />
+                    <label className="btn-sm btn-outline cursor-pointer">
+                      <Upload size={14} />{uploading ? 'Uploading…' : 'Upload photo'}
+                      <input type="file" accept="image/webp,image/jpeg,image/png" className="sr-only" disabled={uploading}
+                        onChange={(e) => { const file = e.target.files?.[0]; e.target.value = ''; if (file) uploadPhoto(file); }} />
+                    </label>
+                    <p className="text-xs font-normal text-stone-500">WebP, JPEG or PNG. Cropped to 3:2 landscape (800×533) from the centre, so keep the dish in the middle.</p>
+                    {uploadError && <p className="text-xs font-normal text-crimson" role="alert">{uploadError}</p>}
+                  </div>
+                </div>
+              </div>
             </div>
             <fieldset className="grid gap-2 sm:grid-cols-4"><legend className="mb-1 text-sm font-semibold">Taste of the finished dish (0–10)</legend>
               {(['sweet', 'salty', 'sour', 'spicy'] as const).map((t) => (

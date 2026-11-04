@@ -5,6 +5,7 @@ import { AlertTriangle, ArrowLeft, Bookmark, BookmarkCheck, CheckCircle2, ChefHa
 import { useAuth } from '../auth/AuthProvider';
 import { CompatibilityGraph } from '../components/CompatibilityGraph';
 import { DishArt, IngredientBadge } from '../components/DishArt';
+import { recipeImage } from '../lib/images';
 import { FeedbackForm } from '../components/FeedbackForm';
 import { Bar, Card, Donut, ErrorNote, Modal, Spinner } from '../components/ui';
 import { DIETS, fetchCompatibility, fetchCuratedDetail, recordEvent, saveCurated, type CuratedDetail, type CuratedMatch } from '../lib/curatedApi';
@@ -111,7 +112,7 @@ export function CuratedRecipePage() {
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
         <div className="min-w-0 space-y-6">
           <section className="card grid gap-5 p-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
-            <DishArt category={recipe.category} imageUrl={recipe.image_url} name={recipe.name} className="h-60" />
+            <DishArt category={recipe.category} imageUrl={recipeImage(recipe.slug, recipe.image_url)} name={recipe.name} />
             <div>
               <h1 className="font-display text-3xl font-extrabold">{recipe.name}</h1>
               <p className="mt-2 text-stone-600">{recipe.description}</p>

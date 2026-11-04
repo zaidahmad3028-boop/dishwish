@@ -3,9 +3,15 @@ import { supabase } from './supabase';
 import { effectiveAllergenTags, type Level, type Preferences, type TasteKey } from './preferences';
 import { API_URL } from './recipes';
 
-export type Diet = 'vegetarian' | 'gluten_free' | 'low_calorie' | 'high_protein';
+export type Diet = 'vegetarian' | 'gluten_free' | 'low_calorie' | 'high_protein' | 'vegan';
 export const DIETS: { key: Diet; label: string }[] = [
   { key: 'vegetarian', label: 'Vegetarian' }, { key: 'low_calorie', label: 'Low Calorie' },
+  { key: 'high_protein', label: 'High Protein' }, { key: 'gluten_free', label: 'Gluten Free' },
+];
+
+// The Ingredient Selection screen also offers Vegan (the Kitchen's quick generator shows the four above).
+export const ALL_DIETS: { key: Diet; label: string }[] = [
+  { key: 'vegetarian', label: 'Vegetarian' }, { key: 'vegan', label: 'Vegan' }, { key: 'low_calorie', label: 'Low Calorie' },
   { key: 'high_protein', label: 'High Protein' }, { key: 'gluten_free', label: 'Gluten Free' },
 ];
 

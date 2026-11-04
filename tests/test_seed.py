@@ -52,9 +52,26 @@ def test_allergens(category, name, expected):
 def test_supplied_csv_and_generated_seed():
     source = ROOT / "supabase/seed/ingredients.csv"
     rows = seed.load_rows(source)
-    assert len(rows) == 260
-    assert len({row["category"] for row in rows}) == 8
+    assert len(rows) == 261
+    assert len({row["category"] for row in rows}) == 8  # engine kinds
     assert seed.build_seed(source) == (ROOT / "supabase/seed/seed.sql").read_text()
+    assert seed.build_category_migration(source) == (ROOT / "supabase/migrations/0006_categories.sql").read_text()
+
+
+def test_every_ingredient_gets_one_of_the_13_display_categories():
+    from engine.categories import GROUPS, GROUP_TO_KIND, display_group, kind_for
+    rows = seed.load_rows(ROOT / "supabase/seed/ingredients.csv")
+    groups = {display_group(r["category"], r["name"]) for r in rows}
+    assert groups == set(GROUPS) and len(GROUPS) == 13
+    by_name = {r["name"]: display_group(r["category"], r["name"]) for r in rows}
+    assert by_name["Tomato Ketchup"] == by_name["Mayonnaise"] == "Sauces & Condiments"
+    assert by_name["Burger Buns (Bun)"] == by_name["Bread"] == "Bakery & Baking"
+    assert by_name["Fresh Mint (Pudina)"] == "Fresh Herbs" and by_name["Prawns"] == "Fish & Seafood"
+    assert by_name["Eggs"] == "Dairy & Eggs" and by_name["Masoor Dal"] == "Pulses & Lentils"
+    known = {r["name"]: r["category"] for r in rows}
+    assert kind_for("Fish & Seafood", "Prawns", known) == "Meat"          # engine logic unchanged
+    assert kind_for("Bakery & Baking", "Pizza Base", known) == "Grocery"  # admin-added: by its group
+    assert set(GROUP_TO_KIND) == set(GROUPS)
     assert seed.quote("Chef's ingredient") == "'Chef''s ingredient'"
 
 @pytest.mark.parametrize("field,value", [("kcal", "NaN"), ("fat", "-1"), ("sweet", "11"), ("priority", "0"), ("salty", "1.5")])

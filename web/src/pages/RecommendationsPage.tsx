@@ -4,7 +4,8 @@ import { Apple, ArrowRight, BarChart3, Bookmark, BookmarkCheck, CheckCircle2, Ch
   SlidersHorizontal, Sparkles, Users, Wand2, XCircle } from 'lucide-react';
 import { useAuth } from '../auth/AuthProvider';
 import { CompatibilityGraph } from '../components/CompatibilityGraph';
-import { DishArt } from '../components/DishArt';
+import { RecipeCardImage } from '../components/DishArt';
+import { recipeImage } from '../lib/images';
 import { Bar, Card, Donut, EmptyState, ErrorNote, PageHeader, Spinner } from '../components/ui';
 import { DIETS, fetchCompatibility, fetchCuratedRecommendations, recordEvent, saveCurated, type CuratedMatch, type RecommendationResult } from '../lib/curatedApi';
 import { allergenLabel, effectiveAllergenTags, type TasteKey } from '../lib/preferences';
@@ -27,12 +28,12 @@ function matchTone(p: number) {
 
 function RecipeCard({ r, selected, onSave, saved }: { r: CuratedMatch; selected: boolean; onSave: () => void; saved: 'idle' | 'saving' | 'saved' | 'exists' }) {
   return (
-    <li className={`card flex flex-col overflow-hidden p-3 ${selected ? 'ring-2 ring-crimson' : ''}`}>
-      <div className="relative">
-        <DishArt category={r.category} imageUrl={r.image_url} name={r.name} className="h-36" />
+    <li className={`card flex flex-col overflow-hidden p-0 ${selected ? 'ring-2 ring-crimson' : ''}`}>
+      <RecipeCardImage category={r.category} imageUrl={recipeImage(r.slug, r.image_url)} name={r.name}>
         <span className={`badge absolute left-2 top-2 text-sm ${matchTone(r.match_percent)}`}>{r.match_percent}% Match</span>
-      </div>
-      <h3 className="mt-3 font-display text-lg font-bold">{r.name}</h3>
+      </RecipeCardImage>
+      <div className="flex flex-1 flex-col p-3">
+      <h3 className="font-display text-lg font-bold">{r.name}</h3>
       <p className="mt-1 flex flex-wrap gap-3 text-xs text-stone-600">
         <span className="inline-flex items-center gap-1"><Clock size={13} />{r.minutes} min</span>
         <span className="inline-flex items-center gap-1"><Users size={13} />{r.servings} servings</span>
@@ -53,6 +54,7 @@ function RecipeCard({ r, selected, onSave, saved }: { r: CuratedMatch; selected:
           {saved === 'saved' || saved === 'exists' ? <BookmarkCheck size={14} /> : <Bookmark size={14} />}
           {saved === 'saved' ? 'Saved' : saved === 'exists' ? 'Already saved' : 'Add to My Recipes'}
         </button>
+      </div>
       </div>
     </li>
   );

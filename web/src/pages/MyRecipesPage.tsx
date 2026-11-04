@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { ArrowRight, BarChart3, Bookmark, BookOpen, ChefHat, Clock, CookingPot, Heart, Plus, Trash2, Users, Zap } from 'lucide-react';
 import { useAuth } from '../auth/AuthProvider';
-import { DishArt } from '../components/DishArt';
+import { RecipeCardImage } from '../components/DishArt';
+import { recipeImage } from '../lib/images';
 import { Card, Donut, EmptyState, ErrorNote, PageHeader, SearchBox, Spinner, StatCard, formatDate } from '../components/ui';
 import { deleteEvent, isCuratedSnapshot, listCuratedRecipes, listEvents, setFavorite, type CuratedSummary, type EventKind, type RecipeEvent } from '../lib/curatedApi';
 import { deleteSavedRecipe, isGenerated, listSavedRecipes, type SavedRecipe } from '../lib/recipesApi';
@@ -22,16 +23,16 @@ function SavedCard({ r, onDelete, onFavorite }: { r: SavedRecipe; onDelete: () =
   const minutes = r.recipe.minutes, servings = r.recipe.servings;
   const category = curated ? (r.recipe as { category: string }).category : 'Main Course';
   return (
-    <li className="card flex flex-col p-3">
-      <div className="relative">
-        <DishArt category={category} name={r.title} className="h-32" />
+    <li className="card flex flex-col overflow-hidden p-0">
+      <RecipeCardImage category={category} imageUrl={curated ? recipeImage((r.recipe as { slug: string }).slug) : null} name={r.title}>
         <span className={`badge absolute left-2 top-2 ${curated ? 'badge-purple' : 'badge-amber'}`}>{curated ? 'Curated' : 'Generated'}</span>
         <button type="button" onClick={onFavorite} aria-pressed={r.favorite ?? false} aria-label={`${r.favorite ? 'Remove' : 'Add'} ${r.title} ${r.favorite ? 'from' : 'to'} favorites`}
           className="absolute right-2 top-2 grid h-8 w-8 place-items-center rounded-full bg-white shadow">
           <Heart size={16} className={r.favorite ? 'fill-crimson text-crimson' : 'text-crimson'} />
         </button>
-      </div>
-      <Link to={savedLink(r)} className="mt-2 font-display text-lg font-bold hover:text-crimson">{r.title}</Link>
+      </RecipeCardImage>
+      <div className="flex flex-1 flex-col p-3">
+      <Link to={savedLink(r)} className="font-display text-lg font-bold hover:text-crimson">{r.title}</Link>
       <p className="mt-1 flex flex-wrap gap-3 text-xs text-stone-600">
         <span className="inline-flex items-center gap-1"><Clock size={13} />{minutes} min</span>
         <span className="inline-flex items-center gap-1"><Users size={13} />{servings} servings</span>
@@ -41,6 +42,7 @@ function SavedCard({ r, onDelete, onFavorite }: { r: SavedRecipe; onDelete: () =
       <div className="mt-3 flex items-center justify-between">
         <Link to={savedLink(r)} className="btn-sm btn-red">View Recipe<ArrowRight size={14} /></Link>
         <button type="button" className="icon-btn" onClick={onDelete} aria-label={`Delete ${r.title}`}><Trash2 size={16} /></button>
+      </div>
       </div>
     </li>
   );
@@ -155,11 +157,13 @@ export function MyRecipesPage() {
             ) : (
               <ul className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
                 {browseShown.map((r) => (
-                  <li key={r.slug} className="card p-3">
-                    <Link to={`/recipe/${r.slug}`}>
-                      <DishArt category={r.category} imageUrl={r.image_url} name={r.name} className="h-28" />
-                      <p className="mt-2 font-display text-lg font-bold">{r.name}</p>
-                      <p className="text-xs text-stone-600">{r.category} · {r.minutes} min · {r.servings} servings</p>
+                  <li key={r.slug} className="card overflow-hidden p-0">
+                    <Link to={`/recipe/${r.slug}`} className="block">
+                      <RecipeCardImage category={r.category} imageUrl={recipeImage(r.slug, r.image_url)} name={r.name} />
+                      <div className="p-3">
+                        <p className="font-display text-lg font-bold">{r.name}</p>
+                        <p className="text-xs text-stone-600">{r.category} · {r.minutes} min · {r.servings} servings</p>
+                      </div>
                     </Link>
                   </li>
                 ))}

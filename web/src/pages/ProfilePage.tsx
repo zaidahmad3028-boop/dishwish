@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, Bookmark, CalendarDays, ChefHat, ChevronRight, Clock, CookingPot, Download, Heart, KeyRound, ListChecks, Mail,
+import { BookOpen, Bookmark, CalendarDays, Camera, ChefHat, ChevronRight, Clock, CookingPot, Download, Heart, KeyRound, ListChecks, Mail,
   ShieldCheck, SlidersHorizontal, Target, Trash2, UserRound, Zap } from 'lucide-react';
 import { useAuth } from '../auth/AuthProvider';
-import { displayName } from '../components/AppShell';
+import { avatarUrl, displayName } from '../components/AppShell';
+import { uploadAvatar } from '../lib/uploads';
 import { SavedRecipesList } from '../components/SavedRecipesList';
 import { Avatar, Card, Donut, ErrorNote, PageHeader, StatCard } from '../components/ui';
-import { loadExtraPrefs, type ExtraPrefs } from '../lib/accountApi';
+import { loadExtraPrefs, saveAvatarUrl, type ExtraPrefs } from '../lib/accountApi';
 import { DIETS, listEvents, type RecipeEvent } from '../lib/curatedApi';
 import { ALLERGEN_CHIPS, TASTES, kcalForTier, type Preferences } from '../lib/preferences';
 import { loadPreferences } from '../lib/preferencesApi';
@@ -20,6 +21,14 @@ export function ProfilePage() {
   const [events, setEvents] = useState<RecipeEvent[]>([]);
   const [saved, setSaved] = useState<SavedRecipe[]>([]);
   const [error, setError] = useState(false);
+  const [photoBusy, setPhotoBusy] = useState(false);
+  const [photoError, setPhotoError] = useState('');
+
+  const changePhoto = (file: File) => {
+    setPhotoBusy(true);
+    setPhotoError('');
+    uploadAvatar(file).then(saveAvatarUrl).catch((e: Error) => setPhotoError(e.message)).finally(() => setPhotoBusy(false));
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -54,7 +63,15 @@ export function ProfilePage() {
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
         <div className="min-w-0 space-y-6">
           <section className="card flex flex-wrap items-center gap-6 p-6">
-            <Avatar name={name} size={104} />
+            <div className="flex flex-col items-center gap-2">
+              <Avatar name={name} size={104} src={avatarUrl(user)} />
+              <label className={`btn-sm btn-outline cursor-pointer ${photoBusy ? 'opacity-60' : ''}`}>
+                <Camera size={14} />{photoBusy ? 'Uploading…' : avatarUrl(user) ? 'Change photo' : 'Upload photo'}
+                <input type="file" accept="image/webp,image/jpeg,image/png" className="sr-only" disabled={photoBusy}
+                  onChange={(e) => { const file = e.target.files?.[0]; e.target.value = ''; if (file) changePhoto(file); }} />
+              </label>
+              {photoError && <p className="max-w-[12rem] text-center text-xs text-crimson" role="alert">{photoError}</p>}
+            </div>
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-3">
                 <h2 className="truncate font-display text-3xl font-extrabold">{name}</h2>

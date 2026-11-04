@@ -29,6 +29,14 @@ export async function saveDisplayName(userId: string, name: string) {
   await supabase.auth.updateUser({ data: { username: clean } });
 }
 
+// The profile photo lives in R2; its public URL is kept on the auth user (like the username),
+// so the sidebar, header and profile all show it without another query. null removes it.
+export async function saveAvatarUrl(url: string | null) {
+  if (url !== null && !url.startsWith('https://')) throw new Error('The photo address must start with https://');
+  const { error } = await supabase.auth.updateUser({ data: { avatar_url: url } });
+  if (error) throw new Error(error.message);
+}
+
 export async function touchLastSeen(userId: string) {
   await supabase.from('profiles').update({ last_seen_at: new Date().toISOString() }).eq('user_id', userId)
     .then(() => undefined, () => undefined);

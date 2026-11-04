@@ -24,6 +24,8 @@ class Ingredient:
     spicy: int
     allergens: tuple[str, ...]
     priority: int
+    # `category` is the engine's cooking kind (8 source categories); `group` is the category people browse.
+    group: str = ""
 
 
 @lru_cache(maxsize=1)

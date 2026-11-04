@@ -220,3 +220,19 @@ def test_curated_detail_and_compatibility_endpoints(client):
 
 def test_auth_module_is_unchanged_for_new_routes():
     assert auth.LEEWAY_SECONDS == 30
+
+
+def test_vegan_excludes_meat_eggs_dairy_and_honey():
+
+    from engine.catalog_db import bundled_data
+    from engine.suitability import SuitabilityEngine
+    data = bundled_data()
+    engine = SuitabilityEngine(data.ingredients, data.recipes, data.edges)
+    by_slug = {r.slug: r for r in data.recipes}
+    assert "vegan" not in engine.diets(by_slug["chicken-karahi"])
+    assert "vegan" not in engine.diets(by_slug["kheer"])          # milk
+    vegan = [r for r in data.recipes if "vegan" in engine.diets(r)]
+    assert vegan, "at least one bundled recipe is vegan"
+    for recipe in vegan:
+        items = [engine.catalog[line.name] for line in recipe.lines]
+        assert all(i.category != "Meat" and not {"milk", "eggs"} & set(i.allergens) and i.name != "Honey" for i in items)

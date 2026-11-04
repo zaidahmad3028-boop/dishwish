@@ -2,6 +2,7 @@
   {
     "name": "Chicken Breast",
     "category": "Meat",
+    "group": "Meat & Poultry",
     "kcal": 165.0,
     "protein": 31.0,
     "carbs": 0.0,
@@ -16,6 +17,7 @@
   {
     "name": "Chicken Thigh",
     "category": "Meat",
+    "group": "Meat & Poultry",
     "kcal": 209.0,
     "protein": 26.0,
     "carbs": 0.0,
@@ -30,6 +32,7 @@
   {
     "name": "Chicken Wings",
     "category": "Meat",
+    "group": "Meat & Poultry",
     "kcal": 203.0,
     "protein": 30.0,
     "carbs": 0.0,
@@ -44,6 +47,7 @@
   {
     "name": "Whole Chicken",
     "category": "Meat",
+    "group": "Meat & Poultry",
     "kcal": 239.0,
     "protein": 27.0,
     "carbs": 0.0,
@@ -58,6 +62,7 @@
   {
     "name": "Chicken Qeema",
     "category": "Meat",
+    "group": "Meat & Poultry",
     "kcal": 143.0,
     "protein": 17.0,
     "carbs": 0.0,
@@ -72,6 +77,7 @@
   {
     "name": "Chicken Liver",
     "category": "Meat",
+    "group": "Meat & Poultry",
     "kcal": 167.0,
     "protein": 24.0,
     "carbs": 1.0,
@@ -86,6 +92,7 @@
   {
     "name": "Mutton",
     "category": "Meat",
+    "group": "Meat & Poultry",
     "kcal": 294.0,
     "protein": 25.0,
     "carbs": 0.0,
@@ -100,6 +107,7 @@
   {
     "name": "Mutton Chops",
     "category": "Meat",
+    "group": "Meat & Poultry",
     "kcal": 290.0,
     "protein": 24.0,
     "carbs": 0.0,
@@ -114,6 +122,7 @@
   {
     "name": "Mutton Qeema",
     "category": "Meat",
+    "group": "Meat & Poultry",
     "kcal": 282.0,
     "protein": 17.0,
     "carbs": 0.0,
@@ -128,6 +137,7 @@
   {
     "name": "Mutton Paya",
     "category": "Meat",
+    "group": "Meat & Poultry",
     "kcal": 180.0,
     "protein": 20.0,
     "carbs": 0.0,
@@ -142,6 +152,7 @@
   {
     "name": "Beef",
     "category": "Meat",
+    "group": "Meat & Poultry",
     "kcal": 250.0,
     "protein": 26.0,
     "carbs": 0.0,
@@ -156,6 +167,7 @@
   {
     "name": "Beef Qeema",
     "category": "Meat",
+    "group": "Meat & Poultry",
     "kcal": 254.0,
     "protein": 17.0,
     "carbs": 0.0,
@@ -170,6 +182,7 @@
   {
     "name": "Beef Nihari Shank",
     "category": "Meat",
+    "group": "Meat & Poultry",
     "kcal": 235.0,
     "protein": 27.0,
     "carbs": 0.0,
@@ -184,6 +197,7 @@
   {
     "name": "Rohu Fish",
     "category": "Meat",
+    "group": "Fish & Seafood",
     "kcal": 97.0,
     "protein": 17.0,
     "carbs": 0.0,
@@ -200,6 +214,7 @@
   {
     "name": "Pomfret Fish",
     "category": "Meat",
+    "group": "Fish & Seafood",
     "kcal": 96.0,
     "protein": 18.0,
     "carbs": 0.0,
@@ -216,6 +231,7 @@
   {
     "name": "Prawns",
     "category": "Meat",
+    "group": "Fish & Seafood",
     "kcal": 99.0,
     "protein": 24.0,
     "carbs": 0.2,
@@ -232,6 +248,7 @@
   {
     "name": "Eggs",
     "category": "Meat",
+    "group": "Dairy & Eggs",
     "kcal": 143.0,
     "protein": 13.0,
     "carbs": 0.7,
@@ -248,6 +265,7 @@
   {
     "name": "Chicken Boneless (Boti)",
     "category": "Meat",
+    "group": "Meat & Poultry",
     "kcal": 165.0,
     "protein": 31.0,
     "carbs": 0.0,
@@ -262,6 +280,7 @@
   {
     "name": "Chicken Drumstick",
     "category": "Meat",
+    "group": "Meat & Poultry",
     "kcal": 172.0,
     "protein": 28.0,
     "carbs": 0.0,
@@ -276,6 +295,7 @@
   {
     "name": "Chicken Leg Piece",
     "category": "Meat",
+    "group": "Meat & Poultry",
     "kcal": 209.0,
     "protein": 26.0,
     "carbs": 0.0,
@@ -290,6 +310,7 @@
   {
     "name": "Chicken Gizzard (Gizzi)",
     "category": "Meat",
+    "group": "Meat & Poultry",
     "kcal": 94.0,
     "protein": 17.0,
     "carbs": 0.0,
@@ -304,6 +325,7 @@
   {
     "name": "Mutton Leg (Raan)",
     "category": "Meat",
+    "group": "Meat & Poultry",
     "kcal": 258.0,
     "protein": 25.0,
     "carbs": 0.0,
@@ -318,6 +340,7 @@
   {
     "name": "Mutton Shoulder",
     "category": "Meat",
+    "group": "Meat & Poultry",
     "kcal": 270.0,
     "protein": 24.0,
     "carbs": 0.0,
@@ -332,6 +355,7 @@
   {
     "name": "Mutton Ribs (Chaap)",
     "category": "Meat",
+    "group": "Meat & Poultry",
     "kcal": 294.0,
     "protein": 25.0,
     "carbs": 0.0,
@@ -346,6 +370,7 @@
   {
     "name": "Mutton Liver (Kaleji)",
     "category": "Meat",
+    "group": "Meat & Poultry",
     "kcal": 139.0,
     "protein": 20.4,
     "carbs": 3.9,
@@ -360,6 +385,7 @@
   {
     "name": "Mutton Brain (Maghaz)",
     "category": "Meat",
+    "group": "Meat & Poultry",
     "kcal": 145.0,
     "protein": 10.9,
     "carbs": 0.0,
@@ -374,6 +400,7 @@
   {
     "name": "Mutton Kidney (Gurda)",
     "category": "Meat",
+    "group": "Meat & Poultry",
     "kcal": 97.0,
     "protein": 16.5,
     "carbs": 0.8,
@@ -388,6 +415,7 @@
   {
     "name": "Beef Boneless",
     "category": "Meat",
+    "group": "Meat & Poultry",
     "kcal": 250.0,
     "protein": 26.0,
     "carbs": 0.0,
@@ -402,6 +430,7 @@
   {
     "name": "Beef Ribs",
     "category": "Meat",
+    "group": "Meat & Poultry",
     "kcal": 291.0,
     "protein": 24.0,
     "carbs": 0.0,
@@ -416,6 +445,7 @@
   {
     "name": "Beef Liver (Kaleji)",
     "category": "Meat",
+    "group": "Meat & Poultry",
     "kcal": 135.0,
     "protein": 20.0,
     "carbs": 3.9,
@@ -430,6 +460,7 @@
   {
     "name": "Beef Bone Marrow (Nalli)",
     "category": "Meat",
+    "group": "Meat & Poultry",
     "kcal": 750.0,
     "protein": 7.0,
     "carbs": 0.0,
@@ -444,6 +475,7 @@
   {
     "name": "Beef Tripe (Ojri)",
     "category": "Meat",
+    "group": "Meat & Poultry",
     "kcal": 85.0,
     "protein": 12.0,
     "carbs": 0.0,
@@ -458,6 +490,7 @@
   {
     "name": "Catla Fish",
     "category": "Meat",
+    "group": "Fish & Seafood",
     "kcal": 111.0,
     "protein": 16.6,
     "carbs": 0.0,
@@ -474,6 +507,7 @@
   {
     "name": "Tilapia Fish",
     "category": "Meat",
+    "group": "Fish & Seafood",
     "kcal": 128.0,
     "protein": 26.0,
     "carbs": 0.0,
@@ -490,6 +524,7 @@
   {
     "name": "Hilsa Fish (Palla)",
     "category": "Meat",
+    "group": "Fish & Seafood",
     "kcal": 273.0,
     "protein": 22.0,
     "carbs": 0.0,
@@ -506,6 +541,7 @@
   {
     "name": "Singhara Fish (Catfish)",
     "category": "Meat",
+    "group": "Fish & Seafood",
     "kcal": 105.0,
     "protein": 18.0,
     "carbs": 0.0,
@@ -522,6 +558,7 @@
   {
     "name": "Surmai Fish (King Fish)",
     "category": "Meat",
+    "group": "Fish & Seafood",
     "kcal": 134.0,
     "protein": 22.0,
     "carbs": 0.0,
@@ -538,6 +575,7 @@
   {
     "name": "Quail (Bater)",
     "category": "Meat",
+    "group": "Meat & Poultry",
     "kcal": 227.0,
     "protein": 25.0,
     "carbs": 0.0,
@@ -552,6 +590,7 @@
   {
     "name": "Tomato",
     "category": "Vegetables",
+    "group": "Vegetables",
     "kcal": 18.0,
     "protein": 0.9,
     "carbs": 3.9,
@@ -568,6 +607,7 @@
   {
     "name": "Onion",
     "category": "Vegetables",
+    "group": "Vegetables",
     "kcal": 40.0,
     "protein": 1.1,
     "carbs": 9.3,
@@ -582,6 +622,7 @@
   {
     "name": "Garlic",
     "category": "Vegetables",
+    "group": "Vegetables",
     "kcal": 149.0,
     "protein": 6.4,
     "carbs": 33.0,
@@ -596,6 +637,7 @@
   {
     "name": "Ginger",
     "category": "Vegetables",
+    "group": "Vegetables",
     "kcal": 80.0,
     "protein": 1.8,
     "carbs": 18.0,
@@ -610,6 +652,7 @@
   {
     "name": "Potato",
     "category": "Vegetables",
+    "group": "Vegetables",
     "kcal": 77.0,
     "protein": 2.0,
     "carbs": 17.0,
@@ -624,6 +667,7 @@
   {
     "name": "Spinach",
     "category": "Vegetables",
+    "group": "Vegetables",
     "kcal": 23.0,
     "protein": 2.9,
     "carbs": 3.6,
@@ -638,6 +682,7 @@
   {
     "name": "Cauliflower",
     "category": "Vegetables",
+    "group": "Vegetables",
     "kcal": 25.0,
     "protein": 1.9,
     "carbs": 5.0,
@@ -652,6 +697,7 @@
   {
     "name": "Green Chilli",
     "category": "Vegetables",
+    "group": "Vegetables",
     "kcal": 40.0,
     "protein": 2.0,
     "carbs": 9.0,
@@ -666,6 +712,7 @@
   {
     "name": "Okra (Bhindi)",
     "category": "Vegetables",
+    "group": "Vegetables",
     "kcal": 33.0,
     "protein": 1.9,
     "carbs": 7.5,
@@ -680,6 +727,7 @@
   {
     "name": "Carrot",
     "category": "Vegetables",
+    "group": "Vegetables",
     "kcal": 41.0,
     "protein": 0.9,
     "carbs": 9.6,
@@ -694,6 +742,7 @@
   {
     "name": "Green Peas",
     "category": "Vegetables",
+    "group": "Vegetables",
     "kcal": 81.0,
     "protein": 5.4,
     "carbs": 14.0,
@@ -708,6 +757,7 @@
   {
     "name": "Cabbage",
     "category": "Vegetables",
+    "group": "Vegetables",
     "kcal": 25.0,
     "protein": 1.3,
     "carbs": 5.8,
@@ -722,6 +772,7 @@
   {
     "name": "Brinjal (Baingan)",
     "category": "Vegetables",
+    "group": "Vegetables",
     "kcal": 25.0,
     "protein": 1.0,
     "carbs": 6.0,
@@ -738,6 +789,7 @@
   {
     "name": "Bottle Gourd (Lauki)",
     "category": "Vegetables",
+    "group": "Vegetables",
     "kcal": 14.0,
     "protein": 0.6,
     "carbs": 3.4,
@@ -752,6 +804,7 @@
   {
     "name": "Bitter Gourd (Karela)",
     "category": "Vegetables",
+    "group": "Vegetables",
     "kcal": 17.0,
     "protein": 1.0,
     "carbs": 3.7,
@@ -766,6 +819,7 @@
   {
     "name": "Capsicum",
     "category": "Vegetables",
+    "group": "Vegetables",
     "kcal": 20.0,
     "protein": 0.9,
     "carbs": 4.6,
@@ -780,6 +834,7 @@
   {
     "name": "Cucumber",
     "category": "Vegetables",
+    "group": "Vegetables",
     "kcal": 15.0,
     "protein": 0.7,
     "carbs": 3.6,
@@ -794,6 +849,7 @@
   {
     "name": "Mushroom",
     "category": "Vegetables",
+    "group": "Vegetables",
     "kcal": 22.0,
     "protein": 3.1,
     "carbs": 3.3,
@@ -808,6 +864,7 @@
   {
     "name": "Pumpkin (Kaddu)",
     "category": "Vegetables",
+    "group": "Vegetables",
     "kcal": 26.0,
     "protein": 1.0,
     "carbs": 6.5,
@@ -822,6 +879,7 @@
   {
     "name": "Turnip (Shaljam)",
     "category": "Vegetables",
+    "group": "Vegetables",
     "kcal": 28.0,
     "protein": 0.9,
     "carbs": 6.4,
@@ -836,6 +894,7 @@
   {
     "name": "Fresh Coriander",
     "category": "Vegetables",
+    "group": "Fresh Herbs",
     "kcal": 23.0,
     "protein": 2.1,
     "carbs": 3.7,
@@ -850,6 +909,7 @@
   {
     "name": "Fresh Mint (Pudina)",
     "category": "Vegetables",
+    "group": "Fresh Herbs",
     "kcal": 44.0,
     "protein": 3.3,
     "carbs": 8.4,
@@ -864,6 +924,7 @@
   {
     "name": "Radish (Mooli)",
     "category": "Vegetables",
+    "group": "Vegetables",
     "kcal": 16.0,
     "protein": 0.7,
     "carbs": 3.4,
@@ -878,6 +939,7 @@
   {
     "name": "Fenugreek Leaves (Methi)",
     "category": "Vegetables",
+    "group": "Fresh Herbs",
     "kcal": 49.0,
     "protein": 4.4,
     "carbs": 6.0,
@@ -892,6 +954,7 @@
   {
     "name": "Mustard Greens (Sarson Saag)",
     "category": "Vegetables",
+    "group": "Vegetables",
     "kcal": 27.0,
     "protein": 2.9,
     "carbs": 4.7,
@@ -908,6 +971,7 @@
   {
     "name": "Sweet Potato (Shakarkandi)",
     "category": "Vegetables",
+    "group": "Vegetables",
     "kcal": 86.0,
     "protein": 1.6,
     "carbs": 20.0,
@@ -922,6 +986,7 @@
   {
     "name": "Apple Gourd (Tinda)",
     "category": "Vegetables",
+    "group": "Vegetables",
     "kcal": 21.0,
     "protein": 1.4,
     "carbs": 3.4,
@@ -936,6 +1001,7 @@
   {
     "name": "Spring Onion (Hara Pyaz)",
     "category": "Vegetables",
+    "group": "Vegetables",
     "kcal": 32.0,
     "protein": 1.8,
     "carbs": 7.3,
@@ -950,6 +1016,7 @@
   {
     "name": "Green Beans (Fali)",
     "category": "Vegetables",
+    "group": "Vegetables",
     "kcal": 31.0,
     "protein": 1.8,
     "carbs": 7.0,
@@ -964,6 +1031,7 @@
   {
     "name": "Cluster Beans (Gwar Phali)",
     "category": "Vegetables",
+    "group": "Vegetables",
     "kcal": 16.0,
     "protein": 3.2,
     "carbs": 3.4,
@@ -978,6 +1046,7 @@
   {
     "name": "Ridge Gourd (Tori)",
     "category": "Vegetables",
+    "group": "Vegetables",
     "kcal": 20.0,
     "protein": 1.2,
     "carbs": 4.4,
@@ -992,6 +1061,7 @@
   {
     "name": "Colocasia (Arvi)",
     "category": "Vegetables",
+    "group": "Vegetables",
     "kcal": 112.0,
     "protein": 1.5,
     "carbs": 26.5,
@@ -1006,6 +1076,7 @@
   {
     "name": "Lotus Stem (Bhein)",
     "category": "Vegetables",
+    "group": "Vegetables",
     "kcal": 74.0,
     "protein": 2.6,
     "carbs": 17.0,
@@ -1020,6 +1091,7 @@
   {
     "name": "Raw Mango (Kairi)",
     "category": "Vegetables",
+    "group": "Vegetables",
     "kcal": 60.0,
     "protein": 0.8,
     "carbs": 15.0,
@@ -1036,6 +1108,7 @@
   {
     "name": "Raw Banana (Kela)",
     "category": "Vegetables",
+    "group": "Vegetables",
     "kcal": 89.0,
     "protein": 1.1,
     "carbs": 23.0,
@@ -1052,6 +1125,7 @@
   {
     "name": "Corn (Makai)",
     "category": "Vegetables",
+    "group": "Vegetables",
     "kcal": 96.0,
     "protein": 3.4,
     "carbs": 21.0,
@@ -1068,6 +1142,7 @@
   {
     "name": "Broccoli",
     "category": "Vegetables",
+    "group": "Vegetables",
     "kcal": 34.0,
     "protein": 2.8,
     "carbs": 6.6,
@@ -1082,6 +1157,7 @@
   {
     "name": "Beetroot (Chukandar)",
     "category": "Vegetables",
+    "group": "Vegetables",
     "kcal": 43.0,
     "protein": 1.6,
     "carbs": 9.6,
@@ -1096,6 +1172,7 @@
   {
     "name": "Dill (Soya)",
     "category": "Vegetables",
+    "group": "Fresh Herbs",
     "kcal": 43.0,
     "protein": 3.5,
     "carbs": 7.0,
@@ -1110,6 +1187,7 @@
   {
     "name": "Bathua",
     "category": "Vegetables",
+    "group": "Vegetables",
     "kcal": 43.0,
     "protein": 4.0,
     "carbs": 7.3,
@@ -1124,6 +1202,7 @@
   {
     "name": "Curry Leaves (Kari Patta)",
     "category": "Vegetables",
+    "group": "Fresh Herbs",
     "kcal": 108.0,
     "protein": 6.1,
     "carbs": 18.7,
@@ -1138,6 +1217,7 @@
   {
     "name": "Lettuce (Salad Patta)",
     "category": "Vegetables",
+    "group": "Vegetables",
     "kcal": 15.0,
     "protein": 1.4,
     "carbs": 2.9,
@@ -1152,6 +1232,7 @@
   {
     "name": "Yam (Jimikand)",
     "category": "Vegetables",
+    "group": "Vegetables",
     "kcal": 118.0,
     "protein": 1.5,
     "carbs": 28.0,
@@ -1166,6 +1247,7 @@
   {
     "name": "Mango",
     "category": "Fruits",
+    "group": "Fruits",
     "kcal": 60.0,
     "protein": 0.8,
     "carbs": 15.0,
@@ -1182,6 +1264,7 @@
   {
     "name": "Apple",
     "category": "Fruits",
+    "group": "Fruits",
     "kcal": 52.0,
     "protein": 0.3,
     "carbs": 14.0,
@@ -1196,6 +1279,7 @@
   {
     "name": "Banana",
     "category": "Fruits",
+    "group": "Fruits",
     "kcal": 89.0,
     "protein": 1.1,
     "carbs": 23.0,
@@ -1212,6 +1296,7 @@
   {
     "name": "Orange (Malta)",
     "category": "Fruits",
+    "group": "Fruits",
     "kcal": 47.0,
     "protein": 0.9,
     "carbs": 12.0,
@@ -1228,6 +1313,7 @@
   {
     "name": "Guava (Amrood)",
     "category": "Fruits",
+    "group": "Fruits",
     "kcal": 68.0,
     "protein": 2.6,
     "carbs": 14.0,
@@ -1242,6 +1328,7 @@
   {
     "name": "Pomegranate (Anar)",
     "category": "Fruits",
+    "group": "Fruits",
     "kcal": 83.0,
     "protein": 1.7,
     "carbs": 19.0,
@@ -1256,6 +1343,7 @@
   {
     "name": "Watermelon",
     "category": "Fruits",
+    "group": "Fruits",
     "kcal": 30.0,
     "protein": 0.6,
     "carbs": 7.6,
@@ -1270,6 +1358,7 @@
   {
     "name": "Grapes",
     "category": "Fruits",
+    "group": "Fruits",
     "kcal": 69.0,
     "protein": 0.7,
     "carbs": 18.0,
@@ -1284,6 +1373,7 @@
   {
     "name": "Dates (Khajoor)",
     "category": "Fruits",
+    "group": "Fruits",
     "kcal": 282.0,
     "protein": 2.5,
     "carbs": 75.0,
@@ -1298,6 +1388,7 @@
   {
     "name": "Lemon",
     "category": "Fruits",
+    "group": "Fruits",
     "kcal": 29.0,
     "protein": 1.1,
     "carbs": 9.0,
@@ -1314,6 +1405,7 @@
   {
     "name": "Pear (Nashpati)",
     "category": "Fruits",
+    "group": "Fruits",
     "kcal": 57.0,
     "protein": 0.4,
     "carbs": 15.0,
@@ -1328,6 +1420,7 @@
   {
     "name": "Peach (Aarhoo)",
     "category": "Fruits",
+    "group": "Fruits",
     "kcal": 39.0,
     "protein": 0.9,
     "carbs": 10.0,
@@ -1342,6 +1435,7 @@
   {
     "name": "Plum (Aloo Bukhara)",
     "category": "Fruits",
+    "group": "Fruits",
     "kcal": 46.0,
     "protein": 0.7,
     "carbs": 11.0,
@@ -1356,6 +1450,7 @@
   {
     "name": "Papaya",
     "category": "Fruits",
+    "group": "Fruits",
     "kcal": 43.0,
     "protein": 0.5,
     "carbs": 11.0,
@@ -1370,6 +1465,7 @@
   {
     "name": "Melon (Kharbooza)",
     "category": "Fruits",
+    "group": "Fruits",
     "kcal": 34.0,
     "protein": 0.8,
     "carbs": 8.0,
@@ -1384,6 +1480,7 @@
   {
     "name": "Apricot (Khubani)",
     "category": "Fruits",
+    "group": "Fruits",
     "kcal": 48.0,
     "protein": 1.4,
     "carbs": 11.0,
@@ -1398,6 +1495,7 @@
   {
     "name": "Fig (Anjeer)",
     "category": "Fruits",
+    "group": "Fruits",
     "kcal": 74.0,
     "protein": 0.8,
     "carbs": 19.0,
@@ -1412,6 +1510,7 @@
   {
     "name": "Strawberry",
     "category": "Fruits",
+    "group": "Fruits",
     "kcal": 32.0,
     "protein": 0.7,
     "carbs": 7.7,
@@ -1428,6 +1527,7 @@
   {
     "name": "Kinnow",
     "category": "Fruits",
+    "group": "Fruits",
     "kcal": 47.0,
     "protein": 0.9,
     "carbs": 11.8,
@@ -1444,6 +1544,7 @@
   {
     "name": "Sweet Lime (Mosambi)",
     "category": "Fruits",
+    "group": "Fruits",
     "kcal": 43.0,
     "protein": 0.8,
     "carbs": 9.3,
@@ -1460,6 +1561,7 @@
   {
     "name": "Lychee",
     "category": "Fruits",
+    "group": "Fruits",
     "kcal": 66.0,
     "protein": 0.8,
     "carbs": 16.5,
@@ -1474,6 +1576,7 @@
   {
     "name": "Jamun",
     "category": "Fruits",
+    "group": "Fruits",
     "kcal": 62.0,
     "protein": 0.7,
     "carbs": 14.0,
@@ -1488,6 +1591,7 @@
   {
     "name": "Mulberry (Shahtoot)",
     "category": "Fruits",
+    "group": "Fruits",
     "kcal": 43.0,
     "protein": 1.4,
     "carbs": 9.8,
@@ -1502,6 +1606,7 @@
   {
     "name": "Loquat (Lokat)",
     "category": "Fruits",
+    "group": "Fruits",
     "kcal": 47.0,
     "protein": 0.4,
     "carbs": 12.0,
@@ -1516,6 +1621,7 @@
   {
     "name": "Custard Apple (Sharifa)",
     "category": "Fruits",
+    "group": "Fruits",
     "kcal": 94.0,
     "protein": 2.1,
     "carbs": 23.6,
@@ -1530,6 +1636,7 @@
   {
     "name": "Persimmon (Amlok)",
     "category": "Fruits",
+    "group": "Fruits",
     "kcal": 70.0,
     "protein": 0.6,
     "carbs": 18.6,
@@ -1544,6 +1651,7 @@
   {
     "name": "Cherry",
     "category": "Fruits",
+    "group": "Fruits",
     "kcal": 63.0,
     "protein": 1.1,
     "carbs": 16.0,
@@ -1558,6 +1666,7 @@
   {
     "name": "Pineapple",
     "category": "Fruits",
+    "group": "Fruits",
     "kcal": 50.0,
     "protein": 0.5,
     "carbs": 13.0,
@@ -1572,6 +1681,7 @@
   {
     "name": "Chikoo",
     "category": "Fruits",
+    "group": "Fruits",
     "kcal": 83.0,
     "protein": 0.4,
     "carbs": 20.0,
@@ -1586,6 +1696,7 @@
   {
     "name": "Ber (Jujube)",
     "category": "Fruits",
+    "group": "Fruits",
     "kcal": 79.0,
     "protein": 1.2,
     "carbs": 20.0,
@@ -1600,6 +1711,7 @@
   {
     "name": "Amla (Gooseberry)",
     "category": "Fruits",
+    "group": "Fruits",
     "kcal": 44.0,
     "protein": 0.9,
     "carbs": 10.2,
@@ -1616,6 +1728,7 @@
   {
     "name": "Fresh Coconut",
     "category": "Fruits",
+    "group": "Fruits",
     "kcal": 354.0,
     "protein": 3.3,
     "carbs": 15.0,
@@ -1632,6 +1745,7 @@
   {
     "name": "Jackfruit (Kathal)",
     "category": "Fruits",
+    "group": "Fruits",
     "kcal": 95.0,
     "protein": 1.7,
     "carbs": 23.0,
@@ -1646,6 +1760,7 @@
   {
     "name": "Milk",
     "category": "Dairy",
+    "group": "Dairy & Eggs",
     "kcal": 61.0,
     "protein": 3.2,
     "carbs": 4.8,
@@ -1662,6 +1777,7 @@
   {
     "name": "Yogurt (Dahi)",
     "category": "Dairy",
+    "group": "Dairy & Eggs",
     "kcal": 61.0,
     "protein": 3.5,
     "carbs": 4.7,
@@ -1678,6 +1794,7 @@
   {
     "name": "Butter (Makhan)",
     "category": "Dairy",
+    "group": "Dairy & Eggs",
     "kcal": 717.0,
     "protein": 0.9,
     "carbs": 0.1,
@@ -1694,6 +1811,7 @@
   {
     "name": "Desi Ghee",
     "category": "Dairy",
+    "group": "Oils, Ghee & Sweeteners",
     "kcal": 900.0,
     "protein": 0.0,
     "carbs": 0.0,
@@ -1710,6 +1828,7 @@
   {
     "name": "Fresh Cream (Malai)",
     "category": "Dairy",
+    "group": "Dairy & Eggs",
     "kcal": 340.0,
     "protein": 2.0,
     "carbs": 3.0,
@@ -1726,6 +1845,7 @@
   {
     "name": "Paneer",
     "category": "Dairy",
+    "group": "Dairy & Eggs",
     "kcal": 265.0,
     "protein": 18.0,
     "carbs": 1.2,
@@ -1742,6 +1862,7 @@
   {
     "name": "Cheddar Cheese",
     "category": "Dairy",
+    "group": "Dairy & Eggs",
     "kcal": 403.0,
     "protein": 25.0,
     "carbs": 1.3,
@@ -1758,6 +1879,7 @@
   {
     "name": "Mozzarella Cheese",
     "category": "Dairy",
+    "group": "Dairy & Eggs",
     "kcal": 280.0,
     "protein": 28.0,
     "carbs": 3.0,
@@ -1774,6 +1896,7 @@
   {
     "name": "Khoya (Mawa)",
     "category": "Dairy",
+    "group": "Dairy & Eggs",
     "kcal": 421.0,
     "protein": 15.0,
     "carbs": 22.0,
@@ -1790,6 +1913,7 @@
   {
     "name": "Buttermilk (Chaas)",
     "category": "Dairy",
+    "group": "Dairy & Eggs",
     "kcal": 40.0,
     "protein": 3.0,
     "carbs": 5.0,
@@ -1806,6 +1930,7 @@
   {
     "name": "Condensed Milk",
     "category": "Dairy",
+    "group": "Dairy & Eggs",
     "kcal": 321.0,
     "protein": 8.0,
     "carbs": 54.0,
@@ -1822,6 +1947,7 @@
   {
     "name": "Milk Powder",
     "category": "Dairy",
+    "group": "Dairy & Eggs",
     "kcal": 496.0,
     "protein": 26.0,
     "carbs": 38.0,
@@ -1838,6 +1964,7 @@
   {
     "name": "Lassi (Sweet)",
     "category": "Dairy",
+    "group": "Dairy & Eggs",
     "kcal": 78.0,
     "protein": 2.5,
     "carbs": 12.0,
@@ -1854,6 +1981,7 @@
   {
     "name": "Rabri",
     "category": "Dairy",
+    "group": "Dairy & Eggs",
     "kcal": 215.0,
     "protein": 7.0,
     "carbs": 25.0,
@@ -1870,6 +1998,7 @@
   {
     "name": "Processed Cheese Slice",
     "category": "Dairy",
+    "group": "Dairy & Eggs",
     "kcal": 313.0,
     "protein": 16.0,
     "carbs": 4.0,
@@ -1886,6 +2015,7 @@
   {
     "name": "Clotted Cream (Qaimaq)",
     "category": "Dairy",
+    "group": "Dairy & Eggs",
     "kcal": 350.0,
     "protein": 3.0,
     "carbs": 4.0,
@@ -1902,6 +2032,7 @@
   {
     "name": "Whipped Cream",
     "category": "Dairy",
+    "group": "Dairy & Eggs",
     "kcal": 257.0,
     "protein": 2.1,
     "carbs": 12.5,
@@ -1918,6 +2049,7 @@
   {
     "name": "Hung Curd (Thick Dahi)",
     "category": "Dairy",
+    "group": "Dairy & Eggs",
     "kcal": 100.0,
     "protein": 9.0,
     "carbs": 4.0,
@@ -1934,6 +2066,7 @@
   {
     "name": "Basmati Rice",
     "category": "Grocery",
+    "group": "Grains & Flours",
     "kcal": 360.0,
     "protein": 7.1,
     "carbs": 79.0,
@@ -1948,6 +2081,7 @@
   {
     "name": "Wheat Flour (Atta)",
     "category": "Grocery",
+    "group": "Grains & Flours",
     "kcal": 340.0,
     "protein": 13.0,
     "carbs": 72.0,
@@ -1964,6 +2098,7 @@
   {
     "name": "Refined Flour (Maida)",
     "category": "Grocery",
+    "group": "Grains & Flours",
     "kcal": 364.0,
     "protein": 10.0,
     "carbs": 76.0,
@@ -1980,6 +2115,7 @@
   {
     "name": "Gram Flour (Besan)",
     "category": "Grocery",
+    "group": "Grains & Flours",
     "kcal": 387.0,
     "protein": 22.0,
     "carbs": 58.0,
@@ -1996,6 +2132,7 @@
   {
     "name": "White Sugar",
     "category": "Grocery",
+    "group": "Oils, Ghee & Sweeteners",
     "kcal": 387.0,
     "protein": 0.0,
     "carbs": 100.0,
@@ -2010,6 +2147,7 @@
   {
     "name": "Jaggery (Gur)",
     "category": "Grocery",
+    "group": "Oils, Ghee & Sweeteners",
     "kcal": 383.0,
     "protein": 0.4,
     "carbs": 98.0,
@@ -2024,6 +2162,7 @@
   {
     "name": "Salt",
     "category": "Grocery",
+    "group": "Spices & Masalas",
     "kcal": 0.0,
     "protein": 0.0,
     "carbs": 0.0,
@@ -2038,6 +2177,7 @@
   {
     "name": "Semolina (Suji)",
     "category": "Grocery",
+    "group": "Grains & Flours",
     "kcal": 360.0,
     "protein": 13.0,
     "carbs": 73.0,
@@ -2054,6 +2194,7 @@
   {
     "name": "Vermicelli (Seviyan)",
     "category": "Grocery",
+    "group": "Grains & Flours",
     "kcal": 350.0,
     "protein": 11.0,
     "carbs": 74.0,
@@ -2070,6 +2211,7 @@
   {
     "name": "Bread",
     "category": "Grocery",
+    "group": "Bakery & Baking",
     "kcal": 265.0,
     "protein": 9.0,
     "carbs": 49.0,
@@ -2084,8 +2226,26 @@
     ]
   },
   {
+    "name": "Burger Buns (Bun)",
+    "category": "Grocery",
+    "group": "Bakery & Baking",
+    "kcal": 279.0,
+    "protein": 9.7,
+    "carbs": 49.0,
+    "fat": 4.3,
+    "sweet": 2,
+    "salty": 2,
+    "sour": 0,
+    "spicy": 0,
+    "priority": 3,
+    "allergens": [
+      "gluten"
+    ]
+  },
+  {
     "name": "Noodles",
     "category": "Grocery",
+    "group": "Grains & Flours",
     "kcal": 360.0,
     "protein": 12.0,
     "carbs": 72.0,
@@ -2102,6 +2262,7 @@
   {
     "name": "Corn Flour",
     "category": "Grocery",
+    "group": "Grains & Flours",
     "kcal": 381.0,
     "protein": 6.0,
     "carbs": 91.0,
@@ -2118,6 +2279,7 @@
   {
     "name": "Honey",
     "category": "Grocery",
+    "group": "Oils, Ghee & Sweeteners",
     "kcal": 304.0,
     "protein": 0.3,
     "carbs": 82.0,
@@ -2132,6 +2294,7 @@
   {
     "name": "Tamarind (Imli)",
     "category": "Grocery",
+    "group": "Spices & Masalas",
     "kcal": 239.0,
     "protein": 2.8,
     "carbs": 62.0,
@@ -2146,6 +2309,7 @@
   {
     "name": "Vinegar",
     "category": "Grocery",
+    "group": "Sauces & Condiments",
     "kcal": 18.0,
     "protein": 0.0,
     "carbs": 0.04,
@@ -2160,6 +2324,7 @@
   {
     "name": "Soy Sauce",
     "category": "Grocery",
+    "group": "Sauces & Condiments",
     "kcal": 53.0,
     "protein": 8.0,
     "carbs": 5.0,
@@ -2177,6 +2342,7 @@
   {
     "name": "Tomato Ketchup",
     "category": "Grocery",
+    "group": "Sauces & Condiments",
     "kcal": 101.0,
     "protein": 1.0,
     "carbs": 27.0,
@@ -2193,6 +2359,7 @@
   {
     "name": "Rice Flour",
     "category": "Grocery",
+    "group": "Grains & Flours",
     "kcal": 366.0,
     "protein": 6.0,
     "carbs": 80.0,
@@ -2207,6 +2374,7 @@
   {
     "name": "Roasted Chana",
     "category": "Grocery",
+    "group": "Pulses & Lentils",
     "kcal": 364.0,
     "protein": 22.0,
     "carbs": 61.0,
@@ -2223,6 +2391,7 @@
   {
     "name": "Sella Basmati Rice",
     "category": "Grocery",
+    "group": "Grains & Flours",
     "kcal": 360.0,
     "protein": 7.1,
     "carbs": 79.0,
@@ -2237,6 +2406,7 @@
   {
     "name": "Cracked Wheat (Dalia)",
     "category": "Grocery",
+    "group": "Grains & Flours",
     "kcal": 342.0,
     "protein": 12.0,
     "carbs": 76.0,
@@ -2253,6 +2423,7 @@
   {
     "name": "Cornmeal (Makai Atta)",
     "category": "Grocery",
+    "group": "Grains & Flours",
     "kcal": 362.0,
     "protein": 8.0,
     "carbs": 77.0,
@@ -2269,6 +2440,7 @@
   {
     "name": "Millet Flour (Bajra Atta)",
     "category": "Grocery",
+    "group": "Grains & Flours",
     "kcal": 378.0,
     "protein": 11.0,
     "carbs": 73.0,
@@ -2283,6 +2455,7 @@
   {
     "name": "Barley (Jau)",
     "category": "Grocery",
+    "group": "Grains & Flours",
     "kcal": 354.0,
     "protein": 12.0,
     "carbs": 74.0,
@@ -2299,6 +2472,7 @@
   {
     "name": "Sago (Sabudana)",
     "category": "Grocery",
+    "group": "Grains & Flours",
     "kcal": 358.0,
     "protein": 0.2,
     "carbs": 88.0,
@@ -2313,6 +2487,7 @@
   {
     "name": "Macaroni",
     "category": "Grocery",
+    "group": "Grains & Flours",
     "kcal": 371.0,
     "protein": 13.0,
     "carbs": 75.0,
@@ -2329,6 +2504,7 @@
   {
     "name": "Spaghetti",
     "category": "Grocery",
+    "group": "Grains & Flours",
     "kcal": 371.0,
     "protein": 13.0,
     "carbs": 75.0,
@@ -2345,6 +2521,7 @@
   {
     "name": "Baking Powder",
     "category": "Grocery",
+    "group": "Bakery & Baking",
     "kcal": 53.0,
     "protein": 0.0,
     "carbs": 28.0,
@@ -2359,6 +2536,7 @@
   {
     "name": "Baking Soda",
     "category": "Grocery",
+    "group": "Bakery & Baking",
     "kcal": 0.0,
     "protein": 0.0,
     "carbs": 0.0,
@@ -2373,6 +2551,7 @@
   {
     "name": "Rose Water (Gulab Jal)",
     "category": "Grocery",
+    "group": "Sauces & Condiments",
     "kcal": 0.0,
     "protein": 0.0,
     "carbs": 0.0,
@@ -2387,6 +2566,7 @@
   {
     "name": "Kewra Water",
     "category": "Grocery",
+    "group": "Sauces & Condiments",
     "kcal": 0.0,
     "protein": 0.0,
     "carbs": 0.0,
@@ -2401,6 +2581,7 @@
   {
     "name": "Fried Onion (Birista)",
     "category": "Grocery",
+    "group": "Vegetables",
     "kcal": 520.0,
     "protein": 6.0,
     "carbs": 40.0,
@@ -2415,6 +2596,7 @@
   {
     "name": "Papad",
     "category": "Grocery",
+    "group": "Bakery & Baking",
     "kcal": 371.0,
     "protein": 25.0,
     "carbs": 60.0,
@@ -2431,6 +2613,7 @@
   {
     "name": "Samosa Pastry Sheets",
     "category": "Grocery",
+    "group": "Bakery & Baking",
     "kcal": 310.0,
     "protein": 9.0,
     "carbs": 62.0,
@@ -2447,6 +2630,7 @@
   {
     "name": "Tea Leaves (Chai Patti)",
     "category": "Grocery",
+    "group": "Spices & Masalas",
     "kcal": 1.0,
     "protein": 0.0,
     "carbs": 0.0,
@@ -2461,6 +2645,7 @@
   {
     "name": "Custard Powder",
     "category": "Grocery",
+    "group": "Bakery & Baking",
     "kcal": 354.0,
     "protein": 0.3,
     "carbs": 85.0,
@@ -2475,6 +2660,7 @@
   {
     "name": "Red Chilli Powder",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 282.0,
     "protein": 13.0,
     "carbs": 50.0,
@@ -2489,6 +2675,7 @@
   {
     "name": "Turmeric (Haldi)",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 312.0,
     "protein": 10.0,
     "carbs": 67.0,
@@ -2503,6 +2690,7 @@
   {
     "name": "Cumin (Zeera)",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 375.0,
     "protein": 18.0,
     "carbs": 44.0,
@@ -2517,6 +2705,7 @@
   {
     "name": "Coriander Powder",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 298.0,
     "protein": 12.0,
     "carbs": 55.0,
@@ -2531,6 +2720,7 @@
   {
     "name": "Garam Masala",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 379.0,
     "protein": 13.0,
     "carbs": 60.0,
@@ -2545,6 +2735,7 @@
   {
     "name": "Black Pepper",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 251.0,
     "protein": 10.0,
     "carbs": 64.0,
@@ -2559,6 +2750,7 @@
   {
     "name": "Green Cardamom (Elaichi)",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 311.0,
     "protein": 11.0,
     "carbs": 68.0,
@@ -2573,6 +2765,7 @@
   {
     "name": "Cinnamon (Dalchini)",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 247.0,
     "protein": 4.0,
     "carbs": 81.0,
@@ -2587,6 +2780,7 @@
   {
     "name": "Cloves (Laung)",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 274.0,
     "protein": 6.0,
     "carbs": 66.0,
@@ -2601,6 +2795,7 @@
   {
     "name": "Bay Leaf (Tez Patta)",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 313.0,
     "protein": 7.6,
     "carbs": 75.0,
@@ -2615,6 +2810,7 @@
   {
     "name": "Fennel Seeds (Saunf)",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 345.0,
     "protein": 16.0,
     "carbs": 52.0,
@@ -2629,6 +2825,7 @@
   {
     "name": "Mustard Seeds (Sarson)",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 508.0,
     "protein": 26.0,
     "carbs": 28.0,
@@ -2645,6 +2842,7 @@
   {
     "name": "Carom Seeds (Ajwain)",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 305.0,
     "protein": 16.0,
     "carbs": 43.0,
@@ -2659,6 +2857,7 @@
   {
     "name": "Fenugreek (Methi Dana)",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 323.0,
     "protein": 23.0,
     "carbs": 58.0,
@@ -2673,6 +2872,7 @@
   {
     "name": "Dried Mango Powder (Amchur)",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 300.0,
     "protein": 3.0,
     "carbs": 70.0,
@@ -2689,6 +2889,7 @@
   {
     "name": "Chaat Masala",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 250.0,
     "protein": 10.0,
     "carbs": 45.0,
@@ -2703,6 +2904,7 @@
   {
     "name": "Black Salt (Kala Namak)",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 0.0,
     "protein": 0.0,
     "carbs": 0.0,
@@ -2717,6 +2919,7 @@
   {
     "name": "Star Anise",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 337.0,
     "protein": 18.0,
     "carbs": 50.0,
@@ -2731,6 +2934,7 @@
   {
     "name": "Nutmeg (Jaifal)",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 525.0,
     "protein": 6.0,
     "carbs": 49.0,
@@ -2745,6 +2949,7 @@
   {
     "name": "Kashmiri Chilli Powder",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 282.0,
     "protein": 13.0,
     "carbs": 50.0,
@@ -2759,6 +2964,7 @@
   {
     "name": "Black Cardamom (Bari Elaichi)",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 300.0,
     "protein": 10.0,
     "carbs": 65.0,
@@ -2773,6 +2979,7 @@
   {
     "name": "Kasuri Methi",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 323.0,
     "protein": 23.0,
     "carbs": 58.0,
@@ -2787,6 +2994,7 @@
   {
     "name": "Whole Red Chilli (Sabut Lal Mirch)",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 318.0,
     "protein": 12.0,
     "carbs": 57.0,
@@ -2801,6 +3009,7 @@
   {
     "name": "Coriander Seeds (Sabut Dhania)",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 298.0,
     "protein": 12.0,
     "carbs": 55.0,
@@ -2815,6 +3024,7 @@
   {
     "name": "Nigella Seeds (Kalonji)",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 345.0,
     "protein": 17.0,
     "carbs": 49.0,
@@ -2829,6 +3039,7 @@
   {
     "name": "Black Cumin (Shahi Zeera)",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 375.0,
     "protein": 18.0,
     "carbs": 44.0,
@@ -2843,6 +3054,7 @@
   {
     "name": "Ginger Powder (Saunth)",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 335.0,
     "protein": 9.0,
     "carbs": 72.0,
@@ -2857,6 +3069,7 @@
   {
     "name": "Red Chilli Flakes (Kuti Lal Mirch)",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 318.0,
     "protein": 12.0,
     "carbs": 57.0,
@@ -2871,6 +3084,7 @@
   {
     "name": "White Pepper",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 296.0,
     "protein": 10.0,
     "carbs": 69.0,
@@ -2885,6 +3099,7 @@
   {
     "name": "Saffron (Zafran)",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 310.0,
     "protein": 11.0,
     "carbs": 65.0,
@@ -2899,6 +3114,7 @@
   {
     "name": "Biryani Masala",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 320.0,
     "protein": 11.0,
     "carbs": 52.0,
@@ -2913,6 +3129,7 @@
   {
     "name": "Tikka Masala",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 310.0,
     "protein": 11.0,
     "carbs": 50.0,
@@ -2927,6 +3144,7 @@
   {
     "name": "Karahi Masala",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 310.0,
     "protein": 11.0,
     "carbs": 50.0,
@@ -2941,6 +3159,7 @@
   {
     "name": "Nihari Masala",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 320.0,
     "protein": 11.0,
     "carbs": 52.0,
@@ -2955,6 +3174,7 @@
   {
     "name": "Korma Masala",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 320.0,
     "protein": 11.0,
     "carbs": 52.0,
@@ -2969,6 +3189,7 @@
   {
     "name": "Chana Masala",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 300.0,
     "protein": 11.0,
     "carbs": 50.0,
@@ -2983,6 +3204,7 @@
   {
     "name": "Pulao Masala",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 320.0,
     "protein": 11.0,
     "carbs": 52.0,
@@ -2997,6 +3219,7 @@
   {
     "name": "Pomegranate Seeds Dried (Anardana)",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 290.0,
     "protein": 3.0,
     "carbs": 65.0,
@@ -3011,6 +3234,7 @@
   {
     "name": "Poppy Seeds (Khashkhash)",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 525.0,
     "protein": 18.0,
     "carbs": 28.0,
@@ -3025,6 +3249,7 @@
   {
     "name": "Mace (Javitri)",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 475.0,
     "protein": 6.7,
     "carbs": 50.0,
@@ -3039,6 +3264,7 @@
   {
     "name": "Asafoetida (Hing)",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 297.0,
     "protein": 4.0,
     "carbs": 68.0,
@@ -3053,6 +3279,7 @@
   {
     "name": "Dried Mint (Pudina Khushk)",
     "category": "Spices",
+    "group": "Spices & Masalas",
     "kcal": 285.0,
     "protein": 20.0,
     "carbs": 52.0,
@@ -3067,6 +3294,7 @@
   {
     "name": "Masoor Dal",
     "category": "Pulses & Nuts",
+    "group": "Pulses & Lentils",
     "kcal": 352.0,
     "protein": 24.0,
     "carbs": 60.0,
@@ -3083,6 +3311,7 @@
   {
     "name": "Moong Dal",
     "category": "Pulses & Nuts",
+    "group": "Pulses & Lentils",
     "kcal": 347.0,
     "protein": 24.0,
     "carbs": 63.0,
@@ -3099,6 +3328,7 @@
   {
     "name": "Chana Dal",
     "category": "Pulses & Nuts",
+    "group": "Pulses & Lentils",
     "kcal": 364.0,
     "protein": 22.0,
     "carbs": 61.0,
@@ -3115,6 +3345,7 @@
   {
     "name": "Toor Dal",
     "category": "Pulses & Nuts",
+    "group": "Pulses & Lentils",
     "kcal": 343.0,
     "protein": 22.0,
     "carbs": 63.0,
@@ -3131,6 +3362,7 @@
   {
     "name": "Mash Dal",
     "category": "Pulses & Nuts",
+    "group": "Pulses & Lentils",
     "kcal": 341.0,
     "protein": 25.0,
     "carbs": 59.0,
@@ -3147,6 +3379,7 @@
   {
     "name": "Kabuli Chickpeas (Chana)",
     "category": "Pulses & Nuts",
+    "group": "Pulses & Lentils",
     "kcal": 364.0,
     "protein": 19.0,
     "carbs": 61.0,
@@ -3163,6 +3396,7 @@
   {
     "name": "Black Chickpeas (Kala Chana)",
     "category": "Pulses & Nuts",
+    "group": "Pulses & Lentils",
     "kcal": 378.0,
     "protein": 20.0,
     "carbs": 63.0,
@@ -3179,6 +3413,7 @@
   {
     "name": "Red Kidney Beans (Rajma)",
     "category": "Pulses & Nuts",
+    "group": "Pulses & Lentils",
     "kcal": 337.0,
     "protein": 23.0,
     "carbs": 60.0,
@@ -3195,6 +3430,7 @@
   {
     "name": "Black-eyed Beans (Lobia)",
     "category": "Pulses & Nuts",
+    "group": "Pulses & Lentils",
     "kcal": 336.0,
     "protein": 24.0,
     "carbs": 60.0,
@@ -3211,6 +3447,7 @@
   {
     "name": "Whole Moong",
     "category": "Pulses & Nuts",
+    "group": "Pulses & Lentils",
     "kcal": 347.0,
     "protein": 24.0,
     "carbs": 63.0,
@@ -3227,6 +3464,7 @@
   {
     "name": "Peanuts",
     "category": "Pulses & Nuts",
+    "group": "Nuts, Seeds & Dry Fruits",
     "kcal": 567.0,
     "protein": 26.0,
     "carbs": 16.0,
@@ -3243,6 +3481,7 @@
   {
     "name": "Almonds (Badam)",
     "category": "Pulses & Nuts",
+    "group": "Nuts, Seeds & Dry Fruits",
     "kcal": 579.0,
     "protein": 21.0,
     "carbs": 22.0,
@@ -3259,6 +3498,7 @@
   {
     "name": "Cashews (Kaju)",
     "category": "Pulses & Nuts",
+    "group": "Nuts, Seeds & Dry Fruits",
     "kcal": 553.0,
     "protein": 18.0,
     "carbs": 30.0,
@@ -3275,6 +3515,7 @@
   {
     "name": "Pistachios (Pista)",
     "category": "Pulses & Nuts",
+    "group": "Nuts, Seeds & Dry Fruits",
     "kcal": 560.0,
     "protein": 20.0,
     "carbs": 28.0,
@@ -3291,6 +3532,7 @@
   {
     "name": "Walnuts (Akhrot)",
     "category": "Pulses & Nuts",
+    "group": "Nuts, Seeds & Dry Fruits",
     "kcal": 654.0,
     "protein": 15.0,
     "carbs": 14.0,
@@ -3307,6 +3549,7 @@
   {
     "name": "Sesame Seeds (Til)",
     "category": "Pulses & Nuts",
+    "group": "Nuts, Seeds & Dry Fruits",
     "kcal": 573.0,
     "protein": 18.0,
     "carbs": 23.0,
@@ -3323,6 +3566,7 @@
   {
     "name": "Raisins (Kishmish)",
     "category": "Pulses & Nuts",
+    "group": "Nuts, Seeds & Dry Fruits",
     "kcal": 299.0,
     "protein": 3.0,
     "carbs": 79.0,
@@ -3337,6 +3581,7 @@
   {
     "name": "Desiccated Coconut",
     "category": "Pulses & Nuts",
+    "group": "Nuts, Seeds & Dry Fruits",
     "kcal": 660.0,
     "protein": 6.9,
     "carbs": 24.0,
@@ -3353,6 +3598,7 @@
   {
     "name": "Dried Green Peas (Sookha Matar)",
     "category": "Pulses & Nuts",
+    "group": "Pulses & Lentils",
     "kcal": 341.0,
     "protein": 24.5,
     "carbs": 60.0,
@@ -3369,6 +3615,7 @@
   {
     "name": "Black Gram Whole (Sabut Mash)",
     "category": "Pulses & Nuts",
+    "group": "Pulses & Lentils",
     "kcal": 341.0,
     "protein": 25.0,
     "carbs": 59.0,
@@ -3385,6 +3632,7 @@
   {
     "name": "Soya Chunks",
     "category": "Pulses & Nuts",
+    "group": "Pulses & Lentils",
     "kcal": 345.0,
     "protein": 52.0,
     "carbs": 33.0,
@@ -3402,6 +3650,7 @@
   {
     "name": "Pine Nuts (Chilgoza)",
     "category": "Pulses & Nuts",
+    "group": "Nuts, Seeds & Dry Fruits",
     "kcal": 673.0,
     "protein": 14.0,
     "carbs": 13.0,
@@ -3418,6 +3667,7 @@
   {
     "name": "Melon Seeds (Magaz)",
     "category": "Pulses & Nuts",
+    "group": "Nuts, Seeds & Dry Fruits",
     "kcal": 557.0,
     "protein": 28.0,
     "carbs": 15.0,
@@ -3432,6 +3682,7 @@
   {
     "name": "Pumpkin Seeds",
     "category": "Pulses & Nuts",
+    "group": "Nuts, Seeds & Dry Fruits",
     "kcal": 559.0,
     "protein": 30.0,
     "carbs": 11.0,
@@ -3446,6 +3697,7 @@
   {
     "name": "Sunflower Seeds",
     "category": "Pulses & Nuts",
+    "group": "Nuts, Seeds & Dry Fruits",
     "kcal": 584.0,
     "protein": 21.0,
     "carbs": 20.0,
@@ -3460,6 +3712,7 @@
   {
     "name": "Flaxseeds (Alsi)",
     "category": "Pulses & Nuts",
+    "group": "Nuts, Seeds & Dry Fruits",
     "kcal": 534.0,
     "protein": 18.0,
     "carbs": 29.0,
@@ -3474,6 +3727,7 @@
   {
     "name": "Dried Apricots",
     "category": "Pulses & Nuts",
+    "group": "Nuts, Seeds & Dry Fruits",
     "kcal": 241.0,
     "protein": 3.4,
     "carbs": 63.0,
@@ -3488,6 +3742,7 @@
   {
     "name": "Fox Nuts (Makhana)",
     "category": "Pulses & Nuts",
+    "group": "Nuts, Seeds & Dry Fruits",
     "kcal": 347.0,
     "protein": 9.7,
     "carbs": 77.0,
@@ -3502,6 +3757,7 @@
   {
     "name": "Cooking Oil",
     "category": "Oils & Sauces",
+    "group": "Oils, Ghee & Sweeteners",
     "kcal": 884.0,
     "protein": 0.0,
     "carbs": 0.0,
@@ -3516,6 +3772,7 @@
   {
     "name": "Mustard Oil",
     "category": "Oils & Sauces",
+    "group": "Oils, Ghee & Sweeteners",
     "kcal": 884.0,
     "protein": 0.0,
     "carbs": 0.0,
@@ -3532,6 +3789,7 @@
   {
     "name": "Mayonnaise",
     "category": "Oils & Sauces",
+    "group": "Sauces & Condiments",
     "kcal": 680.0,
     "protein": 1.0,
     "carbs": 0.6,
@@ -3548,6 +3806,7 @@
   {
     "name": "Mint Chutney",
     "category": "Oils & Sauces",
+    "group": "Sauces & Condiments",
     "kcal": 50.0,
     "protein": 2.0,
     "carbs": 8.0,
@@ -3562,6 +3821,7 @@
   {
     "name": "Tamarind Chutney",
     "category": "Oils & Sauces",
+    "group": "Sauces & Condiments",
     "kcal": 120.0,
     "protein": 1.0,
     "carbs": 30.0,
@@ -3576,6 +3836,7 @@
   {
     "name": "Chilli Garlic Sauce",
     "category": "Oils & Sauces",
+    "group": "Sauces & Condiments",
     "kcal": 70.0,
     "protein": 2.0,
     "carbs": 15.0,
@@ -3590,6 +3851,7 @@
   {
     "name": "Tomato Paste",
     "category": "Oils & Sauces",
+    "group": "Sauces & Condiments",
     "kcal": 82.0,
     "protein": 4.3,
     "carbs": 19.0,
@@ -3606,6 +3868,7 @@
   {
     "name": "Coconut Milk",
     "category": "Oils & Sauces",
+    "group": "Sauces & Condiments",
     "kcal": 230.0,
     "protein": 2.3,
     "carbs": 6.0,
@@ -3622,6 +3885,7 @@
   {
     "name": "Mixed Pickle (Achar)",
     "category": "Oils & Sauces",
+    "group": "Sauces & Condiments",
     "kcal": 100.0,
     "protein": 2.0,
     "carbs": 10.0,
@@ -3638,6 +3902,7 @@
   {
     "name": "Ginger Garlic Paste",
     "category": "Oils & Sauces",
+    "group": "Sauces & Condiments",
     "kcal": 70.0,
     "protein": 2.0,
     "carbs": 10.0,
@@ -3652,6 +3917,7 @@
   {
     "name": "Banaspati Ghee",
     "category": "Oils & Sauces",
+    "group": "Oils, Ghee & Sweeteners",
     "kcal": 884.0,
     "protein": 0.0,
     "carbs": 0.0,
@@ -3666,6 +3932,7 @@
   {
     "name": "Sunflower Oil",
     "category": "Oils & Sauces",
+    "group": "Oils, Ghee & Sweeteners",
     "kcal": 884.0,
     "protein": 0.0,
     "carbs": 0.0,
@@ -3680,6 +3947,7 @@
   {
     "name": "Corn Oil",
     "category": "Oils & Sauces",
+    "group": "Oils, Ghee & Sweeteners",
     "kcal": 884.0,
     "protein": 0.0,
     "carbs": 0.0,
@@ -3696,6 +3964,7 @@
   {
     "name": "Sesame Oil (Til ka Tel)",
     "category": "Oils & Sauces",
+    "group": "Oils, Ghee & Sweeteners",
     "kcal": 884.0,
     "protein": 0.0,
     "carbs": 0.0,
@@ -3712,6 +3981,7 @@
   {
     "name": "Garlic Paste",
     "category": "Oils & Sauces",
+    "group": "Sauces & Condiments",
     "kcal": 100.0,
     "protein": 4.0,
     "carbs": 18.0,
@@ -3726,6 +3996,7 @@
   {
     "name": "Ginger Paste",
     "category": "Oils & Sauces",
+    "group": "Sauces & Condiments",
     "kcal": 60.0,
     "protein": 2.0,
     "carbs": 13.0,
@@ -3740,6 +4011,7 @@
   {
     "name": "Mango Pickle (Aam ka Achar)",
     "category": "Oils & Sauces",
+    "group": "Sauces & Condiments",
     "kcal": 180.0,
     "protein": 1.0,
     "carbs": 15.0,
@@ -3757,6 +4029,7 @@
   {
     "name": "Lemon Pickle (Nimbu Achar)",
     "category": "Oils & Sauces",
+    "group": "Sauces & Condiments",
     "kcal": 150.0,
     "protein": 1.0,
     "carbs": 14.0,
@@ -3774,6 +4047,7 @@
   {
     "name": "Green Chilli Pickle (Hari Mirch Achar)",
     "category": "Oils & Sauces",
+    "group": "Sauces & Condiments",
     "kcal": 140.0,
     "protein": 2.0,
     "carbs": 8.0,
@@ -3790,6 +4064,7 @@
   {
     "name": "Garlic Sauce",
     "category": "Oils & Sauces",
+    "group": "Sauces & Condiments",
     "kcal": 300.0,
     "protein": 1.0,
     "carbs": 12.0,
@@ -3804,6 +4079,7 @@
   {
     "name": "Chilli Sauce",
     "category": "Oils & Sauces",
+    "group": "Sauces & Condiments",
     "kcal": 90.0,
     "protein": 1.5,
     "carbs": 20.0,
@@ -3818,6 +4094,7 @@
   {
     "name": "Rooh Afza Syrup",
     "category": "Oils & Sauces",
+    "group": "Sauces & Condiments",
     "kcal": 270.0,
     "protein": 0.0,
     "carbs": 67.0,

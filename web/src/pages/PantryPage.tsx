@@ -16,7 +16,9 @@ import {
 const DEFAULT_GRAMS = '250';
 export const LOW_STOCK_G = 100;
 // Pantry staples never drive a recipe search on their own.
-const MAIN_CATEGORIES = ['Meat', 'Vegetables', 'Pulses & Nuts', 'Dairy', 'Grocery', 'Fruits'];
+// Display categories first; the old names still work for a database that hasn't run migration 0006 yet.
+const MAIN_CATEGORIES = ['Meat & Poultry', 'Fish & Seafood', 'Meat', 'Vegetables', 'Pulses & Lentils', 'Pulses & Nuts', 'Dairy & Eggs', 'Dairy',
+  'Grains & Flours', 'Grocery', 'Fruits'];
 export const stockStatus = (grams: number) => (grams <= 0 ? 'out' : grams < LOW_STOCK_G ? 'low' : 'in');
 
 function QuantityEditor({ grams, onSave, label }: { grams: number; onSave: (g: number) => Promise<void>; label: string }) {

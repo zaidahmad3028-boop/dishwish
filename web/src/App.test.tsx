@@ -35,7 +35,7 @@ describe('routing', () => {
     setSession(fakeSession('Ayesha'));
     renderAt('/kitchen');
     expect(await screen.findByRole('heading', { name: 'Your Kitchen' })).toBeInTheDocument();
-    expect(screen.getByText(/Salaam, Ayesha!/)).toBeInTheDocument();
+    expect(screen.getByText('Turn your ingredients into amazing recipes.')).toBeInTheDocument();
     const [sidebar] = screen.getAllByRole('navigation', { name: 'Main' });
     for (const label of ['Kitchen', 'Ingredient Selection', 'Recommendations', 'My Recipes', 'My Pantry', 'Profile', 'Settings']) {
       expect(within(sidebar).getByRole('link', { name: label })).toBeInTheDocument();

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useAuth } from '../auth/AuthProvider';
 import { loadCatalog, loadPantry, setPantryItem, type Ingredient, type PantryItem } from './pantryApi';
 import type { Preferences } from './preferences';
 import { loadPreferences } from './preferencesApi';
@@ -10,6 +11,15 @@ export function useKitchenData(userId: string | undefined) {
   const [pantry, setPantry] = useState<PantryItem[]>([]);
   const [prefs, setPrefs] = useState<Preferences | null>(null);
   const [error, setError] = useState('');
+
+  // Signed out (once the session check has finished): the public catalog alone, so pages still render.
+  const { loading } = useAuth();
+  useEffect(() => {
+    if (userId || loading) return;
+    let live = true;
+    loadCatalog().then((c) => { if (live) setCatalog(c); }).catch((e: Error) => { if (live) { setCatalog([]); setError(e.message); } });
+    return () => { live = false; };
+  }, [userId, loading]);
 
   useEffect(() => {
     if (!userId) return;

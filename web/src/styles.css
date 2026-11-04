@@ -2,22 +2,23 @@
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Fraunces", ui-serif, Georgia, serif;
-  --color-cream: #fff8ef;
-  --color-ink: #2b1d1a;
-  --color-crimson: #c81e3a;
+  --font-display: "Playfair Display", ui-serif, Georgia, serif;
+  --color-cream: #fff4ee;
+  --color-ink: #1f1412;
+  --color-crimson: #d9122a;
   --color-ember: #f97316;
   --color-mint: #2fbf8f;
   /* Design tokens (reference: warm cream, crimson-to-orange brand, soft glass cards). */
   --color-crimson-deep: #a50f2a;
   --color-peach: #fde8e1;
+  --color-gold: #f59e0b;
   --color-ivory: #fffaf5;
   --color-success: #16a34a;
   --color-warning: #d97706;
   --color-danger: #dc2626;
-  --radius-card: 22px;
+  --radius-card: 24px;
   --radius-control: 14px;
-  --shadow-card: 0 10px 30px -12px rgb(150 40 30 / 0.22), 0 2px 6px -2px rgb(150 40 30 / 0.08);
+  --shadow-card: 0 8px 26px -12px rgb(190 70 50 / 0.22), 0 1px 3px rgb(190 70 50 / 0.05);
   --shadow-lift: 0 18px 40px -14px rgb(150 40 30 / 0.3);
 }
 
@@ -34,6 +35,11 @@
 body {
   margin: 0;
   min-width: 320px;
+}
+
+/* Desktop sizes follow the 1672px reference designs: every rem shrinks in proportion on smaller laptops. */
+@media (min-width: 1024px) {
+  :root { font-size: clamp(13px, 0.957vw, 16px); }
 }
 
 @layer components {
@@ -56,7 +62,7 @@ body {
     padding: 0.8rem 1.5rem;
     font-weight: 700;
     color: white;
-    background-image: linear-gradient(135deg, var(--color-crimson), var(--color-ember));
+    background-image: linear-gradient(90deg, #dc1029 0%, #ea2526 58%, var(--color-ember) 100%);
     box-shadow: 0 10px 24px -10px rgb(200 30 58 / 0.7);
     transition: transform 150ms ease, box-shadow 150ms ease, opacity 150ms ease;
   }
@@ -106,8 +112,8 @@ body {
 
   /* Solid white card used across the dashboard pages. */
   .card {
-    background: rgb(255 255 255 / 0.82);
-    border: 1px solid rgb(255 255 255 / 0.9);
+    background: rgb(255 255 255 / 0.6);
+    border: 1px solid rgb(255 255 255 / 0.85);
     border-radius: var(--radius-card);
     box-shadow: var(--shadow-card);
     backdrop-filter: blur(14px);
@@ -118,9 +124,9 @@ body {
     align-items: center;
     gap: 0.6rem;
     font-family: var(--font-display);
-    font-size: 1.2rem;
+    font-size: 1.6rem;
     font-weight: 800;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.015em;
   }
   .btn-sm {
     display: inline-flex;
@@ -134,7 +140,7 @@ body {
     transition: background 150ms ease, transform 150ms ease;
   }
   .btn-sm:disabled { opacity: 0.5; cursor: not-allowed; }
-  .btn-red { color: white; background-image: linear-gradient(135deg, var(--color-crimson), var(--color-ember)); }
+  .btn-red { color: white; background-image: linear-gradient(90deg, #dc1029 0%, #ea2526 58%, var(--color-ember) 100%); }
   .btn-red:hover:not(:disabled) { transform: translateY(-1px); }
   .btn-outline { color: var(--color-crimson); background: white; border: 1px solid rgb(200 30 58 / 0.25); }
   .btn-outline:hover:not(:disabled) { background: #fff1f2; }
@@ -158,16 +164,17 @@ body {
     border-radius: 9999px;
     border: 1px solid rgb(43 29 26 / 0.12);
     background: white;
-    padding: 0.4rem 0.9rem;
-    font-size: 0.85rem;
-    font-weight: 600;
+    padding: 0.5rem 1.15rem;
+    font-size: 1rem;
+    font-weight: 500;
+    box-shadow: 0 1px 3px rgb(150 60 40 / 0.1);
     transition: background 150ms ease, border-color 150ms ease;
   }
   .pill:hover:not(:disabled) { border-color: rgb(200 30 58 / 0.35); }
   .pill[aria-pressed="true"], .pill[aria-selected="true"] {
     color: white;
     border-color: transparent;
-    background-image: linear-gradient(135deg, var(--color-crimson), var(--color-ember));
+    background-image: linear-gradient(90deg, #dc1029 0%, #ea2526 58%, var(--color-ember) 100%);
   }
   .badge {
     display: inline-flex;
@@ -200,22 +207,26 @@ body {
   .nav-link {
     display: flex;
     align-items: center;
-    gap: 0.85rem;
-    border-radius: 16px;
-    padding: 0.7rem 1rem;
-    font-weight: 600;
-    color: #292524;
+    gap: 0.95rem;
+    white-space: nowrap;
+    min-height: 3.25rem;
+    border-radius: 18px;
+    padding: 0.5rem 0.9rem;
+    font-size: 1.14rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: #1f1412;
     transition: background 150ms ease, color 150ms ease;
   }
   .nav-link:hover { background: rgb(255 255 255 / 0.75); }
   .nav-link.active {
     color: white;
-    background-image: linear-gradient(135deg, var(--color-crimson), var(--color-ember));
+    background-image: linear-gradient(90deg, #dc1029 0%, #ea2526 58%, var(--color-ember) 100%);
     box-shadow: 0 10px 24px -10px rgb(200 30 58 / 0.7);
   }
 
   .chip-selected {
-    background-image: linear-gradient(135deg, var(--color-crimson), var(--color-ember));
+    background-image: linear-gradient(90deg, #dc1029 0%, #ea2526 58%, var(--color-ember) 100%);
     color: white;
     border-color: transparent;
   }

@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { BarChart3, BookOpen, ChefHat, ChevronDown, Home, Leaf, LogOut, Megaphone, Menu, MessageSquare, Refrigerator, Settings,
+import { BarChart3, Bell, BookOpen, ChefHat, ChevronDown, Home, Leaf, LogOut, Megaphone, Menu, MessageSquare, Refrigerator, Settings,
   Sparkles, UserRound, Users, Utensils, X, type LucideIcon } from 'lucide-react';
 import { signOut, useAuth } from '../auth/AuthProvider';
 import { useAccount } from '../auth/AccountProvider';
 import { applyTextSize, loadAnnouncement, loadExtraPrefs } from '../lib/accountApi';
-import { Avatar } from './ui';
+import { Avatar, ChefHatMark } from './ui';
 
 export interface NavItem { to: string; label: string; icon: LucideIcon; end?: boolean }
 
@@ -34,19 +34,45 @@ export function displayName(user: { email?: string; user_metadata?: Record<strin
   return (typeof username === 'string' && username.trim()) || user?.email?.split('@')[0] || 'Cook';
 }
 
+// The profile photo URL (uploaded to R2 from the Profile page), if any.
+export function avatarUrl(user: { user_metadata?: Record<string, unknown> } | undefined): string | null {
+  const url = user?.user_metadata?.avatar_url;
+  return typeof url === 'string' && url.startsWith('https://') ? url : null;
+}
+
 function Brand({ admin }: { admin: boolean }) {
   return (
     <Link to={admin ? '/admin' : '/kitchen'} className="flex flex-col items-center text-center">
-      <span className="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-crimson to-ember text-white shadow-lg shadow-rose-900/20">
-        <ChefHat size={30} aria-hidden="true" />
-      </span>
-      <span className="mt-2 font-display text-2xl font-extrabold tracking-tight">Dish-Wish</span>
-      <span className="text-xs font-medium text-stone-600">{admin ? 'Admin Panel' : 'Dream Recipe Creation'}</span>
+      <ChefHatMark className="h-14 w-16" />
+      <span className="mt-1 font-display text-[1.9rem] font-extrabold leading-tight tracking-tight">Dish-Wish</span>
+      <span className="text-[0.95rem] text-stone-700">{admin ? 'Admin Panel' : 'Dream Recipe Creation'}</span>
     </Link>
   );
 }
 
-function UserCard({ name, admin, onLogout }: { name: string; admin: boolean; onLogout: () => void }) {
+// Bell and avatar, top right of every page. The number counts real notices only (the admin announcement).
+function TopActions({ name, photo, admin, announcement }: { name: string; photo: string | null; admin: boolean; announcement: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="absolute right-5 top-5 z-20 hidden items-center gap-6 lg:flex">
+      <div className="relative">
+        <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-label={announcement ? 'Notifications, 1 new' : 'Notifications'}
+          className="relative grid h-12 w-12 place-items-center rounded-full bg-white/70 text-ink shadow-sm transition hover:bg-white">
+          <Bell size={26} aria-hidden="true" />
+          {announcement && <span className="absolute right-1 top-0.5 grid h-[1.15rem] w-[1.15rem] place-items-center rounded-full bg-crimson text-[0.7rem] font-bold text-white">1</span>}
+        </button>
+        {open && (
+          <div role="status" className="card absolute right-0 top-full mt-2 w-72 p-4 text-sm">
+            {announcement || 'No new notifications.'}
+          </div>
+        )}
+      </div>
+      <Link to={admin ? '/admin/settings' : '/profile'} aria-label="Your profile"><Avatar name={name} size={54} src={photo} /></Link>
+    </div>
+  );
+}
+
+function UserCard({ name, photo, admin, onLogout }: { name: string; photo: string | null; admin: boolean; onLogout: () => void }) {
   const [open, setOpen] = useState(false);
   const { account } = useAccount();
   return (
@@ -62,11 +88,11 @@ function UserCard({ name, admin, onLogout }: { name: string; admin: boolean; onL
         </div>
       )}
       <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-haspopup="menu"
-        className="card flex w-full items-center gap-3 p-3 text-left">
-        <Avatar name={name} />
+        className="card flex w-full items-center gap-4 px-3.5 py-3.5 text-left">
+        <Avatar name={name} src={photo} size={52} />
         <span className="min-w-0 flex-1">
-          <span className="block truncate font-semibold">{name}</span>
-          <span className="block text-xs text-stone-500">{admin ? 'Super Admin' : 'Registered User'}</span>
+          <span className="block truncate text-lg font-semibold">{name}</span>
+          <span className="block text-sm text-stone-600">{admin ? 'Super Admin' : 'Registered User'}</span>
         </span>
         <ChevronDown size={18} className={`transition ${open ? 'rotate-180' : ''}`} aria-hidden="true" />
       </button>
@@ -82,6 +108,7 @@ export function DashboardShell({ nav, admin = false }: { nav: NavItem[]; admin?:
   const [drawer, setDrawer] = useState(false);
   const [announcement, setAnnouncement] = useState('');
   const name = displayName(session?.user);
+  const photo = avatarUrl(session?.user);
   const userId = session?.user.id;
 
   useEffect(() => { setDrawer(false); }, [location.pathname]);
@@ -97,30 +124,31 @@ export function DashboardShell({ nav, admin = false }: { nav: NavItem[]; admin?:
   };
 
   const sidebar = (
-    <div className="flex h-full flex-col gap-6 overflow-y-auto p-4">
+    <div className="flex h-full flex-col gap-7 overflow-y-auto px-[0.95rem] pb-5 pt-5">
       <Brand admin={admin} />
       <nav aria-label="Main" className="flex-1">
-        <ul className="flex flex-col gap-1.5">
+        <ul className="flex flex-col gap-3">
           {nav.map(({ to, label, icon: Icon, end }) => (
             <li key={to}>
               <NavLink to={to} end={end} className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-                <Icon size={21} aria-hidden="true" />{label}
+                <Icon size={27} strokeWidth={1.7} className="shrink-0" aria-hidden="true" />{label}
               </NavLink>
             </li>
           ))}
         </ul>
       </nav>
-      <UserCard name={name} admin={admin} onLogout={logout} />
+      <UserCard name={name} photo={photo} admin={admin} onLogout={logout} />
     </div>
   );
 
   return (
-    <div className="min-h-dvh lg:pl-72">
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-72 border-r border-white/70 bg-white/45 backdrop-blur-xl lg:block">{sidebar}</aside>
+    <div className="relative min-h-dvh lg:pl-[17rem]">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-[17rem] rounded-r-[1.75rem] border-r border-white/70 bg-white/40 backdrop-blur-md lg:block">{sidebar}</aside>
+      <TopActions name={name} photo={photo} admin={admin} announcement={announcement} />
       <div className="sticky top-0 z-30 flex items-center justify-between border-b border-white/70 bg-white/80 px-4 py-2 backdrop-blur lg:hidden">
         <button type="button" className="icon-btn" onClick={() => setDrawer(true)} aria-label="Open menu"><Menu size={22} /></button>
         <span className="font-display text-lg font-extrabold">Dish-Wish</span>
-        <Link to={admin ? '/admin/settings' : '/profile'} aria-label="Your profile"><Avatar name={name} size={34} /></Link>
+        <Link to={admin ? '/admin/settings' : '/profile'} aria-label="Your profile"><Avatar name={name} size={34} src={photo} /></Link>
       </div>
       {drawer && (
         <div className="fixed inset-0 z-40 lg:hidden">
@@ -131,7 +159,7 @@ export function DashboardShell({ nav, admin = false }: { nav: NavItem[]; admin?:
           </aside>
         </div>
       )}
-      <main className="mx-auto max-w-[1400px] px-4 pb-16 pt-6 sm:px-6 lg:px-8">
+      <main className="px-4 pb-10 pt-5 sm:px-6 lg:pl-[1.3rem] lg:pr-[1.2rem] lg:pt-4">
         {announcement && <p role="status" className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-semibold text-amber-900">{announcement}</p>}
         <Outlet />
       </main>

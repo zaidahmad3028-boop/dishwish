@@ -1,0 +1,1377 @@
+{
+ "recipes/beef-nihari": {
+  "name": "Beef Nihari",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Beef Nihari, made by Saleha Atif, Pakistan.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Beef_Nihari,_made_by_Saleha_Atif,_Pakistan.jpg",
+    "author": "Satcreak",
+    "license": "CC BY-SA 4.0",
+    "size": "3120x4160"
+   }
+  ]
+ },
+ "recipes/aloo-gobi": {
+  "name": "Aloo Gobi",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Aloo Gobi Matar (49653225183).jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Aloo_Gobi_Matar_(49653225183).jpg",
+    "author": "やましこ",
+    "license": "CC BY-SA 2.0",
+    "size": "8212x5475"
+   },
+   {
+    "title": "File:Vegan Aloo Gobi (6971515438).jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Vegan_Aloo_Gobi_(6971515438).jpg",
+    "author": "Jennifer from Vancouver, Canada",
+    "license": "CC BY 2.0",
+    "size": "1800x1200"
+   },
+   {
+    "title": "File:Aloo gobi.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Aloo_gobi.jpg",
+    "author": "",
+    "license": "CC BY-SA 2.0",
+    "size": "1024x683"
+   },
+   {
+    "title": "File:Anchovies with chili, garlic, carrots, olive oil, and black pepper on rotini, plus aloo gobi paratha and hot Indian pickled lime - Massachusetts.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Anchovies_with_chili,_garlic,_carrots,_olive_oil,_and_black_pepper_on_rotini,_plus_aloo_gobi_paratha_and_hot_Indian_pickled_lime_-_Massachusetts.jpg",
+    "author": "Daderot",
+    "license": "CC0",
+    "size": "2914x2914"
+   },
+   {
+    "title": "File:Aloo gobi paratha - Massachusetts.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Aloo_gobi_paratha_-_Massachusetts.jpg",
+    "author": "Daderot",
+    "license": "CC0",
+    "size": "2897x2897"
+   },
+   {
+    "title": "File:Tapenade and green olives on aloo gobi paratha - Massachusetts.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Tapenade_and_green_olives_on_aloo_gobi_paratha_-_Massachusetts.jpg",
+    "author": "Daderot",
+    "license": "CC0",
+    "size": "2617x2618"
+   }
+  ]
+ },
+ "recipes/chicken-tikka": {
+  "name": "Pan Chicken Tikka",
+  "chosen": 2,
+  "candidates": [
+   {
+    "title": "File:Chicken tikka masala (cropped).jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chicken_tikka_masala_(cropped).jpg",
+    "author": "Michael Hays",
+    "license": "CC BY 2.0",
+    "size": "2592x2684"
+   },
+   {
+    "title": "File:Chicken Tikka in oven.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chicken_Tikka_in_oven.jpg",
+    "author": "Pankaj40sahu",
+    "license": "CC BY-SA 4.0",
+    "size": "2610x1815"
+   },
+   {
+    "title": "File:Chicken Tikka Masala - Mohammed - Spice Of Life.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chicken_Tikka_Masala_-_Mohammed_-_Spice_Of_Life.jpg",
+    "author": "Andy Li",
+    "license": "CC0",
+    "size": "4032x3024"
+   },
+   {
+    "title": "File:Chicken Tikka Masala and Kadai Paneer.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chicken_Tikka_Masala_and_Kadai_Paneer.jpg",
+    "author": "Oleg Yunakov",
+    "license": "CC BY-SA 4.0",
+    "size": "5712x4284"
+   },
+   {
+    "title": "File:Tikka Tip Yip Chicken (52930428549).jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Tikka_Tip_Yip_Chicken_(52930428549).jpg",
+    "author": "Steven Miller",
+    "license": "CC BY 2.0",
+    "size": "4032x3024"
+   },
+   {
+    "title": "File:Paneer Tikka and Roasted Chicken.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Paneer_Tikka_and_Roasted_Chicken.jpg",
+    "author": "Vrinda Arora",
+    "license": "CC BY-SA 4.0",
+    "size": "1652x1413"
+   }
+  ]
+ },
+ "recipes/chicken-handi": {
+  "name": "Chicken Handi",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Punjabi Chicken Handi 1.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Punjabi_Chicken_Handi_1.JPG",
+    "author": "Miansari66",
+    "license": "CC0",
+    "size": "2816x2112"
+   },
+   {
+    "title": "File:Chicken Handi.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Chicken_Handi.JPG",
+    "author": "Miansari66",
+    "license": "CC0",
+    "size": "2816x2112"
+   },
+   {
+    "title": "File:Punjabi Chicken Handi.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Punjabi_Chicken_Handi.JPG",
+    "author": "Miansari66",
+    "license": "CC0",
+    "size": "2816x2112"
+   },
+   {
+    "title": "File:Handi-chicken-recipe.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Handi-chicken-recipe.jpg",
+    "author": "Vivekpat30",
+    "license": "CC BY-SA 4.0",
+    "size": "1000x667"
+   },
+   {
+    "title": "File:Handi-chicken-Indian-dum-chicken-curry-recipe.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Handi-chicken-Indian-dum-chicken-curry-recipe.jpg",
+    "author": "Vivekpat30",
+    "license": "CC BY-SA 4.0",
+    "size": "1000x667"
+   },
+   {
+    "title": "File:2020-07-01 21 50 40 An individual Nabisco Original Flavor Chicken in a Biskit Baked Snack Cracker in the Franklin Farm section of Oak Hill, Fairfax County, Virginia.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:2020-07-01_21_50_40_An_individual_Nabisco_Original_Flavor_Chicken_in_a_Biskit_Baked_Snack_Cracker_in_the_Franklin_Farm_section_of_Oak_Hill,_Fairfax_County,_Virginia.jpg",
+    "author": "Famartin",
+    "license": "CC BY-SA 4.0",
+    "size": "4032x3024"
+   }
+  ]
+ },
+ "recipes/yakhni-pulao": {
+  "name": "Chicken Yakhni Pulao",
+  "chosen": 2,
+  "candidates": [
+   {
+    "title": "File:Jiroufan.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Jiroufan.jpg",
+    "author": "Takoradee",
+    "license": "CC BY-SA 3.0",
+    "size": "3389x2818"
+   },
+   {
+    "title": "File:Chicken Yakhni Pulao.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chicken_Yakhni_Pulao.jpg",
+    "author": "Vilalali",
+    "license": "CC BY-SA 4.0",
+    "size": "2995x3134"
+   },
+   {
+    "title": "File:Прилепска јанија - лута јавнија (cropped).jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:%D0%9F%D1%80%D0%B8%D0%BB%D0%B5%D0%BF%D1%81%D0%BA%D0%B0_%D1%98%D0%B0%D0%BD%D0%B8%D1%98%D0%B0_-_%D0%BB%D1%83%D1%82%D0%B0_%D1%98%D0%B0%D0%B2%D0%BD%D0%B8%D1%98%D0%B0_(cropped).jpg",
+    "author": "АннаМариа (original image); derived version by Off-shell",
+    "license": "CC BY 4.0",
+    "size": "2337x2771"
+   },
+   {
+    "title": "File:Punjabi Yakhni Pulao.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Punjabi_Yakhni_Pulao.jpg",
+    "author": "Miansari66",
+    "license": "CC0",
+    "size": "4038x2974"
+   },
+   {
+    "title": "File:Andhra Chicken Pulao.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Andhra_Chicken_Pulao.jpg",
+    "author": "Vis M",
+    "license": "CC BY-SA 4.0",
+    "size": "9248x6936"
+   },
+   {
+    "title": "File:Chicken Pulao.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chicken_Pulao.jpg",
+    "author": "Sumit Surai",
+    "license": "CC BY-SA 4.0",
+    "size": "4288x3216"
+   }
+  ]
+ },
+ "recipes/mutton-karahi": {
+  "name": "Mutton Karahi",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Punjabi Chicken Karahi.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Punjabi_Chicken_Karahi.JPG",
+    "author": "Miansari66",
+    "license": "Public domain",
+    "size": "2767x1560"
+   },
+   {
+    "title": "File:Mutton Karahi 2.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Mutton_Karahi_2.JPG",
+    "author": "Miansari66",
+    "license": "CC0",
+    "size": "4896x3672"
+   },
+   {
+    "title": "File:Mutton Karahi.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Mutton_Karahi.JPG",
+    "author": "Miansari66",
+    "license": "CC0",
+    "size": "4896x3672"
+   },
+   {
+    "title": "File:Dumba Karahi ready 20210605 02.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Dumba_Karahi_ready_20210605_02.jpg",
+    "author": "Shahzaib Damn Cruze",
+    "license": "CC BY-SA 4.0",
+    "size": "4032x3024"
+   },
+   {
+    "title": "File:Lamb Karachi Karahi - Bengal Bertie's 2025-12-15.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Lamb_Karachi_Karahi_-_Bengal_Bertie%27s_2025-12-15.jpg",
+    "author": "Andy Li",
+    "license": "CC0",
+    "size": "8160x6144"
+   },
+   {
+    "title": "File:Karahi.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Karahi.JPG",
+    "author": "Miansari66",
+    "license": "Public domain",
+    "size": "2816x2112"
+   }
+  ]
+ },
+ "recipes/aloo-gosht": {
+  "name": "Aloo Gosht",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Aaloo Gosht (cropped).JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Aaloo_Gosht_(cropped).JPG",
+    "author": "Miansari66",
+    "license": "CC0",
+    "size": "1913x1911"
+   },
+   {
+    "title": "File:Saloonay Chawal With Aloo Gosht.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Saloonay_Chawal_With_Aloo_Gosht.JPG",
+    "author": "Miansari66",
+    "license": "CC0",
+    "size": "4896x3672"
+   },
+   {
+    "title": "File:Aloo Ghobi.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Aloo_Ghobi.jpg",
+    "author": "Sapanabehl",
+    "license": "CC BY-SA 4.0",
+    "size": "1410x1080"
+   }
+  ]
+ },
+ "recipes/shami-kabab": {
+  "name": "Shami Kabab",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Shami Kabab.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Shami_Kabab.JPG",
+    "author": "Miansari66",
+    "license": "Public domain",
+    "size": "2816x2112"
+   }
+  ]
+ },
+ "recipes/keema-matar": {
+  "name": "Keema Matar",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Keema Matar (a dish from India).jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Keema_Matar_(a_dish_from_India).jpg",
+    "author": "Cabeza2000",
+    "license": "CC BY-SA 4.0",
+    "size": "3024x4032"
+   },
+   {
+    "title": "File:Keema Matar, Les Jardins de Shah Jahan, Montparnasse, Paris 001.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Keema_Matar,_Les_Jardins_de_Shah_Jahan,_Montparnasse,_Paris_001.jpg",
+    "author": "Guilhem Vellut from Paris, France",
+    "license": "CC BY 2.0",
+    "size": "5472x3648"
+   },
+   {
+    "title": "File:Keema Matar lunch set, Les Jardins de Shah Jahan, Montparnasse, Paris 001.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Keema_Matar_lunch_set,_Les_Jardins_de_Shah_Jahan,_Montparnasse,_Paris_001.jpg",
+    "author": "Guilhem Vellut from Paris, France",
+    "license": "CC BY 2.0",
+    "size": "5472x3648"
+   },
+   {
+    "title": "File:Chicken Keema Matar.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chicken_Keema_Matar.jpg",
+    "author": "Sharnab neogi",
+    "license": "CC BY-SA 4.0",
+    "size": "2592x1944"
+   },
+   {
+    "title": "File:Keema Matar Salan.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Keema_Matar_Salan.jpg",
+    "author": "Fatimahope",
+    "license": "CC BY-SA 4.0",
+    "size": "1280x718"
+   },
+   {
+    "title": "File:Keema and Rice.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Keema_and_Rice.jpg",
+    "author": "Cyapoj",
+    "license": "CC BY-SA 4.0",
+    "size": "6720x4480"
+   }
+  ]
+ },
+ "recipes/chapli-kabab": {
+  "name": "Chapli Kabab",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Chapli Kebab.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chapli_Kebab.jpg",
+    "author": "Murcotipton",
+    "license": "CC BY-SA 3.0",
+    "size": "4592x2576"
+   },
+   {
+    "title": "File:Peshawari Chapli Kabab by Chef Nina.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Peshawari_Chapli_Kabab_by_Chef_Nina.jpg",
+    "author": "Sholokov",
+    "license": "CC BY-SA 4.0",
+    "size": "4032x3024"
+   },
+   {
+    "title": "File:Chapli Kabab.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Chapli_Kabab.JPG",
+    "author": "Miansari66",
+    "license": "Public domain",
+    "size": "2816x2112"
+   },
+   {
+    "title": "File:Chapli Kabab in pol sorkh - panoramio.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chapli_Kabab_in_pol_sorkh_-_panoramio.jpg",
+    "author": "Masoud Akbari",
+    "license": "CC BY-SA 3.0",
+    "size": "1024x768"
+   },
+   {
+    "title": "File:Chapli Kabob.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chapli_Kabob.jpg",
+    "author": "Arnold Gatilao",
+    "license": "CC BY 2.0",
+    "size": "1280x960"
+   },
+   {
+    "title": "File:Chapli Kabob - 1685181627.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chapli_Kabob_-_1685181627.jpg",
+    "author": "Arnold Gatilao",
+    "license": "CC BY 2.0",
+    "size": "1280x960"
+   }
+  ]
+ },
+ "recipes/lahori-fish-fry": {
+  "name": "Lahori Fish Fry",
+  "chosen": 3,
+  "candidates": [
+   {
+    "title": "File:Fish, chips and mushy peas.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Fish,_chips_and_mushy_peas.jpg",
+    "author": "Charles Haynes from Bangalore, India",
+    "license": "CC BY-SA 2.0",
+    "size": "2082x1488"
+   },
+   {
+    "title": "File:Pakistani Food Karahi Beef.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Pakistani_Food_Karahi_Beef.jpg",
+    "author": "Jess Lander from Culver City, CA, USA",
+    "license": "CC BY 2.0",
+    "size": "3872x2592"
+   },
+   {
+    "title": "File:Lahori Fish Fry.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Lahori_Fish_Fry.JPG",
+    "author": "Miansari66",
+    "license": "CC0",
+    "size": "4896x3672"
+   },
+   {
+    "title": "File:Fried Fish in mercado.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Fried_Fish_in_mercado.jpg",
+    "author": "Khymoe",
+    "license": "CC0",
+    "size": "6024x4020"
+   },
+   {
+    "title": "File:Fish and chips blackpool.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Fish_and_chips_blackpool.jpg",
+    "author": "Matthias Meckel",
+    "license": "CC BY-SA 4.0",
+    "size": "4928x3264"
+   },
+   {
+    "title": "File:Fish Frying in Pakistan - Fried Fish in boiling oil is a traditional food in winters.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Fish_Frying_in_Pakistan_-_Fried_Fish_in_boiling_oil_is_a_traditional_food_in_winters.jpg",
+    "author": "Tahsin Shah",
+    "license": "CC BY-SA 4.0",
+    "size": "5760x3735"
+   }
+  ]
+ },
+ "recipes/prawn-karahi": {
+  "name": "Prawn Karahi",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Grøntsager og tigerrejer i rød karry (4477230448).jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Gr%C3%B8ntsager_og_tigerrejer_i_r%C3%B8d_karry_(4477230448).jpg",
+    "author": "cyclonebill from Copenhagen, Denmark",
+    "license": "CC BY-SA 2.0",
+    "size": "4288x2848"
+   },
+   {
+    "title": "File:Kanji.1.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Kanji.1.jpg",
+    "author": "Swetapadma07",
+    "license": "CC BY-SA 4.0",
+    "size": "3387x2892"
+   },
+   {
+    "title": "File:Bangladeshi Prawn Curry.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Bangladeshi_Prawn_Curry.jpg",
+    "author": "Jubair1985",
+    "license": "CC BY-SA 4.0",
+    "size": "5184x3456"
+   },
+   {
+    "title": "File:Vegetable tom yum soup, prawn penang curry, rice and Singha beer, Mommy Thai, Vicar Lane, Leeds (11th April 2026).jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Vegetable_tom_yum_soup,_prawn_penang_curry,_rice_and_Singha_beer,_Mommy_Thai,_Vicar_Lane,_Leeds_(11th_April_2026).jpg",
+    "author": "Mtaylor848",
+    "license": "CC BY-SA 3.0",
+    "size": "3840x2304"
+   },
+   {
+    "title": "File:King prawn curry - Sunoso.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:King_prawn_curry_-_Sunoso.jpg",
+    "author": "Andy Li",
+    "license": "CC0",
+    "size": "4032x3024"
+   },
+   {
+    "title": "File:Goan prawn curry.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Goan_prawn_curry.jpg",
+    "author": "Schellack at English Wikipedia",
+    "license": "CC BY 3.0",
+    "size": "3264x2448"
+   }
+  ]
+ },
+ "recipes/masoor-daal": {
+  "name": "Masoor Daal Tarka",
+  "chosen": 4,
+  "candidates": [
+   {
+    "title": "File:3 types of lentil.png",
+    "page": "https://commons.wikimedia.org/wiki/File:3_types_of_lentil.png",
+    "author": "User:Justinc",
+    "license": "CC BY-SA 2.5",
+    "size": "3488x2000"
+   },
+   {
+    "title": "File:A mix of split lentils, masoor dal India.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:A_mix_of_split_lentils,_masoor_dal_India.jpg",
+    "author": "jasleen_kaur from USA",
+    "license": "CC BY-SA 2.0",
+    "size": "3374x2457"
+   },
+   {
+    "title": "File:Flickr - cyclonebill - Lamb Korma, raita, Masoor Dal, gulerødder og chapati.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Flickr_-_cyclonebill_-_Lamb_Korma,_raita,_Masoor_Dal,_guler%C3%B8dder_og_chapati.jpg",
+    "author": "cyclonebill",
+    "license": "CC BY-SA 2.0",
+    "size": "3264x2448"
+   },
+   {
+    "title": "File:Lal Masoor Dal and Palak.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Lal_Masoor_Dal_and_Palak.JPG",
+    "author": "Miansari66",
+    "license": "CC0",
+    "size": "4896x3672"
+   },
+   {
+    "title": "File:Kulfa Aur Lal Masoor Ki Dal.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Kulfa_Aur_Lal_Masoor_Ki_Dal.JPG",
+    "author": "Miansari66",
+    "license": "CC0",
+    "size": "4896x3672"
+   },
+   {
+    "title": "File:Kali Masoor Ki Dal Ka Salan.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Kali_Masoor_Ki_Dal_Ka_Salan.JPG",
+    "author": "Miansari66",
+    "license": "CC0",
+    "size": "2816x2112"
+   }
+  ]
+ },
+ "recipes/daal-mash": {
+  "name": "Daal Mash",
+  "chosen": 2,
+  "candidates": [
+   {
+    "title": "File:Black gram.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Black_gram.jpg",
+    "author": "Sanjay Acharya",
+    "license": "CC BY-SA 3.0",
+    "size": "3070x2182"
+   },
+   {
+    "title": "File:Punjabi style Dal Makhani.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Punjabi_style_Dal_Makhani.jpg",
+    "author": "Radhikamprabhu82",
+    "license": "CC BY-SA 4.0",
+    "size": "1024x681"
+   },
+   {
+    "title": "File:Daal Pakoda.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Daal_Pakoda.jpg",
+    "author": "Meha27Shikhi",
+    "license": "CC BY-SA 4.0",
+    "size": "3264x1836"
+   },
+   {
+    "title": "File:Mung beans (Vigna radiata).jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Mung_beans_(Vigna_radiata).jpg",
+    "author": "Ivar Leidus",
+    "license": "CC BY-SA 4.0",
+    "size": "6000x4000"
+   },
+   {
+    "title": "File:Urad dal.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Urad_dal.JPG",
+    "author": "Zeel Patel",
+    "license": "CC BY-SA 4.0",
+    "size": "4608x3456"
+   },
+   {
+    "title": "File:Garelu (Urad dal).jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Garelu_(Urad_dal).jpg",
+    "author": "JVRKPRASAD",
+    "license": "CC BY-SA 4.0",
+    "size": "4128x3096"
+   }
+  ]
+ },
+ "recipes/chana-masala": {
+  "name": "Lahori Chana Masala",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Chana masala.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chana_masala.jpg",
+    "author": "Simon Law (sfllaw) from Montréal, QC, Canada",
+    "license": "CC BY-SA 2.0",
+    "size": "3072x2304"
+   },
+   {
+    "title": "File:Chana Masala - Mohammed - Spice Of Life 2024-05-27.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chana_Masala_-_Mohammed_-_Spice_Of_Life_2024-05-27.jpg",
+    "author": "Andy Li",
+    "license": "CC0",
+    "size": "4032x3024"
+   },
+   {
+    "title": "File:Porota chana Masala.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Porota_chana_Masala.jpg",
+    "author": "Vijayanrajapuram",
+    "license": "CC BY-SA 4.0",
+    "size": "4624x3468"
+   },
+   {
+    "title": "File:Chana masala Vikings Luxury Dinner Buffet textures 26 January 2025 Philippines6.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chana_masala_Vikings_Luxury_Dinner_Buffet_textures_26_January_2025_Philippines6.jpg",
+    "author": "",
+    "license": "CC BY-SA 4.0",
+    "size": "4096x3072"
+   },
+   {
+    "title": "File:Bhog consisting of Puri, Aloo Sabji, Chana Masala, Khichri, Halwa, and Jalebi on Mahanavami at Jyoti Nagar Durga Puja Samiti pandal, Jyoti Nagar, Dibrugarh in 2024..jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Bhog_consisting_of_Puri,_Aloo_Sabji,_Chana_Masala,_Khichri,_Halwa,_and_Jalebi_on_Mahanavami_at_Jyoti_Nagar_Durga_Puja_Samiti_pandal,_Jyoti_Nagar,_Dibrugarh_in_2024..jpg",
+    "author": "AjayDas",
+    "license": "CC BY-SA 4.0",
+    "size": "4032x3024"
+   },
+   {
+    "title": "File:Simple chana masala.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Simple_chana_masala.jpg",
+    "author": "Billjones94",
+    "license": "CC BY-SA 4.0",
+    "size": "3044x1776"
+   }
+  ]
+ },
+ "recipes/rajma": {
+  "name": "Rajma Masala",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Rajma Masala (32081557778).jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Rajma_Masala_(32081557778).jpg",
+    "author": "Gaurav Nemade",
+    "license": "CC BY-SA 2.0",
+    "size": "1395x933"
+   },
+   {
+    "title": "File:Brinjal rajma masala.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Brinjal_rajma_masala.JPG",
+    "author": "Nithyasrm",
+    "license": "CC BY-SA 4.0",
+    "size": "2048x1360"
+   },
+   {
+    "title": "File:Goji Rajma Masala (11962820385).jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Goji_Rajma_Masala_(11962820385).jpg",
+    "author": "Dave Miller from Falls Church, VA, USA",
+    "license": "CC BY 2.0",
+    "size": "3264x2448"
+   },
+   {
+    "title": "File:Rajma Masala.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Rajma_Masala.jpg",
+    "author": "Gayatri Krishnamoorthy",
+    "license": "CC BY 2.0",
+    "size": "2448x3264"
+   },
+   {
+    "title": "File:Rajma dal.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Rajma_dal.JPG",
+    "author": "Nithyasrm",
+    "license": "CC BY-SA 4.0",
+    "size": "2048x1360"
+   },
+   {
+    "title": "File:Ar Rajma.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Ar_Rajma.JPG",
+    "author": "Maher A. A. Abdussalam",
+    "license": "Public domain",
+    "size": "3648x2736"
+   }
+  ]
+ },
+ "recipes/aloo-palak": {
+  "name": "Aloo Palak",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Punjabi Sarsoon Ka Saag.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Punjabi_Sarsoon_Ka_Saag.JPG",
+    "author": "Miansari66",
+    "license": "Public domain",
+    "size": "2816x2112"
+   },
+   {
+    "title": "File:Egg curry with cabbage foogath, saag aloo and rice (3680476855).jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Egg_curry_with_cabbage_foogath,_saag_aloo_and_rice_(3680476855).jpg",
+    "author": "Gordon Joly from London, UK",
+    "license": "CC BY-SA 2.0",
+    "size": "3648x2736"
+   },
+   {
+    "title": "File:Aloo Ghobi.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Aloo_Ghobi.jpg",
+    "author": "Sapanabehl",
+    "license": "CC BY-SA 4.0",
+    "size": "1410x1080"
+   },
+   {
+    "title": "File:A kind of Assamese veg thali with moog dal, Red dal, Black dal with elephant apple, alloo sabji, banana blosom sabji,, couliflower sabjipumpkin sabji, mixed saag sabji, aloo pitika ..raw banana fry and cucumbrer slices.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:A_kind_of_Assamese_veg_thali_with_moog_dal,_Red_dal,_Black_dal_with_elephant_apple,_alloo_sabji,_banana_blosom_sabji,,_couliflower_sabjipumpkin_sabji,_mixed_saag_sabji,_aloo_pitika_..raw_banana_fry_and_cucumbrer_slices.jpg",
+    "author": "Chiring chandan",
+    "license": "CC BY-SA 4.0",
+    "size": "3000x4000"
+   },
+   {
+    "title": "File:Chicken Dhansak (3173280389).jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chicken_Dhansak_(3173280389).jpg",
+    "author": "David Pursehouse from Kawasaki, Japan",
+    "license": "CC BY 2.0",
+    "size": "3648x2736"
+   },
+   {
+    "title": "File:Traditional Nepali Thali.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Traditional_Nepali_Thali.jpg",
+    "author": "Antara.upadhyay7",
+    "license": "CC BY-SA 4.0",
+    "size": "3825x2976"
+   }
+  ]
+ },
+ "recipes/bhindi-masala": {
+  "name": "Bhindi Masala",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Bhindi Masala.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Bhindi_Masala.jpg",
+    "author": "Monali.mishra",
+    "license": "CC BY-SA 4.0",
+    "size": "1944x1944"
+   },
+   {
+    "title": "File:Red roast duck curry.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Red_roast_duck_curry.jpg",
+    "author": "Terence Ong",
+    "license": "CC BY 2.5",
+    "size": "1890x1448"
+   },
+   {
+    "title": "File:Bhindi masala (49657981033).jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Bhindi_masala_(49657981033).jpg",
+    "author": "やましこ",
+    "license": "CC BY-SA 2.0",
+    "size": "8680x5787"
+   },
+   {
+    "title": "File:Masala Bhindi.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Masala_Bhindi.JPG",
+    "author": "1989bhaveshv",
+    "license": "CC BY-SA 4.0",
+    "size": "3216x2136"
+   },
+   {
+    "title": "File:Bharvan Bhindi or Masala Bhindi.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Bharvan_Bhindi_or_Masala_Bhindi.jpg",
+    "author": "Vilalali",
+    "license": "CC BY-SA 4.0",
+    "size": "3556x2166"
+   },
+   {
+    "title": "File:Masala Bhindi in my Lunch.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Masala_Bhindi_in_my_Lunch.jpg",
+    "author": "Bharti.anand",
+    "license": "CC BY-SA 4.0",
+    "size": "3264x2448"
+   }
+  ]
+ },
+ "recipes/baingan-bharta": {
+  "name": "Baingan Bharta",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Baigan Bharta from Nagpur.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Baigan_Bharta_from_Nagpur.JPG",
+    "author": "Dheerajk88",
+    "license": "CC BY-SA 4.0",
+    "size": "4288x2419"
+   },
+   {
+    "title": "File:Baingan Ka Bharta.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Baingan_Ka_Bharta.JPG",
+    "author": "Zeel Patel",
+    "license": "CC BY-SA 4.0",
+    "size": "4608x3152"
+   },
+   {
+    "title": "File:Spicy Baked Aubergine (Baingan Bharta) (753279896).jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Spicy_Baked_Aubergine_(Baingan_Bharta)_(753279896).jpg",
+    "author": "rovingI",
+    "license": "CC BY 2.0",
+    "size": "3072x2304"
+   },
+   {
+    "title": "File:Baingan Bharta.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Baingan_Bharta.JPG",
+    "author": "Mdsmds0",
+    "license": "CC BY-SA 4.0",
+    "size": "4568x3520"
+   },
+   {
+    "title": "File:Baingan bharta1.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Baingan_bharta1.jpg",
+    "author": "S6uruchi",
+    "license": "CC BY-SA 4.0",
+    "size": "1024x683"
+   },
+   {
+    "title": "File:Baingan bharta special.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Baingan_bharta_special.jpg",
+    "author": "BHAVYA KAPOOR",
+    "license": "CC BY-SA 4.0",
+    "size": "1040x780"
+   }
+  ]
+ },
+ "recipes/sarson-ka-saag": {
+  "name": "Sarson ka Saag",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Sarson Ka Saag - Mohali 2016-08-06 8212.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Sarson_Ka_Saag_-_Mohali_2016-08-06_8212.JPG",
+    "author": "Biswarup Ganguly",
+    "license": "CC BY 3.0",
+    "size": "6016x4000"
+   },
+   {
+    "title": "File:Sarson Ka Saag - Mohali 2016-08-06 8213.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Sarson_Ka_Saag_-_Mohali_2016-08-06_8213.JPG",
+    "author": "Biswarup Ganguly",
+    "license": "CC BY 3.0",
+    "size": "6016x4000"
+   },
+   {
+    "title": "File:Sarson Ka Saag - Mohali 2016-08-06 8227.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Sarson_Ka_Saag_-_Mohali_2016-08-06_8227.JPG",
+    "author": "Biswarup Ganguly",
+    "license": "CC BY 3.0",
+    "size": "6016x4000"
+   },
+   {
+    "title": "File:Sarson da saag.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Sarson_da_saag.JPG",
+    "author": "SwingingUvula",
+    "license": "CC BY-SA 4.0",
+    "size": "3648x2736"
+   },
+   {
+    "title": "File:Sarson ka Saag aur Makki ki Roti, from India.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Sarson_ka_Saag_aur_Makki_ki_Roti,_from_India.jpg",
+    "author": "Barthateslisa",
+    "license": "CC BY-SA 4.0",
+    "size": "3264x2448"
+   },
+   {
+    "title": "File:Sarson-Ka-Saag.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Sarson-Ka-Saag.jpg",
+    "author": "Officialksv",
+    "license": "CC BY-SA 4.0",
+    "size": "1200x807"
+   }
+  ]
+ },
+ "recipes/aloo-paratha": {
+  "name": "Aloo Paratha",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Triangle paratha (cropped).JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Triangle_paratha_(cropped).JPG",
+    "author": "Nithyasrm",
+    "license": "CC BY-SA 4.0",
+    "size": "2848x2846"
+   },
+   {
+    "title": "File:Aloo paratha (Pokhara).jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Aloo_paratha_(Pokhara).jpg",
+    "author": "Виктор Пинчук",
+    "license": "CC BY 4.0",
+    "size": "5152x3864"
+   },
+   {
+    "title": "File:Aloo paratha served with daal, curd and achar.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Aloo_paratha_served_with_daal,_curd_and_achar.jpg",
+    "author": "AjayDas",
+    "license": "CC BY-SA 4.0",
+    "size": "4032x3024"
+   },
+   {
+    "title": "File:Aloo Paratha (91787).jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Aloo_Paratha_(91787).jpg",
+    "author": "Nizil Shah",
+    "license": "CC BY-SA 3.0",
+    "size": "4080x3072"
+   },
+   {
+    "title": "File:\"Amazing Aloo Paratha and Lovely Lassi\".jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:%22Amazing_Aloo_Paratha_and_Lovely_Lassi%22.jpg",
+    "author": "Mahi Tatavarty",
+    "license": "CC BY-SA 4.0",
+    "size": "3715x3024"
+   },
+   {
+    "title": "File:Aloo Paratha.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Aloo_Paratha.jpg",
+    "author": "Gannu03",
+    "license": "CC BY-SA 4.0",
+    "size": "3000x3000"
+   }
+  ]
+ },
+ "recipes/masala-omelette": {
+  "name": "Desi Masala Omelette",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Masala omelette.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Masala_omelette.JPG",
+    "author": "SwingingUvula",
+    "license": "CC BY-SA 4.0",
+    "size": "3648x2736"
+   },
+   {
+    "title": "File:\"Hyderabadi Dum Biryani\".jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:%22Hyderabadi_Dum_Biryani%22.jpg",
+    "author": "Mahi Tatavarty",
+    "license": "CC BY-SA 4.0",
+    "size": "4032x2592"
+   },
+   {
+    "title": "File:Masala Omelette.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Masala_Omelette.jpg",
+    "author": "Shubham2007chaudhary",
+    "license": "CC BY-SA 4.0",
+    "size": "3264x2448"
+   },
+   {
+    "title": "File:Masala Egg Omelette.jpeg",
+    "page": "https://commons.wikimedia.org/wiki/File:Masala_Egg_Omelette.jpeg",
+    "author": "User:Yuvipanda",
+    "license": "CC BY-SA 3.0",
+    "size": "3264x2448"
+   },
+   {
+    "title": "File:Masala egg omelette (cropped).jpeg",
+    "page": "https://commons.wikimedia.org/wiki/File:Masala_egg_omelette_(cropped).jpeg",
+    "author": "User:Yuvipanda",
+    "license": "CC BY-SA 3.0",
+    "size": "2060x1476"
+   },
+   {
+    "title": "File:Masala omelette with bread toasties.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Masala_omelette_with_bread_toasties.jpg",
+    "author": "Lillottama",
+    "license": "CC BY-SA 4.0",
+    "size": "4608x2592"
+   }
+  ]
+ },
+ "recipes/aloo-anday": {
+  "name": "Aloo Anday",
+  "chosen": 2,
+  "candidates": [
+   {
+    "title": "File:Chicken raw egg with broken shell.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chicken_raw_egg_with_broken_shell.jpg",
+    "author": "Sauvagette",
+    "license": "CC BY-SA 4.0",
+    "size": "2161x1383"
+   },
+   {
+    "title": "File:Spicy Anda Curry.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Spicy_Anda_Curry.jpg",
+    "author": "https://onlybestrecipes.com/egg-curry-recipeegg-curry-recipe/",
+    "license": "CC BY-SA 4.0",
+    "size": "3600x2400"
+   },
+   {
+    "title": "File:Egg curry 1.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Egg_curry_1.jpg",
+    "author": "Dolon Prova",
+    "license": "CC BY-SA 4.0",
+    "size": "5632x4000"
+   },
+   {
+    "title": "File:Egg curry Indian style.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Egg_curry_Indian_style.jpg",
+    "author": "Nayan j Nath",
+    "license": "CC BY-SA 4.0",
+    "size": "5260x3752"
+   },
+   {
+    "title": "File:Egg curry in West Bengal, India.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Egg_curry_in_West_Bengal,_India.jpg",
+    "author": "Billjones94",
+    "license": "CC BY-SA 4.0",
+    "size": "4096x3072"
+   },
+   {
+    "title": "File:সিদল.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:%E0%A6%B8%E0%A6%BF%E0%A6%A6%E0%A6%B2.jpg",
+    "author": "Alif Arefur",
+    "license": "CC BY-SA 4.0",
+    "size": "2291x1590"
+   }
+  ]
+ },
+ "recipes/pakoray": {
+  "name": "Mix Pakoray",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Onion pakora - a.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Onion_pakora_-_a.jpg",
+    "author": "Babu iyer",
+    "license": "CC BY-SA 4.0",
+    "size": "1903x1920"
+   },
+   {
+    "title": "File:Bread Pakora (Stuffed with Mashed-Spicy Potatoes).JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Bread_Pakora_(Stuffed_with_Mashed-Spicy_Potatoes).JPG",
+    "author": "Mdsmds0",
+    "license": "CC BY-SA 4.0",
+    "size": "4896x3672"
+   },
+   {
+    "title": "File:Onion Pakora 01.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Onion_Pakora_01.jpg",
+    "author": "Marajozkee",
+    "license": "CC BY-SA 4.0",
+    "size": "4032x3024"
+   },
+   {
+    "title": "File:Chicken pakora-MB29.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chicken_pakora-MB29.jpg",
+    "author": "Rajeeb Dutta",
+    "license": "CC BY-SA 4.0",
+    "size": "3229x2422"
+   },
+   {
+    "title": "File:TORC - September 2023 - Sarah Stierch 03.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:TORC_-_September_2023_-_Sarah_Stierch_03.jpg",
+    "author": "Missvain",
+    "license": "CC BY 4.0",
+    "size": "3717x2789"
+   },
+   {
+    "title": "File:Chicken pakora at Club India, Edinburgh.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chicken_pakora_at_Club_India,_Edinburgh.jpg",
+    "author": "www.theedinburghblog.co.uk",
+    "license": "CC BY 2.0",
+    "size": "2592x1936"
+   }
+  ]
+ },
+ "recipes/aloo-samosa": {
+  "name": "Aloo Samosa",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Samosas, snack food at Wikipedia's 16th Birthday celebration in Chittagong (01).jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Samosas,_snack_food_at_Wikipedia%27s_16th_Birthday_celebration_in_Chittagong_(01).jpg",
+    "author": "Moheen Reeyad",
+    "license": "CC BY-SA 4.0",
+    "size": "4000x4000"
+   },
+   {
+    "title": "File:Aloo samosa(Potato Samosas), Kolkata - West Bengal - DSC 0056.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Aloo_samosa(Potato_Samosas),_Kolkata_-_West_Bengal_-_DSC_0056.jpg",
+    "author": "TAPAS KUMAR HALDER",
+    "license": "CC BY-SA 4.0",
+    "size": "6000x4000"
+   },
+   {
+    "title": "File:Aloo filled Samosa.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Aloo_filled_Samosa.jpg",
+    "author": "Aarushi Nandini Dhruv",
+    "license": "CC BY-SA 4.0",
+    "size": "4032x2671"
+   },
+   {
+    "title": "File:Aloo samosa(Potato Samosas), Kolkata - West Bengal - DSC 0057.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Aloo_samosa(Potato_Samosas),_Kolkata_-_West_Bengal_-_DSC_0057.jpg",
+    "author": "TAPAS KUMAR HALDER",
+    "license": "CC BY-SA 4.0",
+    "size": "5533x3913"
+   },
+   {
+    "title": "File:Aloo samosa.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Aloo_samosa.jpg",
+    "author": "Vis M",
+    "license": "CC BY-SA 4.0",
+    "size": "9248x6936"
+   },
+   {
+    "title": "File:Aloo matar with samosa and green chili pickle - Massachusetts.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Aloo_matar_with_samosa_and_green_chili_pickle_-_Massachusetts.jpg",
+    "author": "Daderot",
+    "license": "CC0",
+    "size": "2782x2782"
+   }
+  ]
+ },
+ "recipes/fruit-chaat": {
+  "name": "Fruit Chaat",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Fruit Chat with Podina chutney and masala.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Fruit_Chat_with_Podina_chutney_and_masala.JPG",
+    "author": "Miansari66",
+    "license": "Public domain",
+    "size": "2816x2112"
+   }
+  ]
+ },
+ "recipes/kheer": {
+  "name": "Rice Kheer",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Kheer.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Kheer.jpg",
+    "author": "stu spivack",
+    "license": "CC BY-SA 2.0",
+    "size": "3008x2000"
+   },
+   {
+    "title": "File:Rice Kheer-Payash, Kolkata - West Bengal - DSC 0017.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Rice_Kheer-Payash,_Kolkata_-_West_Bengal_-_DSC_0017.jpg",
+    "author": "TAPAS KUMAR HALDER",
+    "license": "CC BY-SA 4.0",
+    "size": "5414x3897"
+   },
+   {
+    "title": "File:Shahi Rice Kheer.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Shahi_Rice_Kheer.jpg",
+    "author": "Teena Sometimes",
+    "license": "CC BY-SA 4.0",
+    "size": "2592x1800"
+   },
+   {
+    "title": "File:Rice Kheer or Rice Pudding.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Rice_Kheer_or_Rice_Pudding.JPG",
+    "author": "Mdsmds0",
+    "license": "CC BY-SA 4.0",
+    "size": "4896x3672"
+   },
+   {
+    "title": "File:Non-veg platter during the First WikiSanjog Conference 2025 - plain rice, dal, rajma, fish with mustard, chicken curry, carrot and cucumber salad, pickle, green chili, papad, and kheer. 02.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Non-veg_platter_during_the_First_WikiSanjog_Conference_2025_-_plain_rice,_dal,_rajma,_fish_with_mustard,_chicken_curry,_carrot_and_cucumber_salad,_pickle,_green_chili,_papad,_and_kheer._02.jpg",
+    "author": "AjayDas",
+    "license": "CC BY-SA 4.0",
+    "size": "4032x3024"
+   },
+   {
+    "title": "File:Non-veg platter during the First WikiSanjog Conference 2025 - plain rice, dal, rajma, fish with mustard, chicken curry, carrot and cucumber salad, pickle, green chili, papad, and kheer. 01.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Non-veg_platter_during_the_First_WikiSanjog_Conference_2025_-_plain_rice,_dal,_rajma,_fish_with_mustard,_chicken_curry,_carrot_and_cucumber_salad,_pickle,_green_chili,_papad,_and_kheer._01.jpg",
+    "author": "AjayDas",
+    "license": "CC BY-SA 4.0",
+    "size": "4032x3024"
+   }
+  ]
+ },
+ "recipes/sheer-khurma": {
+  "name": "Sheer Khurma",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Sheer Khurma special rotated cropped.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Sheer_Khurma_special_rotated_cropped.jpg",
+    "author": "Miansari66",
+    "license": "CC BY-SA 4.0",
+    "size": "2402x1668"
+   },
+   {
+    "title": "File:Sheer Khurma special.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Sheer_Khurma_special.JPG",
+    "author": "Miansari66",
+    "license": "Public domain",
+    "size": "2816x2112"
+   },
+   {
+    "title": "File:Fried vermicelli for Sheer Khurma.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Fried_vermicelli_for_Sheer_Khurma.JPG",
+    "author": "Miansari66",
+    "license": "Public domain",
+    "size": "2816x2112"
+   },
+   {
+    "title": "File:Fried Nuts for Sheer Khurma.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Fried_Nuts_for_Sheer_Khurma.JPG",
+    "author": "Miansari66",
+    "license": "Public domain",
+    "size": "2816x2112"
+   },
+   {
+    "title": "File:Sheer khurma.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Sheer_khurma.jpg",
+    "author": "Sahil tiwarie",
+    "license": "CC BY-SA 4.0",
+    "size": "1280x848"
+   },
+   {
+    "title": "File:Sheer Sewain.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Sheer_Sewain.jpg",
+    "author": "Fatimahope",
+    "license": "CC BY-SA 4.0",
+    "size": "3264x2448"
+   }
+  ]
+ },
+ "recipes/gajar-halwa": {
+  "name": "Gajar ka Halwa",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Delicious Gajar Ka Halwa.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Delicious_Gajar_Ka_Halwa.jpg",
+    "author": "Sharvarism",
+    "license": "CC BY-SA 4.0",
+    "size": "3600x2400"
+   },
+   {
+    "title": "File:Gajar-Ka-Halwa.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Gajar-Ka-Halwa.jpg",
+    "author": "BhargavVora",
+    "license": "CC BY-SA 4.0",
+    "size": "2576x1818"
+   },
+   {
+    "title": "File:Gajar Ka Halwa a famous Indian Sweet Dish 02.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Gajar_Ka_Halwa_a_famous_Indian_Sweet_Dish_02.jpg",
+    "author": "Bugatti Enthusiast Aishwary Raj",
+    "license": "CC BY-SA 4.0",
+    "size": "4160x3120"
+   },
+   {
+    "title": "File:Gajar Ka Halwa - Indian Desert.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Gajar_Ka_Halwa_-_Indian_Desert.JPG",
+    "author": "Zeel Patel",
+    "license": "CC BY-SA 4.0",
+    "size": "4608x3456"
+   },
+   {
+    "title": "File:Homemade Gajar ka Halwa.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Homemade_Gajar_ka_Halwa.jpg",
+    "author": "Sarika 1410",
+    "license": "CC BY-SA 4.0",
+    "size": "3264x1836"
+   },
+   {
+    "title": "File:GAJAR KA HALWA.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:GAJAR_KA_HALWA.jpg",
+    "author": "Trishahitk2012",
+    "license": "CC BY-SA 4.0",
+    "size": "960x575"
+   }
+  ]
+ },
+ "recipes/kadhi-pakora": {
+  "name": "Kadhi Pakora",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Kadhi Pakora.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Kadhi_Pakora.jpg",
+    "author": "Ams4wiki",
+    "license": "CC BY-SA 4.0",
+    "size": "2490x2008"
+   },
+   {
+    "title": "File:Onion pakora - a.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Onion_pakora_-_a.jpg",
+    "author": "Babu iyer",
+    "license": "CC BY-SA 4.0",
+    "size": "1903x1920"
+   },
+   {
+    "title": "File:Kadhi chawal.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Kadhi_chawal.jpg",
+    "author": "TheKewal",
+    "license": "CC BY-SA 4.0",
+    "size": "4752x3168"
+   },
+   {
+    "title": "File:Kadhi (8447164125).jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Kadhi_(8447164125).jpg",
+    "author": "Devika",
+    "license": "CC BY-SA 2.0",
+    "size": "4320x3060"
+   },
+   {
+    "title": "File:Kadhi Pakoda.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Kadhi_Pakoda.JPG",
+    "author": "Mdsmds0",
+    "license": "CC BY-SA 4.0",
+    "size": "4896x3672"
+   },
+   {
+    "title": "File:Kadhi Gole Food by Ms Ujwala Kasambe DSCN9907 (4).jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Kadhi_Gole_Food_by_Ms_Ujwala_Kasambe_DSCN9907_(4).jpg",
+    "author": "Dr. Raju Kasambe",
+    "license": "CC BY-SA 4.0",
+    "size": "4608x3456"
+   }
+  ]
+ },
+ "recipes/chicken-corn-soup": {
+  "name": "Chicken Corn Soup",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Chicken sweet corn soup.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chicken_sweet_corn_soup.jpg",
+    "author": "Thamizhpparithi Maari",
+    "license": "CC BY-SA 4.0",
+    "size": "4208x2368"
+   },
+   {
+    "title": "File:Chicken corn soup.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chicken_corn_soup.jpg",
+    "author": "Balaji Kasirajan",
+    "license": "CC BY-SA 4.0",
+    "size": "4128x2322"
+   },
+   {
+    "title": "File:Southern Chinese style chicken soup with mushrooms and corn.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Southern_Chinese_style_chicken_soup_with_mushrooms_and_corn.jpg",
+    "author": "David",
+    "license": "Public domain",
+    "size": "2048x1536"
+   },
+   {
+    "title": "File:Chicken noodle soup with carrots, peas, corn, celery, and black pepper - Massachusetts.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chicken_noodle_soup_with_carrots,_peas,_corn,_celery,_and_black_pepper_-_Massachusetts.jpg",
+    "author": "Daderot",
+    "license": "CC0",
+    "size": "2175x2175"
+   },
+   {
+    "title": "File:Corn soup with chicken and black pepper, chilled - Aington, MA.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Corn_soup_with_chicken_and_black_pepper,_chilled_-_Aington,_MA.jpg",
+    "author": "Daderot",
+    "license": "CC0",
+    "size": "2171x2174"
+   },
+   {
+    "title": "File:Chicken Noodle Soup.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chicken_Noodle_Soup.jpg",
+    "author": "Hoyabird8",
+    "license": "CC BY-SA 3.0",
+    "size": "4032x3024"
+   }
+  ]
+ },
+ "recipes/vegetable-pulao": {
+  "name": "Vegetable Pulao",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Vegetable pulao.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Vegetable_pulao.JPG",
+    "author": "Subhankar.c",
+    "license": "CC BY-SA 4.0",
+    "size": "4608x3456"
+   }
+  ]
+ }
+}

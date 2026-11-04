@@ -24,9 +24,9 @@ def test_catalog_matches_source():
         assert module.build_catalog() == (root / 'api/engine/ingredients.json').read_text()
     finally:
         sys.path.remove(str(root / 'scripts'))
-    assert len(load_ingredients()) == 260
-    assert len({x.name for x in load_ingredients()}) == 260
-    assert get_recommender().graph.number_of_edges() == 260 * 259 // 2
+    assert len(load_ingredients()) == 261
+    assert len({x.name for x in load_ingredients()}) == 261
+    assert get_recommender().graph.number_of_edges() == 261 * 260 // 2
     assert nx.is_frozen(get_recommender().graph)
 
 

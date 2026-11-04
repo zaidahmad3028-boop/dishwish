@@ -11,6 +11,7 @@ import os
 
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+import httpx
 import jwt
 from jwt import PyJWKClient
 
@@ -61,6 +62,27 @@ def verify_token(token: str, *, secret: str | None, supabase_url: str | None, jw
 
 
 _bearer = HTTPBearer(auto_error=False)
+
+
+def is_admin_token(token: str) -> bool:
+    """Ask the database (public.is_admin RPC, run as this user) whether the caller is a Super Admin."""
+    url, anon = os.getenv("SUPABASE_URL", "").rstrip("/"), os.getenv("SUPABASE_ANON_KEY", "")
+    if not url or not anon:
+        raise HTTPException(status_code=503, detail="Admin check unavailable: set SUPABASE_URL and SUPABASE_ANON_KEY on the API")
+    try:
+        response = httpx.post(f"{url}/rest/v1/rpc/is_admin", json={}, timeout=10,
+                              headers={"apikey": anon, "Authorization": f"Bearer {token}"})
+    except httpx.HTTPError as exc:
+        raise HTTPException(status_code=503, detail="Could not reach the database") from exc
+    return response.status_code == 200 and response.json() is True
+
+
+def current_admin(credentials: HTTPAuthorizationCredentials | None = Depends(_bearer)) -> dict:
+    """FastAPI dependency: like current_user, but the user must also be a Super Admin."""
+    claims = current_user(credentials)
+    if not is_admin_token(credentials.credentials):
+        raise HTTPException(status_code=403, detail="Admin access required")
+    return claims
 
 
 def current_user(credentials: HTTPAuthorizationCredentials | None = Depends(_bearer)) -> dict:

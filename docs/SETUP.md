@@ -45,6 +45,19 @@ Promote an existing account in SQL instead: `select public.grant_super_admin('yo
 
 Super Admins land on `/admin` after login; everyone else lands on `/kitchen`.
 
+### Images on Cloudflare R2 (optional)
+Without R2 the app serves the photos bundled in `web/public/images`. To store and serve them from R2:
+1. Cloudflare → R2 → create bucket `dishwish-images` → Settings → Public Development URL → Enable (gives `https://pub-….r2.dev`).
+2. R2 → Manage API tokens → Create token with **Object Read & Write** on that bucket.
+3. In `api/.env` (and the dishwish-api Vercel project) set `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`,
+   `R2_BUCKET`, `R2_PUBLIC_URL` (see `api/.env.example`). These are server-only: never put them in `web/.env`.
+4. Copy the bundled photos: `python scripts/sync_images_r2.py` (`--dry-run` lists them first).
+5. Set `VITE_IMAGE_BASE_URL` (= `R2_PUBLIC_URL`) in `web/.env` and the dishwish-web Vercel project, then redeploy.
+
+Super Admins can then upload recipe photos from **Admin → Recipes → Edit → Upload photo**: the API checks the
+admin role and the file (WebP/JPEG/PNG, max 3 MB), stores it in R2 and saves its public URL on the recipe.
+Recipe images are standardised to 3:2 landscape, 800×533: uploads are centre-cropped to that size in the browser, and cards show them in one fixed-height, edge-to-edge frame (`RecipeCardImage`). Recipes without a photo show `images/recipes/default.svg`.
+
 ## 5. Start
 
 - Windows: `powershell -ExecutionPolicy Bypass -File scripts\dev.ps1` checks tools, env files and the database, then starts both servers.

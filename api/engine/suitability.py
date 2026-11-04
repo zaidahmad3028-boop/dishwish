@@ -30,7 +30,7 @@ DEFAULT_SETTINGS = {
     "missing_tolerance": 3,
     "min_score": .20,
 }
-DIETS = ("vegetarian", "gluten_free", "low_calorie", "high_protein")
+DIETS = ("vegetarian", "vegan", "gluten_free", "low_calorie", "high_protein")
 LOW_CALORIE_KCAL = 500  # per serving
 HIGH_PROTEIN_G = 25  # per serving
 TASTE_TARGETS = {"low": 2.0, "medium": 5.0, "high": 8.0}
@@ -213,6 +213,8 @@ class SuitabilityEngine:
         tags = []
         if not any(i.category == "Meat" and i.name != "Eggs" for i in items):
             tags.append("vegetarian")
+        if not any(i.category == "Meat" or {"milk", "eggs"} & set(i.allergens) or i.name == "Honey" for i in items):
+            tags.append("vegan")
         if not any("gluten" in i.allergens for i in items):
             tags.append("gluten_free")
         if per["kcal"] <= LOW_CALORIE_KCAL:

@@ -6,14 +6,14 @@ export function PageHeader({ title, accent, subtitle, icon: Icon, actions }: {
   title: string; accent?: string; subtitle?: string; icon?: LucideIcon; actions?: ReactNode;
 }) {
   return (
-    <header className="mb-6 flex flex-wrap items-start justify-between gap-4">
+    <header className="mb-3 flex flex-wrap items-start justify-between gap-4 lg:pr-36">
       <div className="flex items-start gap-3">
-        {Icon && <Icon size={40} className="mt-1 hidden shrink-0 text-crimson sm:block" strokeWidth={1.8} aria-hidden="true" />}
+        {Icon && <Icon size={52} className="mt-1 hidden shrink-0 text-crimson sm:block" strokeWidth={1.7} aria-hidden="true" />}
         <div>
-          <h1 className="font-display text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
+          <h1 className="font-display text-3xl font-extrabold leading-[1.1] tracking-tight sm:text-4xl lg:text-[3.25rem]">
             {title}{accent && <> <span className="text-crimson">{accent}</span></>}
           </h1>
-          {subtitle && <p className="mt-1 text-stone-600">{subtitle}</p>}
+          {subtitle && <p className="mt-1 text-stone-800 lg:text-[1.35rem]">{subtitle}</p>}
         </div>
       </div>
       {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
@@ -21,15 +21,15 @@ export function PageHeader({ title, accent, subtitle, icon: Icon, actions }: {
   );
 }
 
-export function Card({ title, icon: Icon, action, className = '', children, id }: {
-  title?: ReactNode; icon?: LucideIcon; action?: ReactNode; className?: string; children: ReactNode; id?: string;
+export function Card({ title, icon: Icon, iconClass = 'text-crimson', action, className = '', children, id }: {
+  title?: ReactNode; icon?: LucideIcon; iconClass?: string; action?: ReactNode; className?: string; children: ReactNode; id?: string;
 }) {
   const headingId = useId();
   return (
     <section className={`card p-5 ${className}`} aria-labelledby={title ? headingId : undefined} id={id}>
       {(title || action) && (
         <div className="mb-4 flex items-center justify-between gap-3">
-          {title && <h2 id={headingId} className="card-title">{Icon && <Icon size={22} className="text-crimson" aria-hidden="true" />}{title}</h2>}
+          {title && <h2 id={headingId} className="card-title">{Icon && <Icon size={30} className={iconClass} aria-hidden="true" />}{title}</h2>}
           {action}
         </div>
       )}
@@ -188,7 +188,9 @@ export function Bar({ value, max = 1, color = 'var(--color-crimson)', label }: {
   );
 }
 
-export function Avatar({ name, size = 40 }: { name: string; size?: number }) {
+// A profile photo (square, cover-cropped) when the user uploaded one, otherwise their initial.
+export function Avatar({ name, size = 40, src }: { name: string; size?: number; src?: string | null }) {
+  if (src) return <img src={src} alt="" aria-hidden="true" className="shrink-0 rounded-full object-cover shadow-md" style={{ width: size, height: size }} />;
   return (
     <span className="grid shrink-0 place-items-center rounded-full bg-gradient-to-br from-crimson to-crimson-deep font-display font-bold text-white shadow-md"
       style={{ width: size, height: size, fontSize: size * 0.42 }} aria-hidden="true">
@@ -229,4 +231,16 @@ export function toCsv(rows: Record<string, unknown>[]): string {
     return /[",\n]/.test(safe) ? `"${safe.replace(/"/g, '""')}"` : safe;
   };
   return [cols.join(','), ...rows.map((r) => cols.map((c) => cell(r[c])).join(','))].join('\n');
+}
+
+// The red chef-hat mark of the Dish-Wish brand (logo, "Find Recipes").
+export function ChefHatMark({ className = 'h-12 w-12' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 64 56" className={className} aria-hidden="true">
+      <path d="M18 37C10.500 37 4 31.600 4 23.800 4 16 10.200 10.400 17.200 11 19.800 5.200 25.500 2 32 2s12.200 3.200 14.800 9C53.800 10.400 60 16 60 23.800 60 31.600 53.500 37 46 37z" fill="#ef2f2b" />
+      <path d="M15 41h34v11a3 3 0 0 1-3 3H18a3 3 0 0 1-3-3z" fill="#d9122a" />
+      <path d="M25 26v12M32 26v12M39 26v12" stroke="#fff" strokeWidth="2.600" strokeLinecap="round" />
+      <path d="M15 37.500h34" stroke="#fff" strokeWidth="2.600" />
+    </svg>
+  );
 }
