@@ -152,7 +152,7 @@ export function ProfilePage() {
                           const curated = isCuratedSnapshot(r.recipe) ? r.recipe : null;
                           return (
                             <li key={r.id} className="min-w-0 overflow-hidden rounded-2xl bg-white/80 shadow-sm"><Link to={curated ? `/recipe/${curated.slug}` : `/recipes/${r.id}`} className="block">
-                              <RecipeCardImage category={curated?.category ?? 'Main Course'} imageUrl={curated ? recipeImage(curated.slug) : null} name={r.title} height="h-20" rounded="rounded-t-2xl" />
+                              <RecipeCardImage category={curated?.category ?? 'Main Course'} imageUrl={curated ? recipeImage(curated.slug) : null} name={r.title} rounded="rounded-t-2xl" />
                               <span className="block truncate px-2 pt-1 text-[0.9rem] font-semibold" title={r.title}>{r.title}</span>
                               <span className="flex items-center gap-1 px-2 pb-1.5 text-[0.82rem]"><Clock size={14} className="text-crimson" aria-hidden="true" />{r.recipe.minutes} min</span></Link></li>
                           );

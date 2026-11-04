@@ -198,7 +198,7 @@ export function KitchenHomePage() {
                 {popular.items.map((r) => (
                   <li key={r.slug} className="relative rounded-[1.25rem] bg-white/80 p-4 shadow-sm">
                     <Link to={`/recipe/${r.slug}`} className="block">
-                      <RecipeCardImage category={r.category} imageUrl={recipeImage(r.slug, r.image_url)} name={r.name} height="h-[8.3rem]" rounded="rounded-xl" />
+                      <RecipeCardImage category={r.category} imageUrl={recipeImage(r.slug, r.image_url)} name={r.name} rounded="rounded-xl" />
                       <span className="absolute right-2 top-[1.1rem] rounded-full bg-[#b7f5c8] px-3 py-1 text-[0.9rem] font-semibold text-emerald-950">
                         {r.uses !== undefined ? `${r.uses} recent ${r.uses === 1 ? 'use' : 'uses'}` : 'Featured'}
                       </span>

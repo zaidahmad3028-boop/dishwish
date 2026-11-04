@@ -31,7 +31,7 @@ function matchTone(p: number) {
 function RecipeCard({ r, selected, onSave, saved }: { r: CuratedMatch; selected: boolean; onSave: () => void; saved: 'idle' | 'saving' | 'saved' | 'exists' }) {
   return (
     <li className={`card flex flex-col overflow-hidden p-0 ${selected ? 'ring-2 ring-crimson' : ''}`}>
-      <RecipeCardImage category={r.category} imageUrl={recipeImage(r.slug, r.image_url)} name={r.name} height="h-[8.2rem]">
+      <RecipeCardImage category={r.category} imageUrl={recipeImage(r.slug, r.image_url)} name={r.name}>
         <span className={`badge absolute left-2 top-2 !text-[0.9rem] ${matchTone(r.match_percent)}`}>{r.match_percent}% Match</span>
         <button type="button" onClick={onSave} disabled={saved === 'saving' || saved === 'saved' || saved === 'exists'} aria-label={`Save ${r.name}`}
           className="absolute right-2 top-2 grid h-9 w-9 place-items-center rounded-full bg-white shadow">
@@ -193,7 +193,7 @@ export function RecommendationsPage() {
                 Try adding a main ingredient (chicken, daal, potato) or removing a filter.
               </EmptyState>
             ) : (
-              <ul className="grid gap-3 sm:grid-cols-2 2xl:grid-cols-3">
+              <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                 {shown.map((r) => <RecipeCard key={r.slug} r={r} selected={r === top} saved={saved[r.slug] ?? 'idle'} onSave={() => save(r)} />)}
               </ul>
             )}

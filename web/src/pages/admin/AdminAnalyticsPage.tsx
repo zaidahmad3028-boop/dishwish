@@ -189,7 +189,7 @@ export function AdminAnalyticsPage() {
             <ul className="space-y-1 text-[0.9rem]">
               {data.recipes.map((r) => (
                 <li key={r.recipe_slug ?? r.recipe_name} className="grid grid-cols-[3.2rem_7.5rem_1fr_2.8rem] items-center gap-2">
-                  <RecipeCardImage category="" imageUrl={r.recipe_slug ? recipeImage(r.recipe_slug) : null} name={r.recipe_name} height="h-8" rounded="rounded-md" />
+                  <RecipeCardImage category="" imageUrl={r.recipe_slug ? recipeImage(r.recipe_slug) : null} name={r.recipe_name} rounded="rounded-md" />
                   <span className="truncate font-medium">{r.recipe_name}</span>
                   <Bar value={recipeTotal(r)} max={recipeTotal(data.recipes[0])} color="linear-gradient(90deg, #dc1029, #fb7185)" label={r.recipe_name} />
                   <strong className="text-right">{recipeTotal(r).toLocaleString()}</strong>

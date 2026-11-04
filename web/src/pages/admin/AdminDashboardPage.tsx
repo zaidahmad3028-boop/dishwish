@@ -154,7 +154,7 @@ export function AdminDashboardPage() {
                 <ul className="grid grid-cols-3 gap-2">
                   {data.recipes.map((r) => (
                     <li key={r.recipe_slug ?? r.recipe_name} className="min-w-0 text-center">
-                      <RecipeCardImage category="" imageUrl={r.recipe_slug ? recipeImage(r.recipe_slug) : null} name={r.recipe_name} height="h-[4.6rem]" rounded="rounded-xl" />
+                      <RecipeCardImage category="" imageUrl={r.recipe_slug ? recipeImage(r.recipe_slug) : null} name={r.recipe_name} rounded="rounded-xl" />
                       <p className="mt-1 truncate text-[0.92rem] font-semibold">{r.recipe_name}</p>
                       <p className="flex items-center justify-center gap-1 text-[0.82rem]"><Flame size={14} className="text-crimson" aria-hidden="true" />{(r.generated + r.viewed + r.saved + r.cooked).toLocaleString()} uses</p>
                     </li>

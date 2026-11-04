@@ -140,7 +140,7 @@ export function CuratedRecipePage() {
       <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_31rem]">
         <div className="min-w-0 space-y-3">
           <section className="card grid gap-4 p-2.5 md:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
-            <RecipeCardImage category={recipe.category} imageUrl={recipeImage(recipe.slug, recipe.image_url)} name={recipe.name} height="h-[17rem]" rounded="rounded-2xl" />
+            <RecipeCardImage category={recipe.category} imageUrl={recipeImage(recipe.slug, recipe.image_url)} name={recipe.name} rounded="rounded-2xl" />
             <div className="min-w-0 py-1 pr-2">
               <h1 className="font-display text-[2rem] font-extrabold leading-tight">{recipe.name}</h1>
               <p className="mt-1 line-clamp-3 text-[0.98rem]">{recipe.description}</p>

@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, within, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -86,9 +86,9 @@ describe('PantryPage', () => {
     const field = await screen.findByLabelText('Onion grams');
     await userEvent.clear(field);
     await userEvent.type(field, '1200{Enter}');
-    expect(pantryApi.setPantryItem).toHaveBeenCalledWith('user-1', 2, 1200);
+    await waitFor(() => expect(pantryApi.setPantryItem).toHaveBeenCalledWith('user-1', 2, 1200));
     await userEvent.click(screen.getByRole('button', { name: 'Remove Onion' }));
-    expect(pantryApi.removePantryItem).toHaveBeenCalledWith('user-1', 2);
+    await waitFor(() => expect(pantryApi.removePantryItem).toHaveBeenCalledWith('user-1', 2));
     expect(await screen.findByText(/pantry is empty/i)).toBeInTheDocument();
   });
 });

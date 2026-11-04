@@ -202,7 +202,7 @@ export function PantryPage() {
             ) : shown.length === 0 ? (
               <p className="rounded-[24px] border border-dashed border-stone-300 p-6 text-center text-stone-500">Your pantry is empty. Choose “Add Ingredient” to start.</p>
             ) : (
-              <ul className={view === 'grid' ? 'grid grid-cols-2 gap-2.5 sm:grid-cols-3 2xl:grid-cols-5' : 'divide-y divide-stone-100'}>
+              <ul className={view === 'grid' ? 'grid grid-cols-2 gap-2.5 sm:grid-cols-3 xl:grid-cols-5' : 'divide-y divide-stone-100'}>
                 {shown.map(({ item, grams: g }) => {
                   const s = stockStatus(g);
                   const removeBtn = (
@@ -261,7 +261,7 @@ export function PantryPage() {
             <ul className="grid grid-cols-3 gap-2">
               {ideas.map((r) => (
                 <li key={r.slug} className="min-w-0"><Link to={`/recipe/${r.slug}`} state={{ match: r }} className="block overflow-hidden rounded-xl bg-white/75 shadow-sm">
-                  <RecipeCardImage category={r.category} imageUrl={recipeImage(r.slug, r.image_url)} name={r.name} height="h-20" rounded="rounded-t-xl">
+                  <RecipeCardImage category={r.category} imageUrl={recipeImage(r.slug, r.image_url)} name={r.name} rounded="rounded-t-xl">
                     <span className="badge badge-green absolute right-1 top-1 whitespace-nowrap">{r.match_percent}% Match</span>
                   </RecipeCardImage>
                   <span className="block px-1.5 py-1 text-[0.86rem] font-semibold leading-tight">{r.name}</span></Link></li>

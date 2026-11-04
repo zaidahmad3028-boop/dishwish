@@ -150,7 +150,7 @@ export function AdminRecipesPage() {
           <Card title="Recipe Preview" icon={Eye}>
             {!preview ? <p className="text-sm text-stone-500">No recipe to preview.</p> : (
               <div>
-                <RecipeCardImage category={preview.category} imageUrl={recipeImage(preview.slug, preview.image_url)} name={preview.name} height="h-44" rounded="rounded-2xl">
+                <RecipeCardImage category={preview.category} imageUrl={recipeImage(preview.slug, preview.image_url)} name={preview.name} rounded="rounded-2xl">
                   <span className={`badge absolute right-2 top-2 capitalize !text-[0.86rem] ${STATUS_BADGE[preview.status]}`}>{preview.status}</span>
                   <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent px-3 pb-2 pt-8 font-display text-xl font-bold text-white">{preview.name}</span>
                 </RecipeCardImage>

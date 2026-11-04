@@ -35,7 +35,7 @@ function SavedCard({ r, onDelete, onFavorite }: { r: SavedRecipe; onDelete: () =
   const category = curated ? (r.recipe as { category: string }).category : 'Main Course';
   return (
     <li className="card flex flex-col overflow-hidden p-0">
-      <RecipeCardImage category={category} imageUrl={curated ? recipeImage((r.recipe as { slug: string }).slug) : null} name={r.title} height="h-36">
+      <RecipeCardImage category={category} imageUrl={curated ? recipeImage((r.recipe as { slug: string }).slug) : null} name={r.title}>
         <span className={`badge ${SOFT_BADGE} ${curated ? 'badge-red' : 'badge-purple'}`}>{curated ? 'Saved' : 'Generated'}</span>
         <button type="button" onClick={onFavorite} aria-pressed={r.favorite ?? false} aria-label={`${r.favorite ? 'Remove' : 'Add'} ${r.title} ${r.favorite ? 'from' : 'to'} favorites`}
           className="absolute right-2 top-2 grid h-9 w-9 place-items-center rounded-full bg-white shadow">
@@ -59,7 +59,7 @@ function EventCard({ e, onRemove }: { e: RecipeEvent; onRemove: () => void }) {
   const label = e.kind === 'cooked' ? 'Cooked' : e.kind === 'generated' ? 'Generated' : 'Viewed';
   return (
     <li className="card flex flex-col overflow-hidden p-0">
-      <RecipeCardImage category="" imageUrl={e.recipe_slug ? recipeImage(e.recipe_slug) : null} name={e.recipe_name} height="h-36">
+      <RecipeCardImage category="" imageUrl={e.recipe_slug ? recipeImage(e.recipe_slug) : null} name={e.recipe_name}>
         <span className={`badge ${SOFT_BADGE} ${EVENT_BADGE[e.kind] ?? 'badge-gray'}`}>{label}{e.kind === 'cooked' && <CheckCircle2 size={14} />}</span>
         {e.match_percent !== null && <span className="badge badge-green absolute right-2 top-2 !text-[0.84rem]">{e.match_percent}% Match</span>}
       </RecipeCardImage>
@@ -75,7 +75,7 @@ function EventCard({ e, onRemove }: { e: RecipeEvent; onRemove: () => void }) {
   );
 }
 
-const GRID = 'grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4';
+const GRID = 'grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4';
 
 export function MyRecipesPage() {
   const { session } = useAuth();
@@ -180,7 +180,7 @@ export function MyRecipesPage() {
               <ul className={GRID}>
                 {browseShown.map((r) => (
                   <li key={r.slug} className="card flex flex-col overflow-hidden p-0">
-                    <RecipeCardImage category={r.category} imageUrl={recipeImage(r.slug, r.image_url)} name={r.name} height="h-36" />
+                    <RecipeCardImage category={r.category} imageUrl={recipeImage(r.slug, r.image_url)} name={r.name} />
                     <div className="flex flex-1 flex-col p-3">
                       <p className="truncate font-display text-[1.15rem] font-bold" title={r.name}>{r.name}</p>
                       <CardMeta minutes={r.minutes} servings={r.servings} />
@@ -207,7 +207,7 @@ export function MyRecipesPage() {
             <ul className="divide-y divide-stone-100">
               {(events ?? []).filter((e) => e.kind === 'cooked').slice(0, 3).map((e) => (
                 <li key={e.id} className="flex items-center gap-3 py-1.5">
-                  <span className="w-20 shrink-0"><RecipeCardImage category="" imageUrl={e.recipe_slug ? recipeImage(e.recipe_slug) : null} name={e.recipe_name} height="h-12" rounded="rounded-lg" /></span>
+                  <span className="w-20 shrink-0"><RecipeCardImage category="" imageUrl={e.recipe_slug ? recipeImage(e.recipe_slug) : null} name={e.recipe_name} rounded="rounded-lg" /></span>
                   <span className="min-w-0 flex-1"><strong className="block truncate font-display">{e.recipe_name}</strong><span className="flex items-center gap-1 text-[0.84rem]"><CalendarDays size={14} className="text-crimson" aria-hidden="true" />{formatDate(e.created_at)}</span></span>
                   <CheckCircle2 size={20} className="shrink-0 text-green-600" aria-label="Cooked" />
                 </li>
@@ -219,7 +219,7 @@ export function MyRecipesPage() {
             <ul className="space-y-2">
               {groups.map((g) => (
                 <li key={g.name}><button type="button" onClick={() => { setCategory(g.name); setParams({ tab: 'browse' }); }} className="flex w-full items-center gap-3 rounded-2xl bg-white/75 p-2 text-left shadow-sm hover:bg-rose-50">
-                  <span className="w-16 shrink-0"><RecipeCardImage category={g.name} imageUrl={recipeImage(g.items[0].slug, g.items[0].image_url)} name={g.name} height="h-10" rounded="rounded-lg" /></span>
+                  <span className="w-16 shrink-0"><RecipeCardImage category={g.name} imageUrl={recipeImage(g.items[0].slug, g.items[0].image_url)} name={g.name} rounded="rounded-lg" /></span>
                   <span className="min-w-0 flex-1"><strong className="block truncate font-display">{g.name}</strong><span className="text-[0.84rem]">{g.items.length} recipes</span></span>
                   <ChevronRight size={18} className="text-crimson" aria-hidden="true" /></button></li>
               ))}

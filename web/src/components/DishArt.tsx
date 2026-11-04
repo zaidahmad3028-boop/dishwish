@@ -1,15 +1,25 @@
 // Recipe and ingredient imagery. A recipe shows its own photo (admin image_url, else the bundled/R2
 // photo); without one, or if it fails to load, a neutral Dish-Wish default (a covered plate) is shown,
 // so no other dish's photo is ever passed off as this one.
-import type { CSSProperties, ReactNode, SyntheticEvent } from 'react';
+import { useState, type CSSProperties, type ReactNode, type SyntheticEvent } from 'react';
 import { Apple, Bean, Beef, Carrot, Croissant, Droplet, Drumstick, Egg, Fish, Flame, Leaf, Milk, Nut, Soup, Wheat, type LucideIcon } from 'lucide-react';
 import { imageUrl as assetUrl, ingredientImage } from '../lib/images';
 
 export const DEFAULT_RECIPE_IMAGE = assetUrl('recipes/default.svg');
 
+// A picture can fail on a weak connection, so try it once more before giving up. True means a retry is on its way.
+function retryOnce(img: HTMLImageElement): boolean {
+  if (img.dataset.retried) return false;
+  img.dataset.retried = '1';
+  const url = `${img.src}${img.src.includes('?') ? '&' : '?'}retry=1`;
+  setTimeout(() => { img.src = url; }, 800);
+  return true;
+}
+
 function showDefaultOnError(e: SyntheticEvent<HTMLImageElement>) {
   const img = e.currentTarget;
-  if (!img.src.endsWith(DEFAULT_RECIPE_IMAGE)) img.src = DEFAULT_RECIPE_IMAGE;
+  if (img.src.endsWith(DEFAULT_RECIPE_IMAGE) || retryOnce(img)) return;
+  img.src = DEFAULT_RECIPE_IMAGE;
 }
 
 function RecipeImg({ src, name, category, className }: { src?: string | null; name: string; category: string; className: string }) {
@@ -24,13 +34,13 @@ export function DishArt({ category, imageUrl, name, className = '' }: { category
   return <RecipeImg src={imageUrl} name={name} category={category} className={`aspect-[3/2] w-full rounded-2xl ${className}`} />;
 }
 
-// The top of every recipe card: edge to edge (the card itself has no padding above it), one fixed
-// height per grid, rounded top corners, cover-cropped. Badges/buttons go in `children`.
+// The top of every recipe card: edge to edge (the card itself has no padding above it), rounded top corners.
+// The frame is exactly 3:2 like the pictures, so the whole dish shows at any card width. Badges/buttons go in `children`.
 // The card <li> must be `overflow-hidden p-0` and put its text in its own padded block below.
-export function RecipeCardImage({ category, imageUrl, name, height = 'h-44', rounded = 'rounded-t-xl', children }:
-  { category: string; imageUrl?: string | null; name: string; height?: string; rounded?: string; children?: ReactNode }) {
+export function RecipeCardImage({ category, imageUrl, name, rounded = 'rounded-t-xl', children }:
+  { category: string; imageUrl?: string | null; name: string; rounded?: string; children?: ReactNode }) {
   return (
-    <div className={`relative w-full ${height} overflow-hidden ${rounded}`}>
+    <div className={`relative aspect-[3/2] w-full overflow-hidden ${rounded}`}>
       <RecipeImg src={imageUrl} name={name} category={category} className="block h-full w-full" />
       {children}
     </div>
@@ -80,8 +90,9 @@ export function ingredientIcon(name: string, category: string): LucideIcon {
 // Ingredient picture as in the reference designs: the item floats on the card, no circle or box. Pictures are
 // transparent cut-outs (scripts/slice_ingredient_sheets.py); multiply blending also hides a plain white background.
 export function IngredientBadge({ name, category, size = 44 }: { name: string; category: string; size?: number }) {
+  const [failed, setFailed] = useState(false);
   const photo = ingredientImage(name);
-  if (photo) return <IngredientPicture src={photo} style={{ width: size, height: size }} />;
+  if (photo && !failed) return <IngredientPicture src={photo} onFail={() => setFailed(true)} style={{ width: size, height: size }} />;
   const Icon = ingredientIcon(name, category);
   return (
     <span className={`grid shrink-0 place-items-center rounded-full ${INGREDIENT_TINT[category] ?? 'bg-stone-100 text-stone-600'}`}
@@ -91,14 +102,15 @@ export function IngredientBadge({ name, category, size = 44 }: { name: string; c
   );
 }
 
-function IngredientPicture({ src, className = '', style }: { src: string; className?: string; style?: CSSProperties }) {
-  return <img src={src} alt="" aria-hidden="true" loading="lazy" style={style}
+function IngredientPicture({ src, className = '', style, onFail }: { src: string; className?: string; style?: CSSProperties; onFail: () => void }) {
+  return <img src={src} alt="" aria-hidden="true" style={style} onError={(e) => { if (!retryOnce(e.currentTarget)) onFail(); }}
     className={`block shrink-0 object-contain mix-blend-multiply ${className}`} />;
 }
 
 // The large picture on an ingredient card (selection grid): fills its (relative, sized) parent; icon fallback.
 export function IngredientHero({ name, category }: { name: string; category: string }) {
+  const [failed, setFailed] = useState(false);
   const photo = ingredientImage(name);
-  if (photo) return <IngredientPicture src={photo} className="absolute inset-0 h-full w-full" />;
+  if (photo && !failed) return <IngredientPicture src={photo} onFail={() => setFailed(true)} className="absolute inset-0 h-full w-full" />;
   return <span className="absolute inset-0 grid place-items-center"><IngredientBadge name={name} category={category} size={64} /></span>;
 }
