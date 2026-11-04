@@ -1,6 +1,6 @@
 // Shared building blocks for the dashboard pages (user and admin), styled by the tokens in styles.css.
 import { useEffect, useId, useRef, type ReactNode } from 'react';
-import { AlertTriangle, ChevronLeft, ChevronRight, Inbox, Loader2, Search, X, type LucideIcon } from 'lucide-react';
+import { AlertTriangle, ArrowDown, ArrowUp, ChevronLeft, ChevronRight, Inbox, Loader2, Search, X, type LucideIcon } from 'lucide-react';
 
 export function PageHeader({ title, accent, subtitle, icon: Icon, actions }: {
   title: string; accent?: string; subtitle?: string; icon?: LucideIcon; actions?: ReactNode;
@@ -44,18 +44,66 @@ const TONES = {
 } as const;
 export type Tone = keyof typeof TONES;
 
-export function StatCard({ icon: Icon, value, label, tone = 'red', note }: {
-  icon: LucideIcon; value: ReactNode; label: string; tone?: Tone; note?: ReactNode;
+export function StatCard({ icon: Icon, value, label, tone = 'red', note, trend }: {
+  icon: LucideIcon; value: ReactNode; label: string; tone?: Tone; note?: ReactNode; trend?: string | null;
 }) {
+  const down = trend?.startsWith('-');
   return (
-    <div className="card flex items-center gap-4 p-4">
-      <span className={`grid h-12 w-12 shrink-0 place-items-center rounded-full ${TONES[tone]}`}><Icon size={24} aria-hidden="true" /></span>
-      <div className="min-w-0">
-        <p className="font-display text-2xl font-extrabold leading-none">{value}</p>
-        <p className="mt-1 text-sm text-stone-600">{label}</p>
-        {note && <p className="mt-1 text-xs font-semibold text-stone-500">{note}</p>}
+    <div className="card flex items-center gap-3 p-3.5">
+      <span className={`grid h-[4.4rem] w-[4.4rem] shrink-0 place-items-center rounded-full ${TONES[tone]}`}><Icon size={40} strokeWidth={1.7} aria-hidden="true" /></span>
+      <div className="min-w-0 flex-1">
+        <p className="text-[1.75rem] font-bold leading-none tracking-tight">{value}</p>
+        <p className="mt-1 text-[0.98rem] leading-tight text-stone-700">{label}</p>
+        {trend && <p className={`badge mt-1.5 ${down ? 'badge-red' : 'badge-green'} !text-[0.82rem]`}>{down ? <ArrowDown size={13} /> : <ArrowUp size={13} />}{trend}</p>}
+        {note && <div className="mt-1 text-xs font-semibold text-stone-500">{note}</div>}
       </div>
     </div>
+  );
+}
+
+// Square shortcut with an icon above its label (the "Quick Actions" grids).
+export function ActionTile({ icon: Icon, label, onClick, disabled, iconClass = 'text-crimson' }: {
+  icon: LucideIcon; label: string; onClick?: () => void; disabled?: boolean; iconClass?: string;
+}) {
+  return (
+    <button type="button" onClick={onClick} disabled={disabled} className="action-tile">
+      <Icon size={28} strokeWidth={1.8} className={iconClass} aria-hidden="true" />{label}
+    </button>
+  );
+}
+
+// Full-width row with an icon, a label and a chevron (account and detail action lists).
+export function ActionRow({ icon: Icon, label, onClick, disabled, danger = false }: {
+  icon: LucideIcon; label: string; onClick?: () => void; disabled?: boolean; danger?: boolean;
+}) {
+  return (
+    <button type="button" onClick={onClick} disabled={disabled}
+      className={`flex w-full items-center gap-3 border-b border-stone-100 py-2 text-left text-[0.95rem] font-semibold last:border-0 hover:text-crimson disabled:opacity-40 ${danger ? 'text-crimson' : ''}`}>
+      <Icon size={20} className="text-crimson" aria-hidden="true" /><span className="flex-1">{label}</span><ChevronRight size={18} aria-hidden="true" />
+    </button>
+  );
+}
+
+// Daily / Weekly / Monthly switch shown beside a chart title.
+export function SegmentTabs<T extends string>({ value, options, onChange, label }: {
+  value: T; options: readonly (readonly [T, string])[]; onChange: (v: T) => void; label: string;
+}) {
+  return (
+    <div role="tablist" aria-label={label} className="flex rounded-full bg-white/80 p-0.5 shadow-sm">
+      {options.map(([k, l]) => (
+        <button key={k} type="button" role="tab" aria-selected={value === k} onClick={() => onChange(k)}
+          className={`whitespace-nowrap rounded-full px-2.5 py-0.5 text-[0.8rem] font-semibold ${value === k ? 'bg-gradient-to-r from-crimson to-[#ea2526] text-white shadow' : 'text-stone-700'}`}>{l}</button>
+      ))}
+    </div>
+  );
+}
+
+export function Stars({ value, size = '1rem' }: { value: number; size?: string }) {
+  const n = Math.round(value);
+  return (
+    <span aria-label={`${n} out of 5 stars`} role="img" style={{ fontSize: size }} className="whitespace-nowrap tracking-tight">
+      <span className="text-amber-500">{'★'.repeat(n)}</span><span className="text-stone-300">{'★'.repeat(5 - n)}</span>
+    </span>
   );
 }
 
@@ -109,13 +157,22 @@ export function Pagination({ page, pageSize, total, onPage, noun = 'items' }: {
 }) {
   const pages = Math.max(1, Math.ceil(total / pageSize));
   const from = total === 0 ? 0 : (page - 1) * pageSize + 1;
+  // Numbered buttons around the current page, then "…" and the last page.
+  const start = Math.max(1, Math.min(page - 2, pages - 4));
+  const shown = Array.from({ length: Math.min(5, pages) }, (_, i) => start + i);
   return (
     <nav aria-label="Pagination" className="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm">
       <span className="text-stone-600">Showing {from}–{Math.min(total, page * pageSize)} of {total.toLocaleString()} {noun}</span>
       <span className="flex items-center gap-1">
-        <button type="button" className="icon-btn" onClick={() => onPage(page - 1)} disabled={page <= 1} aria-label="Previous page"><ChevronLeft size={18} /></button>
-        <span className="px-2 font-semibold" aria-current="page">{page} / {pages}</span>
-        <button type="button" className="icon-btn" onClick={() => onPage(page + 1)} disabled={page >= pages} aria-label="Next page"><ChevronRight size={18} /></button>
+        <button type="button" className="page-btn" onClick={() => onPage(page - 1)} disabled={page <= 1} aria-label="Previous page"><ChevronLeft size={18} /></button>
+        {shown.map((p) => (
+          <button key={p} type="button" className={`page-btn ${p === page ? 'page-btn-active' : ''}`} onClick={() => onPage(p)} aria-current={p === page ? 'page' : undefined} aria-label={`Page ${p}`}>{p}</button>
+        ))}
+        {shown[shown.length - 1] < pages && <>
+          <span aria-hidden="true" className="px-1">…</span>
+          <button type="button" className="page-btn" onClick={() => onPage(pages)} aria-label={`Page ${pages}`}>{pages}</button>
+        </>}
+        <button type="button" className="page-btn" onClick={() => onPage(page + 1)} disabled={page >= pages} aria-label="Next page"><ChevronRight size={18} /></button>
       </span>
     </nav>
   );

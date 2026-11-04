@@ -1,17 +1,19 @@
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { AlertTriangle, Download, Layers, Leaf, Link2, Network, Pencil, Plus, Trash2, Upload } from 'lucide-react';
+import { AlertTriangle, Download, Info, Layers, LayoutGrid, Leaf, Link2, Network, Pencil, Plus, PlusCircle, Trash2, Upload, Utensils, Zap } from 'lucide-react';
 import { BarTrend, Legend, PALETTE } from '../../components/charts';
 import { CompatibilityGraph } from '../../components/CompatibilityGraph';
-import { IngredientBadge } from '../../components/DishArt';
-import { Card, Donut, EmptyState, ErrorNote, Modal, Notice, PageHeader, Pagination, SearchBox, Spinner, StatCard, downloadFile, toCsv } from '../../components/ui';
+import { CategoryIcon, IngredientBadge } from '../../components/DishArt';
+import { ActionTile, Bar, Card, Donut, EmptyState, ErrorNote, Modal, Notice, PageHeader, Pagination, SearchBox, Spinner, StatCard, downloadFile, toCsv } from '../../components/ui';
 import {
   addCategory, deleteEdge, deleteIngredient, ingredientUsage, listCategories, listEdges, listIngredients, RELATIONS, saveEdge, saveIngredient,
   validateIngredient, type AdminIngredient, type Edge,
 } from '../../lib/adminApi';
 import { ALLERGEN_CHIPS, allergenLabel } from '../../lib/preferences';
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 8;
+const short = (name: string) => name.replace(/\s*\(.*\)$/, '');
+const scoreBadge = (w: number) => (w >= 0.8 ? 'badge-green' : w >= 0.6 ? 'badge-amber' : 'badge-red');
 const ALL_TAGS = [...ALLERGEN_CHIPS.map((c) => c.tag), 'shellfish'];
 type Draft = Omit<AdminIngredient, 'id'>;
 const blank = (categoryId: number): Draft => ({ name: '', category_id: categoryId, kcal: 0, protein: 0, carbs: 0, fat: 0, sweet: 0, salty: 0, sour: 0, spicy: 0, allergens: [], priority: 3, image_url: null });
@@ -55,6 +57,7 @@ export function AdminIngredientsPage() {
   const [editing, setEditing] = useState<{ id: number | null; draft: Draft } | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<AdminIngredient | null>(null);
   const [edgeForm, setEdgeForm] = useState({ target: 0, weight: 0.8, relation: 'complementary', evidence: '' });
+  const [graphOpen, setGraphOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
   const [importText, setImportText] = useState('');
   const [newCategory, setNewCategory] = useState('');
@@ -80,13 +83,24 @@ export function AdminIngredientsPage() {
     return rows.sort((a, b) => sort === 'name' ? a.name.localeCompare(b.name) : (usage.get(b.id)?.[sort] ?? 0) - (usage.get(a.id)?.[sort] ?? 0));
   }, [items, search, category, allergen, sort, usage]);
 
-  const focusItem = focus ? byId.get(focus) : undefined;
+  // The graph shows the chosen ingredient, or Tomato (as in the designs) until one is chosen.
+  const focusItem = (focus ? byId.get(focus) : undefined) ?? items?.find((i) => i.name === 'Tomato') ?? items?.[0];
+  const avgWeight = useMemo(() => {
+    const acc = new Map<number, { sum: number; n: number }>();
+    for (const e of edges) for (const id of [e.ingredient_a, e.ingredient_b]) {
+      const a = acc.get(id) ?? { sum: 0, n: 0 };
+      acc.set(id, { sum: a.sum + e.weight, n: a.n + 1 });
+    }
+    return new Map([...acc].map(([id, a]) => [id, a.sum / a.n]));
+  }, [edges]);
   const focusEdges = focusItem ? edges.filter((e) => e.ingredient_a === focusItem.id || e.ingredient_b === focusItem.id)
     .map((e) => { const other = byId.get(e.ingredient_a === focusItem.id ? e.ingredient_b : e.ingredient_a); return { name: other?.name ?? '?', id: other?.id ?? 0, weight: e.weight, evidence: e.evidence, relation: e.relation_type }; })
     .sort((a, b) => b.weight - a.weight) : [];
   const covered = new Set(edges.flatMap((e) => [e.ingredient_a, e.ingredient_b]));
   const tagCounts = ALL_TAGS.map((t) => ({ tag: t, n: (items ?? []).filter((i) => i.allergens.includes(t)).length })).filter((t) => t.n > 0).sort((a, b) => b.n - a.n);
   const perCategory = categories.map((c) => ({ name: c.name, count: (items ?? []).filter((i) => i.category_id === c.id).length }));
+  const coverage = items?.length ? Math.round((covered.size / items.length) * 100) : 0;
+  const focusScore = focusItem ? avgWeight.get(focusItem.id) ?? null : null;
 
   const run = async (fn: () => Promise<void>, done: string) => {
     setError(''); setNotice('');
@@ -123,28 +137,25 @@ export function AdminIngredientsPage() {
   return (
     <>
       <PageHeader title="Ingredients" accent="Management" icon={Leaf} subtitle="Manage the ingredient database, categories, allergens and compatibility relationships."
-        actions={<>
-          <button type="button" className="btn-ghost" onClick={exportCsv}><Download size={16} />Export CSV</button>
-          <button type="button" className="btn-ghost" onClick={() => setImportOpen(true)}><Upload size={16} />Import CSV</button>
-          <button type="button" className="btn-primary" onClick={() => setEditing({ id: null, draft: blank(categories[0]?.id ?? 0) })}><Plus size={18} />Add Ingredient</button>
-        </>} />
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+        actions={<button type="button" className="btn-primary" onClick={() => setEditing({ id: null, draft: blank(categories[0]?.id ?? 0) })}><Plus size={18} />Add Ingredient</button>} />
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
         <StatCard icon={Leaf} value={items.length} label="Total Ingredients" tone="green" />
         <StatCard icon={Layers} value={categories.length} label="Categories" tone="amber" />
-        <StatCard icon={Link2} value={edges.length} label="Compatibility Links" />
-        <StatCard icon={AlertTriangle} value={tagCounts.length} label="Allergen tags in use" />
-        <StatCard icon={Network} value={`${items.length ? Math.round((covered.size / items.length) * 100) : 0}%`} label="Graph coverage" tone="blue" note="Ingredients with ≥1 stored edge" />
+        <StatCard icon={Network} value={edges.length.toLocaleString()} label="Compatibility Links" />
+        <StatCard icon={AlertTriangle} value={tagCounts.length} label="Allergens" />
+        <StatCard icon={Utensils} value={`${coverage}%`} label="Knowledge Graph Coverage" note={<Bar value={coverage} max={100} color="#16a34a" label="Knowledge graph coverage" />} />
       </div>
       {notice && <div className="mt-4"><Notice>{notice}</Notice></div>}
       {error && <div className="mt-4"><ErrorNote>{error}</ErrorNote></div>}
 
-      <div className="mt-6 grid gap-6 2xl:grid-cols-[14rem_minmax(0,1fr)_26rem]">
-        <Card title="Categories" className="h-fit">
-          <ul className="flex flex-wrap gap-1 2xl:flex-col">
-            <li><button type="button" className={`w-full rounded-xl px-3 py-1.5 text-left text-sm font-semibold ${!category ? 'bg-rose-50 text-crimson' : ''}`} onClick={() => setCategory(0)}>All ({items.length})</button></li>
+      <div className="mt-3 grid gap-3 xl:grid-cols-[14rem_minmax(0,1fr)_27rem]">
+        <Card title="Ingredient Categories">
+          <ul className="flex flex-wrap xl:flex-col">
+            <li><button type="button" className={`flex w-full items-center gap-2 rounded-xl px-2.5 py-1.5 text-left text-[0.88rem] font-semibold ${!category ? 'bg-gradient-to-r from-crimson to-[#ea2526] text-white' : ''}`} onClick={() => setCategory(0)}>
+              <LayoutGrid size={20} aria-hidden="true" /><span className="flex-1">All Ingredients ({items.length})</span></button></li>
             {perCategory.map((c, i) => (
-              <li key={c.name}><button type="button" className={`w-full rounded-xl px-3 py-1.5 text-left text-sm font-semibold ${category === categories[i].id ? 'bg-rose-50 text-crimson' : ''}`}
-                onClick={() => setCategory(categories[i].id)}>{c.name} ({c.count})</button></li>
+              <li key={c.name}><button type="button" className={`flex w-full items-center gap-2 rounded-xl px-2.5 py-[0.2rem] text-left text-[0.85rem] font-medium ${category === categories[i].id ? 'bg-gradient-to-r from-crimson to-[#ea2526] text-white [&_svg]:text-white' : ''}`}
+                onClick={() => setCategory(categories[i].id)}><CategoryIcon category={c.name} size={20} /><span className="min-w-0 flex-1 truncate" title={c.name}>{c.name}</span><span>({c.count})</span></button></li>
             ))}
           </ul>
           <form className="mt-3 flex gap-1" onSubmit={(e) => { e.preventDefault(); run(async () => { await addCategory(newCategory); setNewCategory(''); }, 'Category added.'); }}>
@@ -165,16 +176,16 @@ export function AdminIngredientsPage() {
           </div>
           {filtered.length === 0 ? <EmptyState title="No ingredients match" /> : (
             <div className="overflow-x-auto">
-              <table className="data-table min-w-[640px]">
-                <thead><tr><th>Ingredient</th><th>Category</th><th>Allergens</th><th>Links</th><th>Recipes</th><th>Actions</th></tr></thead>
+              <table className="data-table min-w-[520px]">
+                <thead><tr><th>Ingredient</th><th>Category</th><th>Allergens</th><th>Compatibility</th><th>Actions</th></tr></thead>
                 <tbody>
                   {filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((i) => (
                     <tr key={i.id} className={focus === i.id ? 'bg-rose-50/60' : ''}>
                       <td><button type="button" className="flex items-center gap-2 text-left font-semibold hover:text-crimson" onClick={() => setFocus(i.id)}>
-                        <IngredientBadge name={i.name} category={catName(i.category_id)} size={28} />{i.name}</button></td>
-                      <td><span className="badge badge-gray">{catName(i.category_id)}</span></td>
-                      <td>{i.allergens.length ? i.allergens.map((a) => <span key={a} className="badge badge-red mr-1">{allergenLabel(a)}</span>) : '—'}</td>
-                      <td>{usage.get(i.id)?.edges ?? 0}</td><td>{usage.get(i.id)?.recipes ?? 0}</td>
+                        <IngredientBadge name={i.name} category={catName(i.category_id)} size={32} />{short(i.name)}</button></td>
+                      <td><span className="badge badge-gray max-w-40 truncate"><CategoryIcon category={catName(i.category_id)} size={14} /><span className="truncate">{catName(i.category_id)}</span></span></td>
+                      <td>{i.allergens.length ? i.allergens.map((a) => <span key={a} className="badge badge-red mr-1 whitespace-nowrap"><AlertTriangle size={12} />{allergenLabel(a)}</span>) : '—'}</td>
+                      <td>{avgWeight.has(i.id) ? <span className={`badge ${scoreBadge(avgWeight.get(i.id) as number)} !text-[0.86rem]`}>{(avgWeight.get(i.id) as number).toFixed(2)}</span> : '—'}</td>
                       <td className="whitespace-nowrap">
                         <button type="button" className="icon-btn" aria-label={`Edit ${i.name}`} onClick={() => setEditing({ id: i.id, draft: { ...i } })}><Pencil size={16} /></button>
                         <button type="button" className="icon-btn" aria-label={`Delete ${i.name}`} onClick={() => setConfirmDelete(i)}><Trash2 size={16} /></button>
@@ -189,9 +200,58 @@ export function AdminIngredientsPage() {
         </Card>
 
         <Card title="Ingredient Compatibility Graph" icon={Network}>
-          {!focusItem ? <p className="text-sm text-stone-500">Click an ingredient name to view and edit its compatibility edges.</p> : (
+          {focusItem && <>
+            <CompatibilityGraph center={focusItem.name} edges={focusEdges} max={8} onSelect={(n) => { const t = items.find((x) => x.name === n); if (t) setFocus(t.id); }} />
+            <div className="mt-2 rounded-2xl bg-white/70 p-3">
+              <p className="flex items-center gap-1.5 font-display text-lg font-bold">Compatibility Score <span className="font-sans text-sm font-normal">({short(focusItem.name)})</span><Info size={15} className="text-crimson" aria-hidden="true" /></p>
+              <div className="mt-2 flex items-center gap-3">
+                <span className="relative h-2.5 flex-1 rounded-full" style={{ background: 'linear-gradient(90deg, #ef4444, #f59e0b, #16a34a)' }}>
+                  {focusScore !== null && <span className="absolute -top-1 h-[1.1rem] w-2.5 -translate-x-1/2 rounded-full border-2 border-white bg-green-600 shadow" style={{ left: `${focusScore * 100}%` }} />}
+                </span>
+                <span className="text-right text-sm font-bold leading-tight">{focusScore !== null ? `${focusScore.toFixed(2)} / 1.00` : 'No links yet'}
+                  {focusScore !== null && <span className={`block font-semibold ${focusScore >= 0.8 ? 'text-green-700' : focusScore >= 0.6 ? 'text-amber-600' : 'text-rose-700'}`}>({focusScore >= 0.8 ? 'High' : focusScore >= 0.6 ? 'Medium' : 'Low'})</span>}</span>
+              </div>
+            </div>
+          </>}
+        </Card>
+      </div>
+
+      <div className="mt-3 grid gap-3 lg:grid-cols-2 xl:grid-cols-[1.15fr_1fr_1.1fr_1.1fr]">
+        <Card title="Ingredient Analytics" icon={Layers}><BarTrend data={perCategory} x="name" y="count" label="Ingredients per category" height={140} /></Card>
+        <Card title="Top Compatible Pairs" icon={Link2}>
+          <ul className="space-y-1.5 text-[0.92rem]">
+            {[...edges].sort((a, b) => b.weight - a.weight).slice(0, 4).map((e) => {
+              const a = byId.get(e.ingredient_a), b = byId.get(e.ingredient_b);
+              return (
+                <li key={`${e.ingredient_a}-${e.ingredient_b}`} className="flex items-center justify-between gap-2">
+                  <span className="flex min-w-0 items-center gap-2">{a && <IngredientBadge name={a.name} category={catName(a.category_id)} size={34} />}<span className="truncate">{a && short(a.name)} + {b && short(b.name)}</span></span>
+                  <span className="badge badge-green !text-[0.86rem]">{e.weight.toFixed(2)}</span>
+                </li>
+              );
+            })}
+            {edges.length === 0 && <li className="text-stone-500">No stored edges yet.</li>}
+          </ul>
+        </Card>
+        <Card title="Allergen Overview" icon={AlertTriangle}>
+          <div className="flex flex-wrap items-center gap-4">
+            <Donut size={130} label="Allergen tags" parts={tagCounts.map((t, i) => ({ value: t.n, color: PALETTE[i % PALETTE.length], label: t.tag }))}
+              center={<span><span className="block text-xl font-bold">{tagCounts.reduce((s, t) => s + t.n, 0)}</span><span className="text-sm">Allergens</span></span>} />
+            <div className="min-w-32 flex-1"><Legend items={tagCounts.slice(0, 5).map((t, i) => ({ label: allergenLabel(t.tag), value: t.n, color: PALETTE[i % PALETTE.length] }))} /></div>
+          </div>
+        </Card>
+        <Card title="Quick Actions" icon={Zap}>
+          <div className="grid grid-cols-2 gap-2">
+            <ActionTile icon={PlusCircle} label="+ Add Ingredient" onClick={() => setEditing({ id: null, draft: blank(categories[0]?.id ?? 0) })} />
+            <ActionTile icon={Upload} label="Import CSV" onClick={() => setImportOpen(true)} />
+            <ActionTile icon={Download} label="Export CSV" onClick={exportCsv} />
+            <ActionTile icon={Network} label="Update Graph" onClick={() => setGraphOpen(true)} />
+          </div>
+        </Card>
+      </div>
+
+      <Modal open={graphOpen} title={`Update graph${focusItem ? `: ${short(focusItem.name)}` : ''}`} onClose={() => setGraphOpen(false)} wide>
+          {focusItem && (
             <>
-              <CompatibilityGraph center={focusItem.name} edges={focusEdges} max={8} onSelect={(n) => { const t = items.find((x) => x.name === n); if (t) setFocus(t.id); }} />
               <form onSubmit={submitEdge} className="mt-4 space-y-2 rounded-2xl bg-white/70 p-3 text-sm">
                 <p className="font-semibold">Add or update an edge from {focusItem.name}</p>
                 <select className="field py-2" value={edgeForm.target} onChange={(e) => setEdgeForm({ ...edgeForm, target: Number(e.target.value) })} aria-label="Target ingredient" required>
@@ -216,32 +276,10 @@ export function AdminIngredientsPage() {
                   ))}
                 </ul>
               )}
-              <p className="mt-2 text-xs text-stone-500">Weight 0–1: 1 = pairs very well, 0 = should not be combined (“avoid”).</p>
+              <p className="mt-2 text-xs text-stone-500">Weight 0–1: 1 = pairs very well, 0 = should not be combined (“avoid”). Click a row’s ingredient in the table first to change which one you are editing.</p>
             </>
           )}
-        </Card>
-      </div>
-
-      <div className="mt-6 grid gap-6 xl:grid-cols-3">
-        <Card title="Ingredients per Category" icon={Layers}><BarTrend data={perCategory} x="name" y="count" label="Ingredients" colorful /></Card>
-        <Card title="Top Compatible Pairs" icon={Link2}>
-          <ul className="space-y-2 text-sm">
-            {[...edges].sort((a, b) => b.weight - a.weight).slice(0, 6).map((e) => (
-              <li key={`${e.ingredient_a}-${e.ingredient_b}`} className="flex justify-between gap-2">
-                <span>{byId.get(e.ingredient_a)?.name} + {byId.get(e.ingredient_b)?.name}</span><span className="badge badge-green">{e.weight.toFixed(2)}</span>
-              </li>
-            ))}
-            {edges.length === 0 && <li className="text-stone-500">No stored edges yet.</li>}
-          </ul>
-        </Card>
-        <Card title="Allergen Overview" icon={AlertTriangle}>
-          <div className="flex flex-wrap items-center gap-4">
-            <Donut size={120} label="Allergen tags" parts={tagCounts.map((t, i) => ({ value: t.n, color: PALETTE[i % PALETTE.length], label: t.tag }))}
-              center={<span><span className="block font-display text-xl font-extrabold">{tagCounts.reduce((s, t) => s + t.n, 0)}</span><span className="text-[11px]">tagged</span></span>} />
-            <div className="min-w-40 flex-1"><Legend items={tagCounts.slice(0, 7).map((t, i) => ({ label: allergenLabel(t.tag), value: t.n, color: PALETTE[i % PALETTE.length] }))} /></div>
-          </div>
-        </Card>
-      </div>
+      </Modal>
 
       <Modal open={editing !== null} title={editing?.id ? 'Edit ingredient' : 'Add ingredient'} onClose={() => setEditing(null)} wide>
         {d && (

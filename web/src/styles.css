@@ -171,6 +171,8 @@ body {
     transition: background 150ms ease, border-color 150ms ease;
   }
   .pill:hover:not(:disabled) { border-color: rgb(200 30 58 / 0.35); }
+  /* Ingredient pictures blend into light cards; on a selected (red) pill that would turn them dark. */
+  .pill[aria-pressed="true"] img, .pill[aria-selected="true"] img { mix-blend-mode: normal; }
   .pill[aria-pressed="true"], .pill[aria-selected="true"] {
     color: white;
     border-color: transparent;
@@ -200,6 +202,47 @@ body {
     font-size: 0.85rem;
     font-weight: 600;
   }
+  /* Admin screens use tighter cards than the user pages, as in the reference designs. */
+  .admin-page .card-title { font-size: 1.22rem; gap: 0.45rem; white-space: nowrap; }
+  .admin-page .card-title svg { width: 1.5rem; height: 1.5rem; }
+  .admin-page .card.p-5 { padding: 0.8rem 0.9rem !important; }
+  .admin-page .card > .mb-4 { margin-bottom: 0.5rem !important; }
+  .admin-page .data-table th, .admin-page .data-table td { padding: 0.36rem 0.45rem; }
+  .admin-page .select { padding-top: 0.42rem; padding-bottom: 0.42rem; }
+  .action-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    min-height: 5rem;
+    border-radius: 1rem;
+    border: 1px solid rgb(255 255 255 / 0.9);
+    background: rgb(255 255 255 / 0.75);
+    padding: 0.6rem 0.3rem;
+    text-align: center;
+    font-size: 0.86rem;
+    font-weight: 600;
+    line-height: 1.15;
+    box-shadow: 0 6px 14px -10px rgb(159 18 57 / 0.45);
+    transition: background 0.15s ease;
+  }
+  .action-tile:hover:not(:disabled) { background: #fff1f2; }
+  .action-tile:disabled { opacity: 0.45; cursor: not-allowed; }
+  .page-btn {
+    display: inline-grid;
+    place-items: center;
+    min-width: 2.15rem;
+    height: 2.15rem;
+    border-radius: 0.7rem;
+    background: rgb(255 255 255 / 0.85);
+    font-weight: 600;
+    box-shadow: 0 4px 10px -7px rgb(159 18 57 / 0.5);
+  }
+  .page-btn:hover:not(:disabled) { color: var(--color-crimson); }
+  .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .page-btn-active { background: linear-gradient(90deg, #dc1029, #ea2526); color: white; }
+  .page-btn-active:hover:not(:disabled) { color: white; }
   .data-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
   .data-table th { text-align: left; font-weight: 700; color: #44403c; padding: 0.6rem 0.75rem; border-bottom: 1px solid #f1e4df; white-space: nowrap; }
   .data-table td { padding: 0.6rem 0.75rem; border-bottom: 1px solid #f7eeea; vertical-align: middle; }

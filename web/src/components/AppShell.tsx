@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { BarChart3, Bell, BookOpen, ChefHat, ChevronDown, Home, Leaf, LogOut, Megaphone, Menu, MessageSquare, Refrigerator, Settings,
-  Sparkles, UserRound, Users, Utensils, X, type LucideIcon } from 'lucide-react';
+  Sparkles, UserRound, Users, X, type LucideIcon } from 'lucide-react';
 import { signOut, useAuth } from '../auth/AuthProvider';
 import { useAccount } from '../auth/AccountProvider';
 import { applyTextSize, loadAnnouncement, loadExtraPrefs } from '../lib/accountApi';
+import { listFeedback } from '../lib/adminApi';
 import { Avatar, ChefHatMark } from './ui';
 
 export interface NavItem { to: string; label: string; icon: LucideIcon; end?: boolean }
@@ -23,7 +24,7 @@ export const ADMIN_NAV: NavItem[] = [
   { to: '/admin', label: 'Dashboard', icon: Home, end: true },
   { to: '/admin/users', label: 'Users', icon: Users },
   { to: '/admin/ingredients', label: 'Ingredients', icon: Leaf },
-  { to: '/admin/recipes', label: 'Recipes', icon: Utensils },
+  { to: '/admin/recipes', label: 'Recipes', icon: BookOpen },
   { to: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
   { to: '/admin/feedback', label: 'Feedback', icon: MessageSquare },
   { to: '/admin/settings', label: 'Settings', icon: Settings },
@@ -50,20 +51,22 @@ function Brand({ admin }: { admin: boolean }) {
   );
 }
 
-// Bell and avatar, top right of every page. The number counts real notices only (the admin announcement).
-function TopActions({ name, photo, admin, announcement }: { name: string; photo: string | null; admin: boolean; announcement: string }) {
+// Bell and avatar, top right of every page. The number counts real notices only: the announcement for users, open feedback for admins.
+function TopActions({ name, photo, admin, announcement, openFeedback }: { name: string; photo: string | null; admin: boolean; announcement: string; openFeedback: number }) {
   const [open, setOpen] = useState(false);
+  const count = admin ? openFeedback : announcement ? 1 : 0;
+  const message = admin ? (openFeedback ? `${openFeedback} feedback item${openFeedback === 1 ? '' : 's'} waiting for review.` : '') : announcement;
   return (
     <div className="absolute right-5 top-5 z-20 hidden items-center gap-6 lg:flex">
       <div className="relative">
-        <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-label={announcement ? 'Notifications, 1 new' : 'Notifications'}
+        <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-label={count ? `Notifications, ${count} new` : 'Notifications'}
           className="relative grid h-12 w-12 place-items-center rounded-full bg-white/70 text-ink shadow-sm transition hover:bg-white">
           <Bell size={26} aria-hidden="true" />
-          {announcement && <span className="absolute right-1 top-0.5 grid h-[1.15rem] w-[1.15rem] place-items-center rounded-full bg-crimson text-[0.7rem] font-bold text-white">1</span>}
+          {count > 0 && <span className="absolute right-1 top-0.5 grid h-[1.15rem] min-w-[1.15rem] place-items-center rounded-full bg-crimson px-0.5 text-[0.7rem] font-bold text-white">{count > 99 ? '99+' : count}</span>}
         </button>
         {open && (
           <div role="status" className="card absolute right-0 top-full mt-2 w-72 p-4 text-sm">
-            {announcement || 'No new notifications.'}
+            {message || 'No new notifications.'}
           </div>
         )}
       </div>
@@ -80,7 +83,6 @@ function UserCard({ name, photo, admin, onLogout }: { name: string; photo: strin
       {open && (
         <div className="card absolute bottom-full left-0 right-0 mb-2 p-2" role="menu" aria-label="Account menu">
           {!admin && <Link to="/profile" role="menuitem" className="nav-link text-sm" onClick={() => setOpen(false)}><UserRound size={18} />My profile</Link>}
-          {admin && <Link to="/kitchen" role="menuitem" className="nav-link text-sm" onClick={() => setOpen(false)}><Home size={18} />Open user kitchen</Link>}
           {!admin && account?.role === 'super_admin' && (
             <Link to="/admin" role="menuitem" className="nav-link text-sm" onClick={() => setOpen(false)}><Megaphone size={18} />Admin panel</Link>
           )}
@@ -88,11 +90,11 @@ function UserCard({ name, photo, admin, onLogout }: { name: string; photo: strin
         </div>
       )}
       <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-haspopup="menu"
-        className="card flex w-full items-center gap-4 px-3.5 py-3.5 text-left">
-        <Avatar name={name} src={photo} size={52} />
+        className={`card flex w-full items-center px-3.5 py-3.5 text-left ${admin ? 'gap-2.5' : 'gap-4'}`}>
+        <Avatar name={name} src={photo} size={admin ? 44 : 52} />
         <span className="min-w-0 flex-1">
           <span className="block truncate text-lg font-semibold">{name}</span>
-          <span className="block text-sm text-stone-600">{admin ? 'Super Admin' : 'Registered User'}</span>
+          <span className="block whitespace-nowrap text-sm text-stone-600">{admin || account?.role === 'super_admin' ? 'Super Admin' : 'Registered User'}</span>
         </span>
         <ChevronDown size={18} className={`transition ${open ? 'rotate-180' : ''}`} aria-hidden="true" />
       </button>
@@ -107,11 +109,16 @@ export function DashboardShell({ nav, admin = false }: { nav: NavItem[]; admin?:
   const location = useLocation();
   const [drawer, setDrawer] = useState(false);
   const [announcement, setAnnouncement] = useState('');
+  const [openFeedback, setOpenFeedback] = useState(0);
   const name = displayName(session?.user);
   const photo = avatarUrl(session?.user);
   const userId = session?.user.id;
 
   useEffect(() => { setDrawer(false); }, [location.pathname]);
+  useEffect(() => {
+    if (!admin) return;
+    listFeedback('', '', '', 1, 1).then((r) => setOpenFeedback(Number(r.counts?.open ?? 0))).catch(() => setOpenFeedback(0));
+  }, [admin, location.pathname]);
   useEffect(() => {
     if (admin || !userId) return;
     loadAnnouncement().then(setAnnouncement).catch(() => setAnnouncement(''));
@@ -142,9 +149,9 @@ export function DashboardShell({ nav, admin = false }: { nav: NavItem[]; admin?:
   );
 
   return (
-    <div className="relative min-h-dvh lg:pl-[17rem]">
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-[17rem] rounded-r-[1.75rem] border-r border-white/70 bg-white/40 backdrop-blur-md lg:block">{sidebar}</aside>
-      <TopActions name={name} photo={photo} admin={admin} announcement={announcement} />
+    <div className={`relative min-h-dvh ${admin ? 'lg:pl-[14.8rem]' : 'lg:pl-[17rem]'}`}>
+      <aside className={`fixed inset-y-0 left-0 z-30 hidden rounded-r-[1.75rem] border-r border-white/70 bg-white/40 backdrop-blur-md lg:block ${admin ? 'w-[14.8rem]' : 'w-[17rem]'}`}>{sidebar}</aside>
+      <TopActions name={name} photo={photo} admin={admin} announcement={announcement} openFeedback={openFeedback} />
       <div className="sticky top-0 z-30 flex items-center justify-between border-b border-white/70 bg-white/80 px-4 py-2 backdrop-blur lg:hidden">
         <button type="button" className="icon-btn" onClick={() => setDrawer(true)} aria-label="Open menu"><Menu size={22} /></button>
         <span className="font-display text-lg font-extrabold">Dish-Wish</span>
@@ -159,7 +166,7 @@ export function DashboardShell({ nav, admin = false }: { nav: NavItem[]; admin?:
           </aside>
         </div>
       )}
-      <main className="px-4 pb-10 pt-5 sm:px-6 lg:pl-[1.3rem] lg:pr-[1.2rem] lg:pt-4">
+      <main className={`px-4 pb-10 pt-5 sm:px-6 lg:pl-[1.3rem] lg:pr-[1.2rem] lg:pt-4 ${admin ? 'admin-page' : ''}`}>
         {announcement && <p role="status" className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-semibold text-amber-900">{announcement}</p>}
         <Outlet />
       </main>

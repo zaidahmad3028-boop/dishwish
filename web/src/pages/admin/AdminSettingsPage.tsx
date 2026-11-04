@@ -1,15 +1,16 @@
-import { useEffect, useState, type ReactNode } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { Crown, Database, FileText, Info, KeyRound, Megaphone, RotateCcw, Save, Settings, ShieldCheck, Sparkles, UserRound, Users } from 'lucide-react';
+import { useCallback, useEffect, useState, type ReactNode } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
+import { ArrowRight, BookOpen, CalendarDays, CheckCircle2, Clock, Crown, Database, Download, FileText, Info, KeyRound, Leaf, Lock, Mail, Megaphone, MessageSquare, Monitor, Pencil, RefreshCw, RotateCcw, Save, Server, Settings, ShieldCheck, Sparkles, UserRound, Users, Zap } from 'lucide-react';
 import { useAuth } from '../../auth/AuthProvider';
 import { displayName } from '../../components/AppShell';
-import { Avatar, Card, EmptyState, ErrorNote, Notice, PageHeader, Spinner, formatDate } from '../../components/ui';
+import { ActionTile, Avatar, Card, EmptyState, ErrorNote, Notice, PageHeader, Spinner, downloadFile, formatDate, toCsv } from '../../components/ui';
 import { changePassword, saveDisplayName } from '../../lib/accountApi';
 import { getSetting, listAudit, saveSetting, systemStatus, validateRecommendationSettings, type AuditRow, type RecommendationSettings } from '../../lib/adminApi';
+import { API_URL } from '../../lib/recipes';
 
-type Tab = 'general' | 'engine' | 'system' | 'security' | 'audit' | 'about';
+type Tab = 'general' | 'roles' | 'engine' | 'system' | 'security' | 'audit' | 'about';
 const TABS: { key: Tab; label: string; icon: typeof Settings }[] = [
-  { key: 'general', label: 'General', icon: Settings }, { key: 'engine', label: 'Recommendation Engine', icon: Sparkles },
+  { key: 'general', label: 'General', icon: Settings }, { key: 'roles', label: 'Users & Roles', icon: Users }, { key: 'engine', label: 'Recommendation Engine', icon: Sparkles },
   { key: 'system', label: 'System & Database', icon: Database }, { key: 'security', label: 'Security', icon: ShieldCheck },
   { key: 'audit', label: 'Audit Logs', icon: FileText }, { key: 'about', label: 'About', icon: Info },
 ];
@@ -20,7 +21,7 @@ function Slider({ label, value, min, max, step, onChange, format = (v: number) =
   label: string; value: number; min: number; max: number; step: number; onChange: (v: number) => void; format?: (v: number) => string;
 }) {
   return (
-    <label className="grid grid-cols-[1fr_3.5rem] items-center gap-x-3 gap-y-1 text-sm sm:grid-cols-[11rem_1fr_3.5rem]">
+    <label className="grid grid-cols-[1fr_3.5rem] items-center gap-x-3 gap-y-1 text-[0.9rem] sm:grid-cols-[9.5rem_1fr_3.5rem]">
       <span className="col-span-2 font-semibold sm:col-span-1">{label}</span>
       <input type="range" min={min} max={max} step={step} value={value} onChange={(e) => onChange(Number(e.target.value))} className="accent-crimson" />
       <span className="rounded-lg bg-white px-2 py-1 text-center font-semibold shadow-sm">{format(value)}</span>
@@ -38,6 +39,8 @@ export function AdminSettingsPage() {
   const [audit, setAudit] = useState<AuditRow[] | null>(null);
   const [status, setStatus] = useState<Awaited<ReturnType<typeof systemStatus>> | null>(null);
   const [name, setName] = useState(displayName(user));
+  const [editingName, setEditingName] = useState(false);
+  const [apiStatus, setApiStatus] = useState('…');
   const [pw, setPw] = useState({ current: '', next: '' });
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
@@ -46,11 +49,15 @@ export function AdminSettingsPage() {
     getSetting<RecommendationSettings>('recommendation').then((s) => setEngine(s ?? DEFAULT_ENGINE)).catch((e: Error) => setError(e.message));
     getSetting<{ announcement?: string }>('general').then((g) => setAnnouncement(g?.announcement ?? '')).catch(() => {});
   }, []);
+  const refreshStatus = useCallback(() => {
+    systemStatus().then(setStatus).catch((e: Error) => setError(e.message));
+    fetch(`${API_URL}/api/health`).then((r) => setApiStatus(r.ok ? 'Online' : `HTTP ${r.status}`)).catch(() => setApiStatus('Offline'));
+  }, []);
   useEffect(() => {
-    if (tab === 'audit' || tab === 'general') listAudit(tab === 'audit' ? 100 : 5).then(setAudit).catch((e: Error) => setError(e.message));
-    if (tab === 'system' || tab === 'general') systemStatus().then(setStatus).catch((e: Error) => setError(e.message));
+    if (tab === 'audit' || tab === 'general') listAudit(tab === 'audit' ? 100 : 25).then(setAudit).catch((e: Error) => setError(e.message));
+    if (tab === 'system' || tab === 'general' || tab === 'roles') refreshStatus();
     setNotice('');
-  }, [tab]);
+  }, [tab, refreshStatus]);
 
   const run = async (fn: () => Promise<void>, done: string) => {
     setError(''); setNotice('');
@@ -79,28 +86,105 @@ export function AdminSettingsPage() {
     </div>
   );
 
+  const auditList = (rows: AuditRow[]) => rows.length === 0 ? <EmptyState icon={FileText} title="No admin actions recorded yet" /> : (
+    <table className="data-table table-fixed text-[0.8rem]">
+      <thead><tr><th className="w-[8.5rem]">Time</th><th className="w-[4.6rem]">Action</th><th>Details</th></tr></thead>
+      <tbody>{rows.map((a) => (
+        <tr key={a.id}><td className="whitespace-nowrap"><span className="mr-1.5 inline-block h-2 w-2 rounded-full bg-green-500" />{formatDate(a.created_at, true)}</td>
+          <td><span className={`badge ${a.action === 'delete' ? 'badge-red' : a.action === 'insert' ? 'badge-green' : 'badge-blue'}`}>{a.action}</span></td>
+          <td className="truncate" title={`${a.entity} #${a.entity_id}`}>{a.entity.replace(/_/g, ' ')} #{a.entity_id}</td></tr>
+      ))}</tbody>
+    </table>
+  );
+
   const content: Record<Tab, ReactNode> = {
     general: (
-      <div className="grid gap-6 xl:grid-cols-3">
-        <Card title="Admin Profile" icon={UserRound}>
-          <div className="flex items-center gap-4"><Avatar name={name || 'A'} size={72} />
-            <div className="min-w-0"><p className="truncate font-display text-xl font-bold">{displayName(user)}</p><span className="badge badge-amber"><Crown size={12} />Super Admin</span>
-              <p className="mt-1 truncate text-sm text-stone-600">{user?.email}</p><p className="text-xs text-stone-500">Last sign-in {formatDate(user?.last_sign_in_at, true)}</p></div></div>
-          <label className="mt-4 block text-sm font-semibold">Display name<input className="field mt-1" value={name} maxLength={30} onChange={(e) => setName(e.target.value)} /></label>
-          <button type="button" className="btn-sm btn-red mt-3" onClick={() => user && run(() => saveDisplayName(user.id, name), 'Name updated.')}><Save size={14} />Save</button>
-        </Card>
-        <Card title="User Announcement" icon={Megaphone}>
-          <p className="-mt-2 mb-2 text-sm text-stone-600">Shown as a banner at the top of every user page. Leave empty to hide it.</p>
-          <textarea className="field min-h-24" maxLength={280} value={announcement} onChange={(e) => setAnnouncement(e.target.value)} aria-label="Announcement text" />
-          <button type="button" className="btn-sm btn-red mt-3" onClick={() => run(() => saveSetting('general', { announcement: announcement.trim() }), announcement.trim() ? 'Announcement published.' : 'Announcement removed.')}>
-            <Save size={14} />Save announcement</button>
-        </Card>
+      <div className="grid gap-3 xl:grid-cols-[1fr_1.2fr_1.1fr]">
+        <div className="min-w-0 space-y-3">
+          <Card title="Admin Profile" icon={UserRound} action={<button type="button" className="btn-sm btn-outline" onClick={() => setEditingName((v) => !v)}><Pencil size={14} />Edit Profile</button>}>
+            <div className="flex items-center gap-4"><Avatar name={name || 'A'} size={96} />
+              <div className="min-w-0"><p className="truncate font-display text-xl font-bold">{displayName(user)}</p><span className="badge badge-amber !text-[0.86rem]"><Crown size={14} />Super Admin</span>
+                <p className="mt-1 flex items-center gap-2 truncate text-[0.9rem]"><Mail size={16} className="shrink-0 text-crimson" aria-hidden="true" /><span className="truncate">{user?.email}</span></p>
+                <p className="mt-1 flex items-center gap-2 text-[0.9rem]"><CalendarDays size={16} className="shrink-0 text-crimson" aria-hidden="true" />Last Login: {formatDate(user?.last_sign_in_at, true)}</p></div></div>
+            {editingName && <form className="mt-3" onSubmit={(e) => { e.preventDefault(); if (user) run(() => saveDisplayName(user.id, name), 'Name updated.'); }}>
+              <label className="block text-sm font-semibold">Display name<input className="field mt-1" value={name} maxLength={30} onChange={(e) => setName(e.target.value)} /></label>
+              <button type="submit" className="btn-sm btn-red mt-2"><Save size={14} />Save</button></form>}
+          </Card>
+          <Card title={<>Users &amp; Roles <span className="font-sans text-base font-normal">(Quick)</span></>} icon={Users} action={<Link to="/admin/users" className="flex items-center gap-1 text-sm font-semibold text-crimson">Manage<ArrowRight size={15} /></Link>}>
+            <div className="grid grid-cols-3 gap-2 text-center">
+              {[{ icon: ShieldCheck, n: status?.admins, label: 'Super Admin' }, { icon: Users, n: status?.tables.profiles, label: 'Accounts' }, { icon: UserRound, n: status ? Math.max(0, (status.tables.profiles ?? 0) - status.admins) : undefined, label: 'Registered Users' }].map(({ icon: Icon, n, label }) => (
+                <div key={label} className="action-tile"><Icon size={28} className="text-crimson" aria-hidden="true" /><strong className="text-xl leading-none">{n ?? '…'}</strong>{label}</div>
+              ))}
+            </div>
+          </Card>
+          <Card title="Security & Access" icon={ShieldCheck} action={<button type="button" className="flex items-center gap-1 text-sm font-semibold text-crimson" onClick={() => setParams({ tab: 'security' })}>Configure<ArrowRight size={15} /></button>}>
+            <ul className="divide-y divide-stone-100 text-[0.92rem]">
+              {[[Lock, 'Passwords hashed by Supabase Auth'], [KeyRound, 'Admin actions checked in the database'], [FileText, 'Admin changes written to the audit log'], [Clock, 'Short-lived sessions that refresh automatically']].map(([Icon, text]) => {
+                const I = Icon as typeof Lock;
+                return <li key={text as string} className="flex items-center gap-3 py-2"><I size={20} className="shrink-0 text-crimson" aria-hidden="true" /><span className="flex-1">{text as string}</span><CheckCircle2 size={18} className="shrink-0 text-green-600" aria-hidden="true" /></li>;
+              })}
+            </ul>
+          </Card>
+        </div>
+        <div className="min-w-0 space-y-3">
+          <Card title="User Announcement" icon={Megaphone}>
+            <p className="-mt-2 mb-2 text-[0.9rem]">Shown as a banner at the top of every user page. Leave empty to hide it.</p>
+            <textarea className="field min-h-20" maxLength={280} value={announcement} onChange={(e) => setAnnouncement(e.target.value)} aria-label="Announcement text" />
+            <button type="button" className="btn-sm btn-red mt-2" onClick={() => run(() => saveSetting('general', { announcement: announcement.trim() }), announcement.trim() ? 'Announcement published.' : 'Announcement removed.')}>
+              <Save size={14} />Save announcement</button>
+          </Card>
+          <Card title="Recommendation Engine Configuration" icon={Sparkles} action={<button type="button" className="flex items-center gap-1 text-sm font-semibold text-crimson" onClick={() => setParams({ tab: 'engine' })}>Configure<ArrowRight size={15} /></button>}>
+            {!engine ? <Spinner /> : (
+              <div className="space-y-2">
+                <div className="flex items-center gap-3 text-sm"><span className="w-44 font-semibold">Algorithm</span><span className="field !w-auto flex-1 !py-1.5">Content-Based + Graph Similarity</span></div>
+                <Slider label="Similarity Threshold" value={engine.min_score} min={0} max={1} step={0.01} onChange={(v) => setEngine({ ...engine, min_score: v })} />
+                <Slider label="Ingredient Weight" value={engine.weights.coverage} min={0} max={1} step={0.01} onChange={(v) => setEngine({ ...engine, weights: { ...engine.weights, coverage: v } })} />
+                <Slider label="Compatibility Weight" value={engine.weights.compatibility} min={0} max={1} step={0.01} onChange={(v) => setEngine({ ...engine, weights: { ...engine.weights, compatibility: v } })} />
+                <Slider label="Taste Weight" value={engine.weights.taste} min={0} max={1} step={0.01} onChange={(v) => setEngine({ ...engine, weights: { ...engine.weights, taste: v } })} />
+                <button type="button" className="btn-sm btn-red" onClick={saveEngine}><Save size={14} />Save configuration</button>
+              </div>
+            )}
+          </Card>
+          <Card title={<>Audit Logs <span className="font-sans text-base font-normal">(Recent Activity)</span></>} icon={FileText} className="min-w-0" action={<button type="button" className="flex items-center gap-1 text-sm font-semibold text-crimson" onClick={() => setParams({ tab: 'audit' })}>View All<ArrowRight size={15} /></button>}>
+            {audit ? auditList(audit.slice(0, 4)) : <Spinner />}
+          </Card>
+        </div>
+        <div className="min-w-0 space-y-3">
+          <Card title="Application Status" icon={Monitor}>
+            <dl className="divide-y divide-stone-100 text-[0.92rem]">
+              {[[Server, 'Recipe API', apiStatus], [Database, 'Database', status ? 'Connected' : '…'], [BookOpen, 'Recipes', status?.tables.curated_recipes], [Leaf, 'Ingredients', status?.tables.ingredients], [MessageSquare, 'Feedback', status?.tables.feedback]].map(([Icon, label, value]) => {
+                const I = Icon as typeof Server;
+                return <div key={label as string} className="flex items-center gap-3 py-2"><dt className="flex flex-1 items-center gap-3"><I size={20} className="text-crimson" aria-hidden="true" />{label as string}</dt><dd className="font-semibold">{String(value ?? '…')}</dd></div>;
+              })}
+            </dl>
+          </Card>
+          <Card title="Database & System" icon={Database} action={<button type="button" className="flex items-center gap-1 text-sm font-semibold text-crimson" onClick={() => setParams({ tab: 'system' })}>Manage<ArrowRight size={15} /></button>}>
+            <dl className="space-y-2 text-[0.92rem]">
+              <div className="flex items-center justify-between"><dt>Database Status</dt><dd><span className="badge badge-green !text-[0.86rem]"><CheckCircle2 size={14} />Connected</span></dd></div>
+              <div className="flex items-center justify-between"><dt>PostgreSQL</dt><dd className="font-semibold">{status?.postgres_version ?? '…'}</dd></div>
+              <div className="flex items-center justify-between"><dt>Database Size</dt><dd className="font-semibold">{status ? `${(status.database_size_bytes / 1024 / 1024).toFixed(1)} MB` : '…'}</dd></div>
+              <div className="flex items-center justify-between"><dt>Tables without RLS</dt><dd className={`font-semibold ${status?.rls_disabled.length ? 'text-rose-700' : 'text-green-700'}`}>{status ? status.rls_disabled.length || 'None' : '…'}</dd></div>
+            </dl>
+          </Card>
+          <Card title="System Actions" icon={Zap}>
+            <div className="grid grid-cols-2 gap-2">
+              <ActionTile icon={Download} label="Export Audit Log" disabled={!audit?.length} onClick={() => downloadFile('dishwish-audit-log.csv', toCsv((audit ?? []).map((a) => ({ time: a.created_at, action: a.action, entity: a.entity, entity_id: a.entity_id, details: a.details }))), 'text/csv')} />
+              <ActionTile icon={Download} label="Export Settings" disabled={!engine} onClick={() => downloadFile('dishwish-settings.json', JSON.stringify({ recommendation: engine, announcement }, null, 2))} />
+              <ActionTile icon={RefreshCw} label="Refresh Status" onClick={refreshStatus} />
+              <ActionTile icon={RotateCcw} label="Reset Engine" onClick={() => { setEngine(DEFAULT_ENGINE); setNotice('Defaults loaded. Choose Save configuration to apply them.'); }} />
+            </div>
+          </Card>
+        </div>
+      </div>
+    ),
+    roles: (
+      <div className="grid gap-3 xl:grid-cols-2">
         <Card title="Users & Roles" icon={Users}>
           <p className="text-sm">Roles: <strong>Registered User</strong> and <strong>Super Admin</strong>.</p>
-          <p className="mt-2 text-sm">Super Admins: <strong>{status?.admins ?? '…'}</strong></p>
+          <p className="mt-2 text-sm">Super Admins: <strong>{status?.admins ?? '…'}</strong> · Accounts: <strong>{status?.tables.profiles ?? '…'}</strong></p>
           <p className="mt-2 text-xs text-stone-500">Promoting an account is done server-side only (scripts/create_admin.py or the SQL function grant_super_admin), never from the browser.</p>
+          <Link to="/admin/users" className="btn-sm btn-outline mt-3">Manage users<ArrowRight size={14} /></Link>
         </Card>
-        <Card title="Recent Audit Activity" icon={FileText} className="min-w-0 xl:col-span-3">{audit ? auditTable(audit) : <Spinner />}</Card>
       </div>
     ),
     engine: !engine ? <Spinner /> : (
@@ -168,10 +252,10 @@ export function AdminSettingsPage() {
 
   return (
     <>
-      <PageHeader title="System" accent="Settings" icon={Settings} subtitle="Manage your admin account, recommendation engine, security and audit logs." />
-      <div role="tablist" aria-label="Settings sections" className="mb-6 flex flex-wrap gap-2">
+      <PageHeader title="System" accent="Settings" icon={Settings} subtitle="Manage your account, system configuration, AI recommendation, security and more." />
+      <div role="tablist" aria-label="Settings sections" className="mb-3 flex flex-wrap gap-2">
         {TABS.map(({ key, label, icon: Icon }) => (
-          <button key={key} type="button" role="tab" aria-selected={tab === key} className="pill" onClick={() => setParams(key === 'general' ? {} : { tab: key })}><Icon size={16} />{label}</button>
+          <button key={key} type="button" role="tab" aria-selected={tab === key} className="pill !px-5 !py-2 text-[0.98rem]" onClick={() => setParams(key === 'general' ? {} : { tab: key })}><Icon size={22} />{label}</button>
         ))}
       </div>
       {notice && <div className="mb-4"><Notice>{notice}</Notice></div>}

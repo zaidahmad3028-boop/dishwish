@@ -217,6 +217,13 @@ export async function listAudit(limit = 50): Promise<AuditRow[]> {
 export const systemStatus = () => rpc<{ database: string; server_time: string; postgres_version: string; database_size_bytes: number; admins: number;
   tables: Record<string, number>; rls_disabled: string[] }>('admin_system_status');
 
+// Short form for the stat-card pills, e.g. "+12.5%".
+export function pctShort(now: number, prev: number): string | null {
+  if (!prev) return now ? `+${now}` : null;
+  const p = ((now - prev) / prev) * 100;
+  return `${p >= 0 ? '+' : ''}${p.toFixed(1)}%`;
+}
+
 export function pctChange(now: number, prev: number): string | null {
   if (!prev) return now ? 'new this period' : null;
   const p = ((now - prev) / prev) * 100;

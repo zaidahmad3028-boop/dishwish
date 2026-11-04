@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { ShieldAlert } from 'lucide-react';
 import { loadAccount, touchLastSeen, type Account } from '../lib/accountApi';
 import { signOut, useAuth } from './AuthProvider';
@@ -48,10 +48,13 @@ export function DeactivatedNotice() {
 }
 
 // Registered-user area: admins are sent to their dashboard, deactivated users see a notice.
+// Recipe pages stay open to them, because the admin screens link there to preview a recipe.
 export function RequireUser() {
   const { account } = useAccount();
+  const { pathname } = useLocation();
   if (!account) return <FullPageSpinner />;
   if (account.status === 'deactivated') return <DeactivatedNotice />;
+  if (account.role === 'super_admin' && !pathname.startsWith('/recipe/')) return <Navigate to="/admin" replace />;
   return <Outlet />;
 }
 

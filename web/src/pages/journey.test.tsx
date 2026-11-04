@@ -111,4 +111,13 @@ describe('roles', () => {
     }
     expect(screen.getAllByText('Super Admin').length).toBeGreaterThan(0);
   }, 30000);
+
+  it('sends a Super Admin away from the user kitchen to the admin panel', async () => {
+    setAccountRole('super_admin');
+    setSession(fakeSession('Admin'));
+    renderAt('/kitchen');
+    await screen.findByRole('link', { name: 'Dashboard' }, { timeout: 20000 });
+    expect(screen.queryByRole('heading', { name: 'Your Kitchen' })).not.toBeInTheDocument();
+    expect(screen.queryByText('Registered User')).not.toBeInTheDocument();
+  }, 30000);
 });

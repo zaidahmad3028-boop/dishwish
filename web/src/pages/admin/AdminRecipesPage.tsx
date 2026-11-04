@@ -1,17 +1,17 @@
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Archive, CheckCircle2, ChefHat, Clock, Download, Eye, FileEdit, Pencil, Plus, Star, Trash2, Upload, Utensils, X } from 'lucide-react';
+import { Archive, BarChart3, BookOpen, CheckCircle2, ChefHat, Clock, Download, Eye, FileEdit, LayoutGrid, Moon, Pencil, Plus, PlusCircle, Star, Trash2, Upload, X, Zap } from 'lucide-react';
 import { Legend, PALETTE } from '../../components/charts';
-import { DishArt } from '../../components/DishArt';
+import { DishArt, RecipeCardImage } from '../../components/DishArt';
 import { recipeImage } from '../../lib/images';
 import { uploadImage } from '../../lib/uploads';
-import { Card, Donut, EmptyState, ErrorNote, Modal, Notice, PageHeader, Pagination, SearchBox, Spinner, StatCard, STATUS_BADGE, downloadFile, toCsv } from '../../components/ui';
+import { ActionTile, Card, Donut, EmptyState, ErrorNote, Modal, Notice, PageHeader, Pagination, SearchBox, Spinner, StatCard, STATUS_BADGE, downloadFile, toCsv } from '../../components/ui';
 import {
   deleteRecipe, listIngredients, listRecipes, recipeParts, recipeRatings, RECIPE_CATEGORIES, saveRecipe, setRecipeStatus, topRecipes, validateRecipe,
   type AdminIngredient, type AdminRecipe, type RecipeDraft,
 } from '../../lib/adminApi';
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 8;
 export const slugify = (s: string) => s.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80);
 const emptyDraft = (): RecipeDraft => ({ id: null, slug: '', name: '', description: '', category: 'Main Course', cuisine: 'Pakistani', minutes: 30, servings: 4,
   taste: { sweet: 1, salty: 5, sour: 2, spicy: 5 }, image_url: null, status: 'draft', lines: [], steps: [''] });
@@ -26,7 +26,7 @@ export function AdminRecipesPage() {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('');
   const [page, setPage] = useState(1);
-  const [preview, setPreview] = useState<AdminRecipe | null>(null);
+  const [previewId, setPreviewId] = useState<number | null>(null);
   const [draft, setDraft] = useState<RecipeDraft | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<AdminRecipe | null>(null);
   const [error, setError] = useState('');
@@ -48,6 +48,8 @@ export function AdminRecipesPage() {
     const q = search.trim().toLowerCase();
     return (recipes ?? []).filter((r) => (status === 'all' || r.status === status) && (!category || r.category === category) && (!q || r.name.toLowerCase().includes(q) || r.slug.includes(q)));
   }, [recipes, status, search, category]);
+  const preview = (recipes ?? []).find((r) => r.id === previewId) ?? filtered[0] ?? null;
+  const totalViews = Object.values(views).reduce((a, b) => a + b, 0);
   const count = (s: AdminRecipe['status']) => (recipes ?? []).filter((r) => r.status === s).length;
   const rated = Object.values(ratings);
   const avgRating = rated.length ? rated.reduce((s, r) => s + r.avg * r.count, 0) / rated.reduce((s, r) => s + r.count, 0) : null;
@@ -82,28 +84,25 @@ export function AdminRecipesPage() {
 
   return (
     <>
-      <PageHeader title="Recipes" accent="Management" icon={Utensils} subtitle="Create, review, update and manage the curated recipes Dish-Wish recommends."
-        actions={<>
-          <button type="button" className="btn-ghost" onClick={() => downloadFile('dishwish-recipes.csv', toCsv(recipes.map((r) => ({ slug: r.slug, name: r.name, category: r.category,
-            cuisine: r.cuisine, minutes: r.minutes, servings: r.servings, status: r.status, source: r.source }))), 'text/csv')}><Download size={16} />Export</button>
-          <button type="button" className="btn-primary" onClick={() => setDraft(emptyDraft())}><Plus size={18} />Add New Recipe</button>
-        </>} />
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+      <PageHeader title="Recipes" accent="Management" icon={BookOpen} subtitle="Create, review, update and manage all recipes on Dish-Wish."
+        actions={<button type="button" className="btn-primary" onClick={() => setDraft(emptyDraft())}><Plus size={18} />Add New Recipe</button>} />
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
         <StatCard icon={ChefHat} value={recipes.length} label="Total Recipes" />
         <StatCard icon={CheckCircle2} value={count('published')} label="Published" tone="green" />
-        <StatCard icon={FileEdit} value={count('draft')} label="Drafts (not shown to users)" tone="amber" />
+        <StatCard icon={FileEdit} value={count('draft')} label="Drafts" tone="amber" />
         <StatCard icon={Archive} value={count('archived')} label="Archived" tone="gray" />
-        <StatCard icon={Star} value={avgRating !== null ? `${avgRating.toFixed(1)} / 5` : '—'} label="Avg. Recipe Rating" tone="amber" note={`${rated.reduce((s, r) => s + r.count, 0)} recipe ratings`} />
+        <StatCard icon={Star} value={avgRating !== null ? `${avgRating.toFixed(1)} / 5` : '—'} label="Avg. Recipe Rating" tone="amber" />
+        <StatCard icon={Eye} value={totalViews.toLocaleString()} label="Total Views" />
       </div>
       {notice && <div className="mt-4"><Notice>{notice}</Notice></div>}
       {error && <div className="mt-4"><ErrorNote>{error}</ErrorNote></div>}
 
-      <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
-        <Card className="min-w-0">
+      <div className="mt-3 grid gap-3 xl:grid-cols-[minmax(0,1fr)_25rem]">
+        <div className="min-w-0">
           <div role="tablist" className="mb-3 flex flex-wrap gap-2">
-            {(['all', 'published', 'draft', 'archived'] as const).map((s) => (
-              <button key={s} type="button" role="tab" aria-selected={status === s} className="pill capitalize" onClick={() => setStatus(s)}>
-                {s} ({s === 'all' ? recipes.length : count(s)})</button>
+            {([['all', 'All Recipes', LayoutGrid], ['published', 'Published', CheckCircle2], ['draft', 'Drafts', FileEdit], ['archived', 'Archived', Archive]] as const).map(([s, label, Icon]) => (
+              <button key={s} type="button" role="tab" aria-selected={status === s} className="pill !px-5 !py-2 text-[0.98rem]" onClick={() => setStatus(s)}>
+                <Icon size={20} aria-hidden="true" />{label} ({s === 'all' ? recipes.length : count(s)})</button>
             ))}
           </div>
           <div className="mb-3 flex flex-wrap gap-2">
@@ -112,17 +111,20 @@ export function AdminRecipesPage() {
               <option value="">All Categories</option>{RECIPE_CATEGORIES.map((c) => <option key={c}>{c}</option>)}
             </select>
           </div>
+          <Card className="min-w-0">
           {filtered.length === 0 ? <EmptyState title="No recipes match" /> : (
             <div className="overflow-x-auto">
               <table className="data-table min-w-[760px]">
-                <thead><tr><th>Recipe</th><th>Category</th><th>Cuisine</th><th>Time</th><th>Rating</th><th>Views</th><th>Status</th><th>Actions</th></tr></thead>
+                <thead><tr><th>Recipe</th><th>Category</th><th>Cuisine</th><th>Prep Time</th><th>Rating</th><th>Views</th><th>Status</th><th>Actions</th></tr></thead>
                 <tbody>
                   {filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((r) => (
                     <tr key={r.id}>
                       <td><span className="flex items-center gap-2"><DishArt category={r.category} imageUrl={recipeImage(r.slug, r.image_url)} name={r.name} className="!w-16 shrink-0 !rounded-lg" />
                         <span><strong>{r.name}</strong><span className="block text-xs text-stone-500">{r.slug} · {r.source === 'curated' ? 'Curated' : 'User-generated'}</span></span></span></td>
-                      <td>{r.category}</td><td>{r.cuisine}</td><td>{r.minutes} min</td>
-                      <td>{ratings[r.slug] ? <>★ {ratings[r.slug].avg.toFixed(1)} ({ratings[r.slug].count})</> : '—'}</td>
+                      <td><span className="badge badge-red whitespace-nowrap"><ChefHat size={13} />{r.category}</span></td>
+                      <td><span className="badge badge-gray whitespace-nowrap"><Moon size={13} className="text-green-700" />{r.cuisine}</span></td>
+                      <td className="whitespace-nowrap"><span className="inline-flex items-center gap-1"><Clock size={15} className="text-crimson" />{r.minutes} min</span></td>
+                      <td className="whitespace-nowrap">{ratings[r.slug] ? <span className="inline-flex items-center gap-1"><Star size={15} className="fill-amber-500 text-amber-500" />{ratings[r.slug].avg.toFixed(1)} ({ratings[r.slug].count})</span> : '—'}</td>
                       <td>{views[r.slug] ?? 0}</td>
                       <td>
                         <select className={`badge ${STATUS_BADGE[r.status]} border-0`} value={r.status} aria-label={`Status of ${r.name}`}
@@ -131,7 +133,7 @@ export function AdminRecipesPage() {
                         </select>
                       </td>
                       <td className="whitespace-nowrap">
-                        <button type="button" className="icon-btn" aria-label={`Preview ${r.name}`} onClick={() => setPreview(r)}><Eye size={16} /></button>
+                        <button type="button" className="icon-btn" aria-label={`Preview ${r.name}`} onClick={() => setPreviewId(r.id)}><Eye size={16} /></button>
                         <button type="button" className="icon-btn" aria-label={`Edit ${r.name}`} onClick={() => edit(r)}><Pencil size={16} /></button>
                         <button type="button" className="icon-btn" aria-label={`Delete ${r.name}`} onClick={() => setConfirmDelete(r)}><Trash2 size={16} /></button>
                       </td>
@@ -142,25 +144,38 @@ export function AdminRecipesPage() {
             </div>
           )}
           <Pagination page={page} pageSize={PAGE_SIZE} total={filtered.length} onPage={setPage} noun="recipes" />
-        </Card>
-        <aside className="flex flex-col gap-4">
+          </Card>
+        </div>
+        <aside className="flex flex-col gap-3">
           <Card title="Recipe Preview" icon={Eye}>
-            {!preview ? <p className="text-sm text-stone-500">Choose the eye icon on a recipe.</p> : (
+            {!preview ? <p className="text-sm text-stone-500">No recipe to preview.</p> : (
               <div>
-                <DishArt category={preview.category} imageUrl={recipeImage(preview.slug, preview.image_url)} name={preview.name} />
-                <p className="mt-2 flex items-center justify-between font-display text-lg font-bold">{preview.name}<span className={`badge ${STATUS_BADGE[preview.status]}`}>{preview.status}</span></p>
-                <p className="text-sm text-stone-600">{preview.description}</p>
-                <p className="mt-2 flex gap-3 text-xs"><span className="inline-flex items-center gap-1"><Clock size={13} />{preview.minutes} min</span><span>{preview.servings} servings</span>
-                  <span>Spicy {preview.taste.spicy}/10</span></p>
-                {preview.status === 'published' && <a href={`/recipe/${preview.slug}`} target="_blank" rel="noreferrer" className="btn-sm btn-outline mt-3">Open user view</a>}
+                <RecipeCardImage category={preview.category} imageUrl={recipeImage(preview.slug, preview.image_url)} name={preview.name} height="h-44" rounded="rounded-2xl">
+                  <span className={`badge absolute right-2 top-2 capitalize !text-[0.86rem] ${STATUS_BADGE[preview.status]}`}>{preview.status}</span>
+                  <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent px-3 pb-2 pt-8 font-display text-xl font-bold text-white">{preview.name}</span>
+                </RecipeCardImage>
+                <p className="mt-2 flex items-center justify-between gap-2 text-[0.92rem]">
+                  <span className="inline-flex items-center gap-1"><Clock size={18} className="text-crimson" />{preview.minutes} min</span>
+                  <span className="inline-flex items-center gap-1"><BarChart3 size={18} className="text-crimson" />{preview.servings} servings</span>
+                  <span className="inline-flex items-center gap-1"><Star size={18} className="fill-amber-500 text-amber-500" />{ratings[preview.slug] ? `${ratings[preview.slug].avg.toFixed(1)} (${ratings[preview.slug].count})` : 'No ratings'}</span>
+                </p>
+                {preview.status === 'published' && <a href={`/recipe/${preview.slug}`} target="_blank" rel="noreferrer" className="btn-sm btn-outline mt-2">Open user view</a>}
               </div>
             )}
           </Card>
-          <Card title="Categories Distribution" icon={ChefHat}>
+          <Card title="Recipe Categories Distribution" icon={BarChart3}>
             <div className="flex flex-wrap items-center gap-4">
-              <Donut size={120} label="Recipes by category" parts={byCategory.map((x, i) => ({ value: x.n, color: PALETTE[i % PALETTE.length], label: x.c }))}
-                center={<span><span className="block font-display text-xl font-extrabold">{recipes.length}</span><span className="text-[11px]">Recipes</span></span>} />
-              <div className="min-w-36 flex-1"><Legend items={byCategory.map((x, i) => ({ label: x.c, value: `${Math.round((x.n / recipes.length) * 100)}%`, color: PALETTE[i % PALETTE.length] }))} /></div>
+              <Donut size={130} label="Recipes by category" parts={byCategory.map((x, i) => ({ value: x.n, color: PALETTE[i % PALETTE.length], label: x.c }))}
+                center={<span><span className="block text-xl font-bold">{recipes.length}</span><span className="text-sm">Recipes</span></span>} />
+              <div className="min-w-32 flex-1"><Legend items={byCategory.map((x, i) => ({ label: x.c, value: `${Math.round((x.n / recipes.length) * 100)}%`, color: PALETTE[i % PALETTE.length] }))} /></div>
+            </div>
+          </Card>
+          <Card title="Quick Actions" icon={Zap}>
+            <div className="grid grid-cols-3 gap-2">
+              <ActionTile icon={PlusCircle} label="Add Recipe" onClick={() => setDraft(emptyDraft())} />
+              <ActionTile icon={Download} label="Export Data" onClick={() => downloadFile('dishwish-recipes.csv', toCsv(recipes.map((r) => ({ slug: r.slug, name: r.name, category: r.category,
+                cuisine: r.cuisine, minutes: r.minutes, servings: r.servings, status: r.status, source: r.source }))), 'text/csv')} />
+              <ActionTile icon={FileEdit} label="Review Drafts" onClick={() => setStatus('draft')} />
             </div>
           </Card>
         </aside>
