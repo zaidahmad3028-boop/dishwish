@@ -1,10 +1,9 @@
 """Cut ChatGPT dish sheets (2x2 grids in 3:2 landscape) into recipe pictures.
 
-    python scripts/slice_dish_sheets.py <folder with dish-1.png ... dish-8.png>
+    python scripts/slice_dish_sheets.py <folder with dish-1.png ... dish-9.png>
 
 Each cell is trimmed inside its thin white divider, centre-cropped to 3:2 and saved at 800x533 as
 web/public/images/recipes/<slug>.webp. A review grid is written to <folder>/review.jpg.
-Chicken Karahi, Biryani and Qorma keep the owner's pictures from the reference designs.
 """
 from __future__ import annotations
 
@@ -27,6 +26,7 @@ SHEETS = [
     ["aloo-paratha", "masala-omelette", "aloo-anday", "pakoray"],
     ["aloo-samosa", "fruit-chaat", "kheer", "sheer-khurma"],
     ["gajar-halwa", "kadhi-pakora", "chicken-corn-soup", "vegetable-pulao"],
+    ["chicken-karahi", "chicken-biryani", "chicken-qorma", None],  # the fourth cell was a spare biryani
 ]
 SIZE = (800, 533)
 TRIM = 6  # pixels inside the white divider and the sheet edge
@@ -44,6 +44,8 @@ def main() -> None:
         sheet = Image.open(path).convert("RGB")
         w, h = sheet.width / 2, sheet.height / 2
         for k, slug in enumerate(slugs):
+            if slug is None:
+                continue
             r, c = divmod(k, 2)
             box = (round(c * w) + TRIM, round(r * h) + TRIM, round((c + 1) * w) - TRIM, round((r + 1) * h) - TRIM)
             ImageOps.fit(sheet.crop(box), SIZE, Image.LANCZOS).save(out / f"{slug}.webp", "WEBP", quality=86)
