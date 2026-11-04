@@ -78,6 +78,13 @@ describe('AuthConfirmPage', () => {
     expect(supabase.auth.verifyOtp).not.toHaveBeenCalled();
   });
 
+  it('says the email is confirmed when a ?code= link opens in another browser', async () => {
+    renderConfirm('/auth/confirm?code=abc');
+    expect(await screen.findByRole('heading', { name: 'Email confirmed' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /go to login/i })).toHaveAttribute('href', '/auth?mode=login');
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
   it('explains an expired or used link', async () => {
     renderConfirm('/auth/confirm#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired');
     expect(await screen.findByRole('alert')).toHaveTextContent('expired or was already used');

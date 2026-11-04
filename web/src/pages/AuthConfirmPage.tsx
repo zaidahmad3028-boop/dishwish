@@ -64,6 +64,23 @@ export function AuthConfirmPage() {
   }, [verifying, loading, error, session, navigate]);
 
   const waiting = !error && (verifying || loading || session);
+  // Supabase only issues a ?code= after it has verified the email. With no session here, the code couldn't be
+  // exchanged because the link was opened in a different browser, so the account is confirmed: just log in.
+  const confirmedElsewhere = !waiting && !error && new URLSearchParams(window.location.search).has('code');
+
+  if (confirmedElsewhere) {
+    return (
+      <main className="mx-auto grid min-h-dvh max-w-md place-items-center px-5 py-10">
+        <section className="glass w-full p-6 sm:p-9" aria-labelledby="confirm-title">
+          <Logo />
+          <h1 id="confirm-title" className="mt-6 font-display text-3xl font-extrabold tracking-tight">Email confirmed</h1>
+          <p role="status" className="mt-3 text-stone-700">Your email is confirmed. Log in with your email and password to open your kitchen.</p>
+          <p className="mt-2 text-sm text-stone-500">Resetting a password? Open the reset link in the same browser where you asked for it.</p>
+          <div className="mt-6 grid gap-3"><Link to="/auth?mode=login" className="btn-primary w-full">Go to login</Link></div>
+        </section>
+      </main>
+    );
+  }
 
   return (
     <main className="mx-auto grid min-h-dvh max-w-md place-items-center px-5 py-10">
