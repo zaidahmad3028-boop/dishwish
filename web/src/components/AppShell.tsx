@@ -90,8 +90,8 @@ function UserCard({ name, photo, admin, onLogout }: { name: string; photo: strin
         </div>
       )}
       <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-haspopup="menu"
-        className={`card flex w-full items-center px-3.5 py-3.5 text-left ${admin ? 'gap-2.5' : 'gap-4'}`}>
-        <Avatar name={name} src={photo} size={admin ? 44 : 52} />
+        className="card flex w-full items-center gap-2.5 px-3 py-3 text-left">
+        <Avatar name={name} src={photo} size={48} />
         <span className="min-w-0 flex-1">
           <span className="block truncate text-lg font-semibold">{name}</span>
           <span className="block whitespace-nowrap text-sm text-stone-600">{admin || account?.role === 'super_admin' ? 'Super Admin' : 'Registered User'}</span>
@@ -113,6 +113,8 @@ export function DashboardShell({ nav, admin = false }: { nav: NavItem[]; admin?:
   const name = displayName(session?.user);
   const photo = avatarUrl(session?.user);
   const userId = session?.user.id;
+  // The designs give only the Kitchen and Ingredient Selection the wider sidebar.
+  const wideSidebar = !admin && ['/kitchen', '/select'].includes(location.pathname);
 
   useEffect(() => { setDrawer(false); }, [location.pathname]);
   useEffect(() => {
@@ -149,8 +151,8 @@ export function DashboardShell({ nav, admin = false }: { nav: NavItem[]; admin?:
   );
 
   return (
-    <div className={`relative min-h-dvh ${admin ? 'lg:pl-[14.8rem]' : 'lg:pl-[17rem]'}`}>
-      <aside className={`fixed inset-y-0 left-0 z-30 hidden rounded-r-[1.75rem] border-r border-white/70 bg-white/40 backdrop-blur-md lg:block ${admin ? 'w-[14.8rem]' : 'w-[17rem]'}`}>{sidebar}</aside>
+    <div className={`relative min-h-dvh ${wideSidebar ? 'lg:pl-[17rem]' : 'lg:pl-[14.8rem]'}`}>
+      <aside className={`fixed inset-y-0 left-0 z-30 hidden rounded-r-[1.75rem] border-r border-white/70 bg-white/40 backdrop-blur-md lg:block ${wideSidebar ? 'w-[17rem]' : 'w-[14.8rem]'} ${!admin && !wideSidebar ? '[&_.nav-link]:!gap-2.5 [&_.nav-link]:!px-2.5 [&_.nav-link]:!text-[1.04rem]' : ''}`}>{sidebar}</aside>
       <TopActions name={name} photo={photo} admin={admin} announcement={announcement} openFeedback={openFeedback} />
       <div className="sticky top-0 z-30 flex items-center justify-between border-b border-white/70 bg-white/80 px-4 py-2 backdrop-blur lg:hidden">
         <button type="button" className="icon-btn" onClick={() => setDrawer(true)} aria-label="Open menu"><Menu size={22} /></button>
@@ -166,7 +168,7 @@ export function DashboardShell({ nav, admin = false }: { nav: NavItem[]; admin?:
           </aside>
         </div>
       )}
-      <main className={`px-4 pb-10 pt-5 sm:px-6 lg:pl-[1.3rem] lg:pr-[1.2rem] lg:pt-4 ${admin ? 'admin-page' : ''}`}>
+      <main className={`px-4 pb-10 pt-5 sm:px-6 lg:pl-[1.3rem] lg:pr-[1.2rem] lg:pt-4 ${admin ? 'tight-page' : ''}`}>
         {announcement && <p role="status" className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-semibold text-amber-900">{announcement}</p>}
         <Outlet />
       </main>

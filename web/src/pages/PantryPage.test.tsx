@@ -37,16 +37,17 @@ beforeEach(() => {
 });
 
 describe('PantryPage', () => {
-  it('lists saved items grouped by category', async () => {
+  it('lists saved items with their category shelf', async () => {
     renderPantry();
     expect(await screen.findByText('1 item at home')).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Vegetables' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Vegetables/ })).toBeInTheDocument();
     expect(screen.getByLabelText('Onion grams')).toHaveValue('500');
   });
 
   it('searches and adds an ingredient with the chosen grams', async () => {
     renderPantry();
     await screen.findByText('1 item at home');
+    await userEvent.click(screen.getAllByRole('button', { name: 'Add Ingredient' })[0]);
     await userEvent.type(screen.getByPlaceholderText(/search/i), 'chicken');
     const qty = screen.getByLabelText('Quantity to add in grams');
     await userEvent.clear(qty);
@@ -60,6 +61,7 @@ describe('PantryPage', () => {
   it('refuses an invalid quantity', async () => {
     renderPantry();
     await screen.findByText('1 item at home');
+    await userEvent.click(screen.getAllByRole('button', { name: 'Add Ingredient' })[0]);
     await userEvent.type(screen.getByPlaceholderText(/search/i), 'rice');
     await userEvent.clear(screen.getByLabelText('Quantity to add in grams'));
     await userEvent.click(screen.getByRole('button', { name: 'Add Basmati Rice' }));
@@ -70,6 +72,7 @@ describe('PantryPage', () => {
   it('blocks ingredients from the allergen shield (tags and free-text words)', async () => {
     renderPantry();
     await screen.findByText('1 item at home');
+    await userEvent.click(screen.getAllByRole('button', { name: 'Add Ingredient' })[0]);
     await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Category' }), 'All');
     await userEvent.type(screen.getByPlaceholderText(/search/i), 'a');
     const results = screen.getByRole('list', { name: 'Search results' });

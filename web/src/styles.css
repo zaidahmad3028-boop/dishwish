@@ -202,13 +202,13 @@ body {
     font-size: 0.85rem;
     font-weight: 600;
   }
-  /* Admin screens use tighter cards than the user pages, as in the reference designs. */
-  .admin-page .card-title { font-size: 1.22rem; gap: 0.45rem; white-space: nowrap; }
-  .admin-page .card-title svg { width: 1.5rem; height: 1.5rem; }
-  .admin-page .card.p-5 { padding: 0.8rem 0.9rem !important; }
-  .admin-page .card > .mb-4 { margin-bottom: 0.5rem !important; }
-  .admin-page .data-table th, .admin-page .data-table td { padding: 0.36rem 0.45rem; }
-  .admin-page .select { padding-top: 0.42rem; padding-bottom: 0.42rem; }
+  /* The data-heavy screens use tighter cards, as in the reference designs. */
+  .tight-page .card-title { font-size: 1.22rem; gap: 0.45rem; white-space: nowrap; }
+  .tight-page .card-title svg { width: 1.5rem; height: 1.5rem; }
+  .tight-page .card.p-5 { padding: 0.8rem 0.9rem !important; }
+  .tight-page .card > .mb-4 { margin-bottom: 0.5rem !important; }
+  .tight-page .data-table th, .tight-page .data-table td { padding: 0.36rem 0.45rem; }
+  .tight-page .select { padding-top: 0.42rem; padding-bottom: 0.42rem; }
   .action-tile {
     display: flex;
     flex-direction: column;

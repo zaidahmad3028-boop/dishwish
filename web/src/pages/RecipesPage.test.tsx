@@ -52,13 +52,13 @@ describe('saved recipes', () => {
     expect(screen.queryByRole('region', { name: 'Nutrition breakdown' })).not.toBeInTheDocument();
   });
 
-  it('lists only saved dishes on the profile, with joined date and settings', async () => {
+  it('shows recent saved dishes on the profile, with member date and settings', async () => {
     setSession(fakeSession('Ayesha'));
     renderAt('/profile');
     expect(await screen.findByRole('heading', { name: 'Ayesha' })).toBeInTheDocument();
-    expect(screen.getByText('Joined 1 January 2026')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /edit preferences/i })).toHaveAttribute('href', '/onboarding');
-    const dishes = screen.getByRole('region', { name: 'My saved dishes' });
+    expect(screen.getByText(/Member since 01 Jan 2026/)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /edit details/i })).toHaveAttribute('href', '/onboarding');
+    const dishes = screen.getByRole('region', { name: 'Recent Recipes' });
     expect(await within(dishes).findByRole('link', { name: /Chicken Breast Karahi/ })).toHaveAttribute('href', '/recipes/r1');
   });
 

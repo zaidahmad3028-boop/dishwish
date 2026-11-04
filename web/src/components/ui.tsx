@@ -2,8 +2,8 @@
 import { useEffect, useId, useRef, type ReactNode } from 'react';
 import { AlertTriangle, ArrowDown, ArrowUp, ChevronLeft, ChevronRight, Inbox, Loader2, Search, X, type LucideIcon } from 'lucide-react';
 
-export function PageHeader({ title, accent, subtitle, icon: Icon, actions }: {
-  title: string; accent?: string; subtitle?: string; icon?: LucideIcon; actions?: ReactNode;
+export function PageHeader({ title, accent, subtitle, icon: Icon, actions, oneWord = false }: {
+  title: string; accent?: string; subtitle?: string; icon?: LucideIcon; actions?: ReactNode; oneWord?: boolean;
 }) {
   return (
     <header className="mb-3 flex flex-wrap items-start justify-between gap-4 lg:pr-36">
@@ -11,7 +11,7 @@ export function PageHeader({ title, accent, subtitle, icon: Icon, actions }: {
         {Icon && <Icon size={52} className="mt-1 hidden shrink-0 text-crimson sm:block" strokeWidth={1.7} aria-hidden="true" />}
         <div>
           <h1 className="font-display text-3xl font-extrabold leading-[1.1] tracking-tight sm:text-4xl lg:text-[3.25rem]">
-            {title}{accent && <> <span className="text-crimson">{accent}</span></>}
+            {title}{accent && <>{oneWord ? '' : ' '}<span className="text-crimson">{accent}</span></>}
           </h1>
           {subtitle && <p className="mt-1 text-stone-800 lg:text-[1.35rem]">{subtitle}</p>}
         </div>

@@ -1,16 +1,17 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Bell, Download, Flame, KeyRound, Leaf, LogOut, MessageSquare, Palette, Save, ShieldCheck, Trash2, UserRound } from 'lucide-react';
+import { AlertTriangle, Bell, CalendarDays, Check, ChefHat, Download, Flame, KeyRound, Leaf, LogOut, Mail, MessageSquare, Palette, Pencil, RotateCcw, Save, Settings as SettingsIcon, ShieldCheck, Trash2, UserRound, Zap } from 'lucide-react';
 import { signOut, useAuth } from '../auth/AuthProvider';
-import { displayName } from '../components/AppShell';
+import { avatarUrl, displayName } from '../components/AppShell';
 import { FeedbackForm } from '../components/FeedbackForm';
-import { Avatar, Card, ErrorNote, Modal, PageHeader, Spinner, Toggle, downloadFile, formatDate, STATUS_BADGE } from '../components/ui';
+import { ActionRow, Avatar, Card, ErrorNote, Modal, PageHeader, Spinner, Toggle, downloadFile, formatDate, STATUS_BADGE } from '../components/ui';
 import {
   applyTextSize, changePassword, defaultExtraPrefs, deleteMyAccount, exportMyData, listMyFeedback, loadExtraPrefs, saveDisplayName,
   saveExtraPrefs, type ExtraPrefs, type FeedbackRow,
 } from '../lib/accountApi';
-import { DIETS } from '../lib/curatedApi';
-import { ALLERGEN_CHIPS, CALORIE_TIERS, LEVELS, TASTES, parseCustomAllergens, type Preferences } from '../lib/preferences';
+import { ALL_DIETS } from '../lib/curatedApi';
+import { imageUrl, IMAGES } from '../lib/images';
+import { ALLERGEN_CHIPS, CALORIE_TIERS, LEVELS, TASTES, parseCustomAllergens, type Level, type Preferences } from '../lib/preferences';
 import { loadPreferences, savePreferences } from '../lib/preferencesApi';
 
 type Tab = 'profile' | 'diet' | 'notifications' | 'security' | 'appearance' | 'feedback' | 'data';
@@ -21,6 +22,8 @@ const TABS: { key: Tab; label: string; icon: typeof UserRound }[] = [
   { key: 'data', label: 'Your Data', icon: Download },
 ];
 const CUISINES = ['Pakistani', 'Pakistani-Chinese', 'Continental', 'Middle Eastern'];
+// Tapping a taste tile steps through Any → low → medium → high → Any.
+const nextLevel = (level: Level | null): Level | null => (level === null ? LEVELS[0] : LEVELS[LEVELS.indexOf(level) + 1] ?? null);
 
 function SaveBar({ saving, onSave, note }: { saving: boolean; onSave: () => void; note: string }) {
   return (
@@ -45,6 +48,7 @@ export function SettingsPage() {
   const [extra, setExtra] = useState<ExtraPrefs>(defaultExtraPrefs());
   const [name, setName] = useState(displayName(user));
   const [customText, setCustomText] = useState('');
+  const [editingName, setEditingName] = useState(false);
   const [saving, setSaving] = useState(false);
   const [note, setNote] = useState('');
   const [error, setError] = useState('');
@@ -92,51 +96,90 @@ export function SettingsPage() {
 
   const content: Record<Tab, ReactNode> = {
     profile: (
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card title="Profile Information" icon={UserRound}>
-          <div className="mb-4 flex items-center gap-4"><Avatar name={name || '?'} size={72} />
-            <div><p className="font-display text-xl font-bold">{displayName(user)}</p><p className="text-sm text-stone-600">{user.email}</p><span className="badge badge-red mt-1">Registered User</span></div></div>
-          <Field label="Display name"><input className="field" value={name} maxLength={30} onChange={(e) => setName(e.target.value)} /></Field>
-          <p className="mt-2 text-xs text-stone-500">Email changes aren’t supported in-app yet. Joined {formatDate(user.created_at)}.</p>
-          <button type="button" className="btn-primary mt-4" disabled={saving}
-            onClick={() => run(() => saveDisplayName(user.id, name), 'Display name updated.')}><Save size={16} />Save name</button>
-        </Card>
-        <Card title="Taste Preferences" icon={Flame}>
-          <p className="-mt-2 mb-3 text-sm text-stone-600">Used to rank recipes. Leave a taste unset if you don’t mind.</p>
-          {TASTES.map((t) => (
-            <fieldset key={t.key} className="mb-3">
-              <legend className="text-sm font-semibold">{t.label} <span className="font-normal text-stone-500">({t.hint})</span></legend>
-              <div className="mt-1 flex flex-wrap gap-2">
-                {[null, ...LEVELS].map((lv) => (
-                  <button key={lv ?? 'none'} type="button" className="pill" aria-pressed={prefs.tastes[t.key] === lv}
-                    onClick={() => setPrefs({ ...prefs, tastes: { ...prefs.tastes, [t.key]: lv } })}>{lv ?? 'Any'}</button>
-                ))}
-              </div>
-            </fieldset>
-          ))}
-          <Field label="Preferred cuisines">
-            <span className="flex flex-wrap gap-2">
-              {CUISINES.map((c) => (
-                <button key={c} type="button" className="pill" aria-pressed={extra.cuisines.includes(c)}
-                  onClick={() => setExtra({ ...extra, cuisines: extra.cuisines.includes(c) ? extra.cuisines.filter((x) => x !== c) : [...extra.cuisines, c] })}>{c}</button>
+      <div className="grid gap-3 xl:grid-cols-[1fr_1.1fr_0.75fr]">
+        <div className="min-w-0 space-y-3">
+          <Card title="Profile Information" icon={UserRound} action={<button type="button" className="pill !px-3 !py-1 !text-[0.86rem] !text-crimson" onClick={() => setEditingName((v) => !v)}><Pencil size={15} />Edit Profile</button>}>
+            <div className="flex items-center gap-4"><Avatar name={name || '?'} size={96} src={avatarUrl(user)} />
+              <div className="min-w-0"><p className="truncate font-display text-xl font-bold">{displayName(user)}</p><p className="truncate text-[0.95rem]">{user.email}</p><span className="badge badge-red mt-1 !text-[0.86rem]">Registered User</span></div></div>
+            <dl className="mt-3 divide-y divide-stone-100 border-t border-stone-100 text-[0.95rem]">
+              <div className="flex items-center gap-3 py-2"><dt className="flex w-32 items-center gap-2"><UserRound size={18} className="text-crimson" aria-hidden="true" />Full Name</dt><dd className="min-w-0 truncate">{displayName(user)}</dd></div>
+              <div className="flex items-center gap-3 py-2"><dt className="flex w-32 items-center gap-2"><Mail size={18} className="text-crimson" aria-hidden="true" />Email</dt><dd className="min-w-0 truncate">{user.email}</dd></div>
+              <div className="flex items-center gap-3 py-2"><dt className="flex w-32 items-center gap-2"><CalendarDays size={18} className="text-crimson" aria-hidden="true" />Joined</dt><dd>{formatDate(user.created_at)}</dd></div>
+            </dl>
+            {editingName && <div className="mt-2"><Field label="Display name"><input className="field" value={name} maxLength={30} onChange={(e) => setName(e.target.value)} /></Field>
+              <button type="button" className="btn-sm btn-red mt-2" disabled={saving} onClick={() => run(() => saveDisplayName(user.id, name), 'Display name updated.')}><Save size={14} />Save name</button></div>}
+          </Card>
+          <Card title="Taste Preferences" icon={Flame}>
+            <p className="-mt-2 mb-2 text-[0.88rem]">Set your favorite taste profile for better recipe recommendations. Tap a taste to change its level.</p>
+            <ul className="grid grid-cols-2 gap-2 2xl:grid-cols-4">
+              {TASTES.map((t) => {
+                const level = prefs.tastes[t.key];
+                return (
+                  <li key={t.key}><button type="button" aria-label={`${t.label}: ${level ?? 'any'}`} onClick={() => setPrefs({ ...prefs, tastes: { ...prefs.tastes, [t.key]: nextLevel(level) } })}
+                    className={`w-full rounded-2xl border p-2.5 text-left shadow-sm transition ${level ? 'border-rose-300 bg-rose-100/80' : 'border-white/90 bg-white/75 hover:bg-rose-50'}`}>
+                    <span className="flex items-center justify-between"><Flame size={22} className="text-crimson" aria-hidden="true" />
+                      <span className={`grid h-5 w-5 place-items-center rounded ${level ? 'bg-crimson text-white' : 'border border-stone-300 bg-white'}`}>{level && <Check size={14} strokeWidth={3} aria-hidden="true" />}</span></span>
+                    <span className="mt-1 block font-semibold leading-tight">{t.label}</span><span className="text-[0.8rem] capitalize">{level ?? 'Any'}</span>
+                  </button></li>
+                );
+              })}
+            </ul>
+            <SaveBar saving={saving} onSave={saveAll} note={note} />
+          </Card>
+        </div>
+        <div className="min-w-0 space-y-3">
+          <Card title="Diet & Allergies" icon={Leaf} iconClass="text-green-600">
+            <p className="-mt-2 mb-2 text-[0.88rem]">Tell us about your dietary needs and any ingredients to avoid.</p>
+            <p className="flex items-center gap-2 text-[0.95rem] font-semibold"><ChefHat size={18} className="text-crimson" aria-hidden="true" />Diet Type</p>
+            <div className="mt-1.5 flex flex-wrap gap-1.5">
+              {ALL_DIETS.map((d) => (
+                <label key={d.key} className="pill cursor-pointer !px-2.5 !py-1 !text-[0.86rem]"><input type="checkbox" className="accent-crimson" checked={extra.diets.includes(d.key)}
+                  onChange={() => setExtra({ ...extra, diets: extra.diets.includes(d.key) ? extra.diets.filter((x) => x !== d.key) : [...extra.diets, d.key] })} />{d.label}</label>
               ))}
-            </span>
-          </Field>
-          <div className="mt-3"><Field label="Typical cooking time">
-            <select className="field" value={extra.maxMinutes ?? 0} onChange={(e) => setExtra({ ...extra, maxMinutes: Number(e.target.value) || null })}>
-              <option value={0}>Any</option><option value={30}>Up to 30 minutes</option><option value={45}>Up to 45 minutes</option>
-              <option value={60}>Up to 60 minutes</option><option value={90}>Up to 90 minutes</option>
-            </select></Field></div>
-          <SaveBar saving={saving} onSave={saveAll} note={note} />
-        </Card>
+            </div>
+            <p className="mt-2.5 flex items-center gap-2 text-[0.95rem] font-semibold"><AlertTriangle size={18} className="text-crimson" aria-hidden="true" />Allergies (if any)</p>
+            <div className="mt-1.5 flex flex-wrap gap-1.5">
+              {ALLERGEN_CHIPS.map((c) => (
+                <button key={c.tag} type="button" className="pill !px-2.5 !py-1 !text-[0.86rem]" aria-pressed={prefs.allergens.includes(c.tag)} title={c.example}
+                  onClick={() => setPrefs({ ...prefs, allergens: prefs.allergens.includes(c.tag) ? prefs.allergens.filter((x) => x !== c.tag) : [...prefs.allergens, c.tag] })}>{c.label}</button>
+              ))}
+            </div>
+            <input className="field mt-2 !py-1.5" aria-label="Other ingredients to avoid" value={customText} onChange={(e) => setCustomText(e.target.value)} placeholder="Add more allergies (comma separated)..." />
+          </Card>
+          <Card title="Notification Preferences" icon={Bell}>
+            <p className="-mt-2 mb-1 text-[0.88rem]">Choose what updates you want to receive.</p>
+            <ul className="divide-y divide-stone-100 text-[0.95rem]">
+              <li className="flex items-center justify-between gap-3 py-1.5"><span>Replies to my feedback</span>
+                <Toggle label="Replies to my feedback" checked={extra.notify.feedback_replies} onChange={(v) => setExtra({ ...extra, notify: { ...extra.notify, feedback_replies: v } })} /></li>
+              <li className="flex items-center justify-between gap-3 py-1.5"><span>Cooking tips and new recipes</span>
+                <Toggle label="Cooking tips and new recipes" checked={extra.notify.tips} onChange={(v) => setExtra({ ...extra, notify: { ...extra.notify, tips: v } })} /></li>
+            </ul>
+          </Card>
+          <Card title="Security & Account" icon={ShieldCheck}>
+            <ActionRow icon={KeyRound} label="Change Password" onClick={() => setParams({ tab: 'security' })} />
+            <ActionRow icon={LogOut} label="Active Sessions" onClick={() => setParams({ tab: 'security' })} />
+          </Card>
+        </div>
+        <div className="min-w-0 space-y-3">
+          <section className="card overflow-hidden p-0 text-center">
+            <img src={imageUrl(IMAGES.kitchenHero)} alt="" aria-hidden="true" className="h-40 w-full object-cover object-right" />
+            <div className="p-4"><p className="font-display text-[1.7rem] font-extrabold leading-tight">Personalize Your <span className="text-crimson">Dish-Wish</span></p>
+              <p className="mt-2 text-[0.95rem]">Set your taste, diet and preferences to get recipes made just for you.</p></div>
+          </section>
+          <Card title="Quick Actions" icon={Zap} iconClass="text-orange-500">
+            <ActionRow icon={RotateCcw} label="Reset Preferences" onClick={() => { setPrefs({ ...prefs, tastes: { sweet: null, salty: null, sour: null, spicy: null } }); setExtra({ ...extra, diets: [], cuisines: [], maxMinutes: null }); setNote('Cleared. Choose Save changes to apply.'); }} />
+            <ActionRow icon={Download} label="Export My Data" onClick={() => setParams({ tab: 'data' })} />
+            <ActionRow icon={Trash2} danger label="Delete Account" onClick={() => setParams({ tab: 'data' })} />
+          </Card>
+        </div>
       </div>
     ),
     diet: (
-      <Card title="Diet & Allergies" icon={Leaf}>
+      <Card title="Diet & Allergies" icon={Leaf} iconClass="text-green-600">
         <p className="-mt-2 mb-3 text-sm text-stone-600">Allergies are hard filters: a recipe containing one is never recommended, whatever its score.</p>
         <p className="text-sm font-semibold">Diet type</p>
         <div className="mt-2 flex flex-wrap gap-2">
-          {DIETS.map((d) => (
+          {ALL_DIETS.map((d) => (
             <label key={d.key} className="pill cursor-pointer"><input type="checkbox" className="accent-crimson" checked={extra.diets.includes(d.key)}
               onChange={() => setExtra({ ...extra, diets: extra.diets.includes(d.key) ? extra.diets.filter((x) => x !== d.key) : [...extra.diets, d.key] })} />{d.label}</label>
           ))}
@@ -247,12 +290,12 @@ export function SettingsPage() {
   };
 
   return (
-    <>
-      <PageHeader title="Your" accent="Settings" subtitle="Manage your profile, preferences, diet, allergies, notifications and account security." />
-      <div role="tablist" aria-label="Settings sections" className="mb-6 flex flex-wrap gap-2">
+    <div className="tight-page">
+      <PageHeader title="Set" accent="tings" oneWord icon={SettingsIcon} subtitle="Manage your profile, preferences, diet, allergies, notifications and account security." />
+      <div role="tablist" aria-label="Settings sections" className="mb-3 flex flex-wrap gap-2">
         {TABS.map(({ key, label, icon: Icon }) => (
-          <button key={key} type="button" role="tab" aria-selected={tab === key} className="pill" onClick={() => setParams(key === 'profile' ? {} : { tab: key })}>
-            <Icon size={16} />{label}</button>
+          <button key={key} type="button" role="tab" aria-selected={tab === key} className="pill !px-4 !py-2 text-[0.98rem]" onClick={() => setParams(key === 'profile' ? {} : { tab: key })}>
+            <Icon size={20} />{label}</button>
         ))}
       </div>
       {error && <div className="mb-4"><ErrorNote>{error}</ErrorNote></div>}
@@ -266,6 +309,6 @@ export function SettingsPage() {
           <button type="submit" className="btn-sm btn-danger" disabled={saving}><Trash2 size={14} />Permanently delete</button>
         </form>
       </Modal>
-    </>
+    </div>
   );
 }
