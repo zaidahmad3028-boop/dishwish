@@ -1,6 +1,6 @@
-// Image uploads to Cloudflare R2 through the Dish-Wish API. The browser first crops and resizes the
+// Image uploads through the Dish-Wish API to Supabase Storage (or Cloudflare R2 when the API has R2 set up). The browser first crops and resizes the
 // photo to its standard size; the API checks the user (and the admin role for recipe images) and the
-// file, stores it in R2 and returns its public https URL.
+// file, stores it and returns its public https URL.
 import { API_URL } from './recipes';
 import { supabase } from './supabase';
 

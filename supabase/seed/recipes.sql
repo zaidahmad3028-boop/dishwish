@@ -162,6 +162,79 @@ select new_recipe.id, v.position, v.body from new_recipe, (values
   (5, 'Garnish with coriander and serve with naan.')
 ) as v(position, body);
 
+-- Chicken Jalfrezi
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('chicken-jalfrezi', 'Chicken Jalfrezi', 'Boneless chicken stir-fried on high heat with capsicum, onion, tomato and green chillies in a tangy masala.', 'Main Course', 'Pakistani', 35, 4, '{"sweet": 2, "salty": 5, "sour": 4, "spicy": 7}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Chicken Boneless (Boti)'), 1, 600, '600 g, in strips'),
+    ((select id from public.ingredients where name = 'Capsicum'), 2, 200, '2, in thick strips'),
+    ((select id from public.ingredients where name = 'Onion'), 3, 200, '2 medium, in wedges'),
+    ((select id from public.ingredients where name = 'Tomato'), 4, 250, '3 medium, chopped'),
+    ((select id from public.ingredients where name = 'Green Chilli'), 5, 20, '4, slit'),
+    ((select id from public.ingredients where name = 'Ginger'), 6, 15, '1 tbsp paste, plus a little julienned'),
+    ((select id from public.ingredients where name = 'Garlic'), 7, 10, '2 tsp paste'),
+    ((select id from public.ingredients where name = 'Cooking Oil'), 8, 60, '1/4 cup'),
+    ((select id from public.ingredients where name = 'Salt'), 9, 6, '1 tsp'),
+    ((select id from public.ingredients where name = 'Red Chilli Powder'), 10, 4, '1 tsp'),
+    ((select id from public.ingredients where name = 'Turmeric (Haldi)'), 11, 1, '1/4 tsp'),
+    ((select id from public.ingredients where name = 'Coriander Powder'), 12, 4, '1 tsp'),
+    ((select id from public.ingredients where name = 'Cumin (Zeera)'), 13, 3, '1 tsp'),
+    ((select id from public.ingredients where name = 'Black Pepper'), 14, 2, '1/2 tsp'),
+    ((select id from public.ingredients where name = 'Vinegar'), 15, 15, '1 tbsp'),
+    ((select id from public.ingredients where name = 'Fresh Coriander'), 16, 10, 'to garnish')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Heat the oil on high heat and sear the chicken with the ginger and garlic for 5-6 minutes until lightly golden.'),
+  (2, 'Add the tomatoes, salt, red chilli, turmeric, coriander powder and cumin; cook until the tomatoes break down and the oil separates.'),
+  (3, 'Add the onion and capsicum and stir-fry on high heat for 3-4 minutes so they stay crunchy.'),
+  (4, 'Add the green chillies, black pepper and vinegar; toss for 1 minute.'),
+  (5, 'Garnish with julienned ginger and coriander. Serve hot with naan or plain rice.')
+) as v(position, body);
+
+-- Chicken Achari
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('chicken-achari', 'Chicken Achari', 'Chicken in a tangy yogurt and tomato gravy flavoured with the pickling spices of a Pakistani achar.', 'Main Course', 'Pakistani', 45, 4, '{"sweet": 1, "salty": 6, "sour": 7, "spicy": 7}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Chicken Leg Piece'), 1, 750, '750 g, cut in pieces'),
+    ((select id from public.ingredients where name = 'Onion'), 2, 200, '2 medium, sliced'),
+    ((select id from public.ingredients where name = 'Tomato'), 3, 250, '3 medium, chopped'),
+    ((select id from public.ingredients where name = 'Yogurt (Dahi)'), 4, 150, '2/3 cup, whisked'),
+    ((select id from public.ingredients where name = 'Green Chilli'), 5, 20, '4, slit'),
+    ((select id from public.ingredients where name = 'Ginger'), 6, 15, '1 tbsp paste'),
+    ((select id from public.ingredients where name = 'Garlic'), 7, 15, '1 tbsp paste'),
+    ((select id from public.ingredients where name = 'Mustard Oil'), 8, 60, '1/4 cup'),
+    ((select id from public.ingredients where name = 'Salt'), 9, 8, '1 1/2 tsp'),
+    ((select id from public.ingredients where name = 'Red Chilli Powder'), 10, 4, '1 tsp'),
+    ((select id from public.ingredients where name = 'Turmeric (Haldi)'), 11, 1, '1/4 tsp'),
+    ((select id from public.ingredients where name = 'Fennel Seeds (Saunf)'), 12, 4, '2 tsp'),
+    ((select id from public.ingredients where name = 'Cumin (Zeera)'), 13, 3, '1 tsp'),
+    ((select id from public.ingredients where name = 'Mustard Seeds (Sarson)'), 14, 3, '1 tsp'),
+    ((select id from public.ingredients where name = 'Fenugreek (Methi Dana)'), 15, 2, '1/2 tsp'),
+    ((select id from public.ingredients where name = 'Nigella Seeds (Kalonji)'), 16, 2, '1/2 tsp'),
+    ((select id from public.ingredients where name = 'Lemon'), 17, 30, 'juice of 1'),
+    ((select id from public.ingredients where name = 'Fresh Coriander'), 18, 10, 'to garnish')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Dry-roast the fennel, cumin, mustard, fenugreek and nigella for 1 minute until fragrant, then lightly crush them.'),
+  (2, 'Heat the mustard oil until it just smokes, lower the heat and fry the onion until golden.'),
+  (3, 'Add the chicken, ginger and garlic and cook on high heat for 6-7 minutes until the chicken changes colour.'),
+  (4, 'Add the tomatoes, salt, red chilli, turmeric and half the crushed spices; cook until the oil separates.'),
+  (5, 'Lower the heat, stir in the yogurt, cover and cook for 12-15 minutes until the chicken is tender.'),
+  (6, 'Add the slit green chillies, the remaining spices and the lemon juice; simmer for 2 minutes, garnish with coriander and serve.')
+) as v(position, body);
+
 -- Chicken Yakhni Pulao
 with new_recipe as (
   insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
@@ -1034,18 +1107,1280 @@ select new_recipe.id, v.position, v.body from new_recipe, (values
   (4, 'Add the drained rice; cook until the water is absorbed, then steam covered on low heat for 15 minutes.')
 ) as v(position, body);
 
+-- Butter Chicken
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('butter-chicken', 'Butter Chicken', 'Grilled chicken pieces simmered in a smooth, buttery tomato and cream gravy.', 'Main Course', 'Pakistani', 50, 4, '{"sweet": 4, "salty": 5, "sour": 3, "spicy": 4}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Chicken Boneless (Boti)'), 1, 600, '600 g'),
+    ((select id from public.ingredients where name = 'Yogurt (Dahi)'), 2, 120, '1/2 cup'),
+    ((select id from public.ingredients where name = 'Tomato'), 3, 400, '4 medium, pureed'),
+    ((select id from public.ingredients where name = 'Butter (Makhan)'), 4, 50, '4 tbsp'),
+    ((select id from public.ingredients where name = 'Fresh Cream (Malai)'), 5, 100, '1/2 cup'),
+    ((select id from public.ingredients where name = 'Ginger Garlic Paste'), 6, 20, '1 tbsp'),
+    ((select id from public.ingredients where name = 'Kashmiri Chilli Powder'), 7, 6, '2 tsp'),
+    ((select id from public.ingredients where name = 'Garam Masala'), 8, 3, '1 tsp'),
+    ((select id from public.ingredients where name = 'Kasuri Methi'), 9, 2, '1 tsp'),
+    ((select id from public.ingredients where name = 'Salt'), 10, 7, '1 1/4 tsp'),
+    ((select id from public.ingredients where name = 'White Sugar'), 11, 5, '1 tsp')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Marinate the chicken with yogurt, half the ginger garlic paste, chilli powder and salt for 30 minutes.'),
+  (2, 'Sear the chicken in a hot pan until charred at the edges; set aside.'),
+  (3, 'Melt the butter, add the rest of the ginger garlic paste and the tomato puree; cook until thick and glossy (10 minutes).'),
+  (4, 'Add the chicken, garam masala, sugar and crushed kasuri methi; simmer for 8 minutes.'),
+  (5, 'Stir in the cream, warm through and serve with naan.')
+) as v(position, body);
+
+-- White Chicken Karahi
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('chicken-white-karahi', 'White Chicken Karahi', 'A creamy, peppery karahi made with yogurt and cream instead of tomatoes.', 'Main Course', 'Pakistani', 40, 4, '{"sweet": 1, "salty": 5, "sour": 3, "spicy": 4}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Chicken Leg Piece'), 1, 750, '750 g'),
+    ((select id from public.ingredients where name = 'Yogurt (Dahi)'), 2, 200, '3/4 cup'),
+    ((select id from public.ingredients where name = 'Fresh Cream (Malai)'), 3, 100, '1/2 cup'),
+    ((select id from public.ingredients where name = 'Ginger Garlic Paste'), 4, 20, '1 tbsp'),
+    ((select id from public.ingredients where name = 'Green Chilli'), 5, 25, '5, slit'),
+    ((select id from public.ingredients where name = 'Black Pepper'), 6, 4, '1 tsp, crushed'),
+    ((select id from public.ingredients where name = 'White Pepper'), 7, 2, '1/2 tsp'),
+    ((select id from public.ingredients where name = 'Cumin (Zeera)'), 8, 3, '1 tsp'),
+    ((select id from public.ingredients where name = 'Cooking Oil'), 9, 50, '1/4 cup'),
+    ((select id from public.ingredients where name = 'Salt'), 10, 8, '1 1/2 tsp'),
+    ((select id from public.ingredients where name = 'Ginger'), 11, 10, 'julienned')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Fry the chicken in the oil with the ginger garlic paste until it turns white.'),
+  (2, 'Add salt, both peppers and cumin; stir for 2 minutes.'),
+  (3, 'Add the whisked yogurt and cook on high heat until the chicken is tender and the oil shows (12 minutes).'),
+  (4, 'Add green chillies and cream, cook for 3 minutes and finish with julienned ginger.')
+) as v(position, body);
+
+-- Chicken Malai Boti
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('chicken-malai-boti', 'Chicken Malai Boti', 'Tender boneless chicken marinated in cream, cheese and mild spices, then grilled.', 'Snacks', 'Pakistani', 45, 4, '{"sweet": 1, "salty": 5, "sour": 2, "spicy": 3}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Chicken Boneless (Boti)'), 1, 600, '600 g'),
+    ((select id from public.ingredients where name = 'Fresh Cream (Malai)'), 2, 80, '1/3 cup'),
+    ((select id from public.ingredients where name = 'Yogurt (Dahi)'), 3, 60, '1/4 cup'),
+    ((select id from public.ingredients where name = 'Processed Cheese Slice'), 4, 40, '2 slices'),
+    ((select id from public.ingredients where name = 'Ginger Garlic Paste'), 5, 15, '1 tbsp'),
+    ((select id from public.ingredients where name = 'White Pepper'), 6, 3, '1 tsp'),
+    ((select id from public.ingredients where name = 'Green Chilli'), 7, 10, '2, ground'),
+    ((select id from public.ingredients where name = 'Lemon'), 8, 15, 'juice of 1/2'),
+    ((select id from public.ingredients where name = 'Salt'), 9, 6, '1 tsp'),
+    ((select id from public.ingredients where name = 'Butter (Makhan)'), 10, 20, 'for basting')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Blend cream, yogurt, cheese, ginger garlic paste, green chilli, white pepper, lemon juice and salt.'),
+  (2, 'Coat the chicken and marinate for at least 1 hour.'),
+  (3, 'Thread onto skewers and grill or bake at 220 °C for 15-18 minutes, basting with butter.'),
+  (4, 'Rest for 2 minutes and serve with mint chutney.')
+) as v(position, body);
+
+-- Chicken Kofta Curry
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('chicken-kofta-curry', 'Chicken Kofta Curry', 'Soft minced-chicken meatballs cooked in a spiced onion-tomato gravy.', 'Main Course', 'Pakistani', 55, 4, '{"sweet": 1, "salty": 6, "sour": 3, "spicy": 6}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Chicken Qeema'), 1, 500, '500 g'),
+    ((select id from public.ingredients where name = 'Onion'), 2, 250, '2, 1 grated for koftas'),
+    ((select id from public.ingredients where name = 'Tomato'), 3, 250, '2 large'),
+    ((select id from public.ingredients where name = 'Gram Flour (Besan)'), 4, 20, '2 tbsp'),
+    ((select id from public.ingredients where name = 'Ginger Garlic Paste'), 5, 20, '1 tbsp'),
+    ((select id from public.ingredients where name = 'Green Chilli'), 6, 10, '2'),
+    ((select id from public.ingredients where name = 'Red Chilli Powder'), 7, 5, '1 tsp'),
+    ((select id from public.ingredients where name = 'Turmeric (Haldi)'), 8, 2, '1/2 tsp'),
+    ((select id from public.ingredients where name = 'Garam Masala'), 9, 3, '1 tsp'),
+    ((select id from public.ingredients where name = 'Yogurt (Dahi)'), 10, 100, '1/2 cup'),
+    ((select id from public.ingredients where name = 'Cooking Oil'), 11, 60, '1/4 cup'),
+    ((select id from public.ingredients where name = 'Salt'), 12, 8, '1 1/2 tsp'),
+    ((select id from public.ingredients where name = 'Fresh Coriander'), 13, 10, 'chopped')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Mix the qeema with grated onion, besan, half the garam masala, green chilli and salt; shape into small balls.'),
+  (2, 'Fry the sliced onion in oil until golden, add ginger garlic paste, tomatoes and spices; bhuno until the oil separates.'),
+  (3, 'Add yogurt and 1 cup water and bring to a simmer.'),
+  (4, 'Slide in the koftas, cover and cook on low heat for 20 minutes without stirring.'),
+  (5, 'Finish with garam masala and coriander.')
+) as v(position, body);
+
+-- Chicken Haleem
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('chicken-haleem', 'Chicken Haleem', 'Slow-cooked lentils, cracked wheat and shredded chicken, beaten into a thick, hearty stew.', 'Main Course', 'Pakistani', 150, 6, '{"sweet": 1, "salty": 6, "sour": 3, "spicy": 6}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Chicken Boneless (Boti)'), 1, 600, '600 g'),
+    ((select id from public.ingredients where name = 'Cracked Wheat (Dalia)'), 2, 150, '3/4 cup, soaked'),
+    ((select id from public.ingredients where name = 'Chana Dal'), 3, 60, '1/3 cup'),
+    ((select id from public.ingredients where name = 'Masoor Dal'), 4, 40, '1/4 cup'),
+    ((select id from public.ingredients where name = 'Moong Dal'), 5, 40, '1/4 cup'),
+    ((select id from public.ingredients where name = 'Mash Dal'), 6, 40, '1/4 cup'),
+    ((select id from public.ingredients where name = 'Onion'), 7, 300, '3, sliced and fried'),
+    ((select id from public.ingredients where name = 'Ginger Garlic Paste'), 8, 30, '2 tbsp'),
+    ((select id from public.ingredients where name = 'Red Chilli Powder'), 9, 8, '2 tsp'),
+    ((select id from public.ingredients where name = 'Turmeric (Haldi)'), 10, 3, '1 tsp'),
+    ((select id from public.ingredients where name = 'Garam Masala'), 11, 4, '1 tsp'),
+    ((select id from public.ingredients where name = 'Cooking Oil'), 12, 100, '1/2 cup'),
+    ((select id from public.ingredients where name = 'Salt'), 13, 12, '2 tsp'),
+    ((select id from public.ingredients where name = 'Lemon'), 14, 30, 'to serve'),
+    ((select id from public.ingredients where name = 'Fresh Mint (Pudina)'), 15, 10, 'to serve')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Boil the soaked wheat and all dals with turmeric until completely soft (about 1 hour).'),
+  (2, 'Cook the chicken with ginger garlic paste, chilli, salt and half the fried onion until tender; shred it.'),
+  (3, 'Combine the chicken with the lentils and beat (ghotna) over low heat for 30 minutes until stringy and thick.'),
+  (4, 'Add garam masala and adjust salt.'),
+  (5, 'Serve topped with fried onion, mint, ginger and lemon.')
+) as v(position, body);
+
+-- Chicken Steam Roast
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('chicken-steam-roast', 'Chicken Steam Roast', 'Whole chicken marinated in yogurt and spices, steamed until tender and then pan-roasted.', 'Main Course', 'Pakistani', 70, 4, '{"sweet": 1, "salty": 6, "sour": 4, "spicy": 6}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Whole Chicken'), 1, 1200, '1 small chicken, skinned, slashed'),
+    ((select id from public.ingredients where name = 'Yogurt (Dahi)'), 2, 150, '2/3 cup'),
+    ((select id from public.ingredients where name = 'Lemon'), 3, 30, 'juice of 1'),
+    ((select id from public.ingredients where name = 'Ginger Garlic Paste'), 4, 25, '1 1/2 tbsp'),
+    ((select id from public.ingredients where name = 'Red Chilli Powder'), 5, 6, '1 1/2 tsp'),
+    ((select id from public.ingredients where name = 'Tikka Masala'), 6, 15, '1 1/2 tbsp'),
+    ((select id from public.ingredients where name = 'Black Pepper'), 7, 2, '1/2 tsp'),
+    ((select id from public.ingredients where name = 'Cooking Oil'), 8, 40, '3 tbsp'),
+    ((select id from public.ingredients where name = 'Salt'), 9, 10, '1 3/4 tsp')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Mix yogurt, lemon, ginger garlic paste, chilli, tikka masala, pepper and salt; rub into the chicken and marinate for 2 hours.'),
+  (2, 'Steam the chicken for 30-35 minutes until cooked through.'),
+  (3, 'Heat the oil and roast the chicken on all sides until browned, spooning the juices over it.'),
+  (4, 'Serve with salad and chutney.')
+) as v(position, body);
+
+-- Mutton Qorma
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('mutton-qorma', 'Mutton Qorma', 'Slow-cooked mutton in a rich fried-onion, yogurt and whole-spice gravy.', 'Main Course', 'Pakistani', 120, 6, '{"sweet": 2, "salty": 6, "sour": 2, "spicy": 5}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Mutton'), 1, 1000, '1 kg'),
+    ((select id from public.ingredients where name = 'Onion'), 2, 300, '3, sliced and fried golden'),
+    ((select id from public.ingredients where name = 'Yogurt (Dahi)'), 3, 250, '1 cup'),
+    ((select id from public.ingredients where name = 'Ginger Garlic Paste'), 4, 30, '2 tbsp'),
+    ((select id from public.ingredients where name = 'Korma Masala'), 5, 30, '3 tbsp'),
+    ((select id from public.ingredients where name = 'Green Cardamom (Elaichi)'), 6, 2, '4'),
+    ((select id from public.ingredients where name = 'Cloves (Laung)'), 7, 1, '4'),
+    ((select id from public.ingredients where name = 'Cinnamon (Dalchini)'), 8, 2, '1 stick'),
+    ((select id from public.ingredients where name = 'Cooking Oil'), 9, 120, '1/2 cup'),
+    ((select id from public.ingredients where name = 'Salt'), 10, 12, '2 tsp'),
+    ((select id from public.ingredients where name = 'Kewra Water'), 11, 5, '1 tsp')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Heat the oil with the whole spices, add the mutton and ginger garlic paste and brown well.'),
+  (2, 'Add the yogurt blended with the crushed fried onion, korma masala and salt.'),
+  (3, 'Add 2 cups water, cover and cook on low heat for 1 1/2 hours until the meat is very tender.'),
+  (4, 'Cook uncovered until the oil rises, sprinkle kewra and serve with naan.')
+) as v(position, body);
+
+-- Mutton Paya
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('mutton-paya', 'Mutton Paya', 'Trotters slow-cooked overnight into a sticky, spiced broth, a classic winter breakfast.', 'Main Course', 'Pakistani', 300, 6, '{"sweet": 0, "salty": 6, "sour": 2, "spicy": 7}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Mutton Paya'), 1, 1500, '6-8 trotters, cleaned'),
+    ((select id from public.ingredients where name = 'Onion'), 2, 250, '2, sliced'),
+    ((select id from public.ingredients where name = 'Ginger Garlic Paste'), 3, 40, '2 1/2 tbsp'),
+    ((select id from public.ingredients where name = 'Red Chilli Powder'), 4, 10, '2 tsp'),
+    ((select id from public.ingredients where name = 'Turmeric (Haldi)'), 5, 3, '1 tsp'),
+    ((select id from public.ingredients where name = 'Coriander Powder'), 6, 8, '2 tsp'),
+    ((select id from public.ingredients where name = 'Garam Masala'), 7, 5, '1 tsp'),
+    ((select id from public.ingredients where name = 'Yogurt (Dahi)'), 8, 120, '1/2 cup'),
+    ((select id from public.ingredients where name = 'Cooking Oil'), 9, 120, '1/2 cup'),
+    ((select id from public.ingredients where name = 'Salt'), 10, 15, '2 1/2 tsp'),
+    ((select id from public.ingredients where name = 'Ginger'), 11, 15, 'julienned'),
+    ((select id from public.ingredients where name = 'Lemon'), 12, 30, 'to serve')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Fry the onions until golden; add ginger garlic paste and the spices with a splash of water.'),
+  (2, 'Add the trotters and yogurt and bhuno for 15 minutes.'),
+  (3, 'Add 3 litres of water and simmer covered for 4-5 hours (or overnight) until the meat falls off the bone.'),
+  (4, 'Adjust salt and garam masala; serve with ginger, green chillies and lemon.')
+) as v(position, body);
+
+-- Mutton Raan Roast
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('raan-roast', 'Mutton Raan Roast', 'A whole leg of mutton marinated overnight and slow-roasted until it falls apart.', 'Main Course', 'Pakistani', 180, 6, '{"sweet": 1, "salty": 6, "sour": 4, "spicy": 6}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Mutton Leg (Raan)'), 1, 1800, '1 leg, deeply slashed'),
+    ((select id from public.ingredients where name = 'Yogurt (Dahi)'), 2, 250, '1 cup'),
+    ((select id from public.ingredients where name = 'Raw Mango (Kairi)'), 3, 50, 'or 2 tbsp papaya paste'),
+    ((select id from public.ingredients where name = 'Ginger Garlic Paste'), 4, 40, '2 1/2 tbsp'),
+    ((select id from public.ingredients where name = 'Red Chilli Powder'), 5, 10, '2 tsp'),
+    ((select id from public.ingredients where name = 'Garam Masala'), 6, 6, '1 1/2 tsp'),
+    ((select id from public.ingredients where name = 'Lemon'), 7, 40, 'juice of 1'),
+    ((select id from public.ingredients where name = 'Cooking Oil'), 8, 60, '1/4 cup'),
+    ((select id from public.ingredients where name = 'Salt'), 9, 15, '2 1/2 tsp')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Blend yogurt, raw mango, ginger garlic paste, chilli, garam masala, lemon and salt.'),
+  (2, 'Rub into the leg and marinate overnight in the fridge.'),
+  (3, 'Cook covered with 1 cup water on low heat (or bake at 160 °C) for 2 1/2 hours until tender.'),
+  (4, 'Uncover, baste with oil and roast until browned. Serve with naan and salad.')
+) as v(position, body);
+
+-- Beef Seekh Kabab
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('beef-seekh-kabab', 'Beef Seekh Kabab', 'Spiced beef mince pressed onto skewers and grilled until smoky.', 'Snacks', 'Pakistani', 40, 4, '{"sweet": 0, "salty": 6, "sour": 2, "spicy": 6}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Beef Qeema'), 1, 600, '600 g, double minced'),
+    ((select id from public.ingredients where name = 'Onion'), 2, 100, '1, grated and squeezed'),
+    ((select id from public.ingredients where name = 'Ginger Garlic Paste'), 3, 15, '1 tbsp'),
+    ((select id from public.ingredients where name = 'Green Chilli'), 4, 15, '3, finely chopped'),
+    ((select id from public.ingredients where name = 'Fresh Coriander'), 5, 10, 'chopped'),
+    ((select id from public.ingredients where name = 'Red Chilli Flakes (Kuti Lal Mirch)'), 6, 4, '1 tsp'),
+    ((select id from public.ingredients where name = 'Garam Masala'), 7, 3, '1 tsp'),
+    ((select id from public.ingredients where name = 'Roasted Chana'), 8, 20, '2 tbsp, ground'),
+    ((select id from public.ingredients where name = 'Salt'), 9, 8, '1 1/2 tsp'),
+    ((select id from public.ingredients where name = 'Butter (Makhan)'), 10, 20, 'for basting')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Mix all ingredients except the butter and knead for 5 minutes; rest for 30 minutes.'),
+  (2, 'Wet your hands and press the mixture onto skewers.'),
+  (3, 'Grill over high heat for 10-12 minutes, turning and basting with butter.'),
+  (4, 'Serve with onion rings, lemon and mint chutney.')
+) as v(position, body);
+
+-- Beef Bhuna Gosht
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('bhuna-gosht', 'Beef Bhuna Gosht', 'Beef slow-cooked and then stir-fried until the masala darkens and clings to the meat.', 'Main Course', 'Pakistani', 90, 4, '{"sweet": 0, "salty": 6, "sour": 3, "spicy": 7}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Beef Boneless'), 1, 750, '750 g'),
+    ((select id from public.ingredients where name = 'Onion'), 2, 250, '2, sliced'),
+    ((select id from public.ingredients where name = 'Tomato'), 3, 200, '2'),
+    ((select id from public.ingredients where name = 'Ginger Garlic Paste'), 4, 25, '1 1/2 tbsp'),
+    ((select id from public.ingredients where name = 'Yogurt (Dahi)'), 5, 100, '1/2 cup'),
+    ((select id from public.ingredients where name = 'Red Chilli Powder'), 6, 8, '2 tsp'),
+    ((select id from public.ingredients where name = 'Coriander Powder'), 7, 6, '1 1/2 tsp'),
+    ((select id from public.ingredients where name = 'Turmeric (Haldi)'), 8, 2, '1/2 tsp'),
+    ((select id from public.ingredients where name = 'Garam Masala'), 9, 4, '1 tsp'),
+    ((select id from public.ingredients where name = 'Cooking Oil'), 10, 80, '1/3 cup'),
+    ((select id from public.ingredients where name = 'Salt'), 11, 10, '1 3/4 tsp'),
+    ((select id from public.ingredients where name = 'Green Chilli'), 12, 15, '3')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Fry the onions until golden; add the beef and ginger garlic paste and sear well.'),
+  (2, 'Add the spices, tomatoes and yogurt; cook for 5 minutes.'),
+  (3, 'Add 2 cups water, cover and cook on low heat for 1 hour until tender.'),
+  (4, 'Uncover and bhuno on high heat, stirring, until the masala is dark and dry. Add green chillies and garam masala.')
+) as v(position, body);
+
+-- Mutton Pulao
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('mutton-pulao', 'Mutton Pulao', 'Fragrant rice cooked in a whole-spice mutton stock (yakhni) with fried onions.', 'Rice', 'Pakistani', 120, 6, '{"sweet": 1, "salty": 6, "sour": 1, "spicy": 3}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Mutton'), 1, 750, '750 g'),
+    ((select id from public.ingredients where name = 'Basmati Rice'), 2, 500, '2 1/2 cups, soaked'),
+    ((select id from public.ingredients where name = 'Onion'), 3, 200, '2, sliced'),
+    ((select id from public.ingredients where name = 'Ginger'), 4, 20, '1 piece'),
+    ((select id from public.ingredients where name = 'Garlic'), 5, 20, '1 bulb'),
+    ((select id from public.ingredients where name = 'Coriander Seeds (Sabut Dhania)'), 6, 8, '1 tbsp'),
+    ((select id from public.ingredients where name = 'Fennel Seeds (Saunf)'), 7, 5, '1 tsp'),
+    ((select id from public.ingredients where name = 'Cumin (Zeera)'), 8, 3, '1 tsp'),
+    ((select id from public.ingredients where name = 'Black Cardamom (Bari Elaichi)'), 9, 2, '2'),
+    ((select id from public.ingredients where name = 'Cloves (Laung)'), 10, 1, '5'),
+    ((select id from public.ingredients where name = 'Cooking Oil'), 11, 100, '1/2 cup'),
+    ((select id from public.ingredients where name = 'Salt'), 12, 15, '2 1/2 tsp'),
+    ((select id from public.ingredients where name = 'Yogurt (Dahi)'), 13, 100, '1/2 cup')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Tie the ginger, garlic, coriander and fennel seeds in a muslin bag; boil with the mutton in 6 cups water for 1 hour to make yakhni.'),
+  (2, 'Fry the onions golden in oil, add cumin, cardamom and cloves, then the mutton pieces and yogurt.'),
+  (3, 'Add 4 cups of strained yakhni and salt; bring to a boil.'),
+  (4, 'Add the drained rice, cook until the water is absorbed, then steam on low heat for 15 minutes.')
+) as v(position, body);
+
+-- Rohu Fish Curry
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('rohu-fish-curry', 'Rohu Fish Curry', 'River fish simmered in a tangy tomato and mustard-seed gravy.', 'Main Course', 'Pakistani', 40, 4, '{"sweet": 0, "salty": 6, "sour": 5, "spicy": 6}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Rohu Fish'), 1, 750, '750 g, steaks'),
+    ((select id from public.ingredients where name = 'Tomato'), 2, 300, '3'),
+    ((select id from public.ingredients where name = 'Onion'), 3, 150, '1 large'),
+    ((select id from public.ingredients where name = 'Ginger Garlic Paste'), 4, 15, '1 tbsp'),
+    ((select id from public.ingredients where name = 'Mustard Seeds (Sarson)'), 5, 3, '1 tsp'),
+    ((select id from public.ingredients where name = 'Turmeric (Haldi)'), 6, 3, '1 tsp'),
+    ((select id from public.ingredients where name = 'Red Chilli Powder'), 7, 6, '1 1/2 tsp'),
+    ((select id from public.ingredients where name = 'Coriander Powder'), 8, 5, '1 tsp'),
+    ((select id from public.ingredients where name = 'Tamarind (Imli)'), 9, 15, '1 tbsp pulp'),
+    ((select id from public.ingredients where name = 'Mustard Oil'), 10, 50, '1/4 cup'),
+    ((select id from public.ingredients where name = 'Salt'), 11, 8, '1 1/2 tsp'),
+    ((select id from public.ingredients where name = 'Fresh Coriander'), 12, 10, 'chopped')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Rub the fish with turmeric and salt and lightly fry; set aside.'),
+  (2, 'In the same oil splutter the mustard seeds, then fry the onion and ginger garlic paste.'),
+  (3, 'Add tomatoes and spices; cook until soft, then add 1 1/2 cups water and the tamarind.'),
+  (4, 'Slide in the fish and simmer for 8 minutes without stirring. Garnish with coriander.')
+) as v(position, body);
+
+-- Surmai Fish Tikka
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('fish-tikka', 'Surmai Fish Tikka', 'King fish cubes marinated in yogurt, lemon and carom seeds, then grilled.', 'Snacks', 'Pakistani', 35, 4, '{"sweet": 0, "salty": 6, "sour": 5, "spicy": 6}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Surmai Fish (King Fish)'), 1, 600, '600 g, cubed'),
+    ((select id from public.ingredients where name = 'Yogurt (Dahi)'), 2, 80, '1/3 cup'),
+    ((select id from public.ingredients where name = 'Lemon'), 3, 30, 'juice of 1'),
+    ((select id from public.ingredients where name = 'Carom Seeds (Ajwain)'), 4, 2, '1/2 tsp'),
+    ((select id from public.ingredients where name = 'Ginger Garlic Paste'), 5, 15, '1 tbsp'),
+    ((select id from public.ingredients where name = 'Kashmiri Chilli Powder'), 6, 5, '1 1/2 tsp'),
+    ((select id from public.ingredients where name = 'Gram Flour (Besan)'), 7, 15, '1 1/2 tbsp'),
+    ((select id from public.ingredients where name = 'Chaat Masala'), 8, 3, '1 tsp'),
+    ((select id from public.ingredients where name = 'Salt'), 9, 6, '1 tsp'),
+    ((select id from public.ingredients where name = 'Cooking Oil'), 10, 20, 'for basting')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Marinate the fish with lemon and salt for 10 minutes.'),
+  (2, 'Mix in yogurt, besan, carom seeds, ginger garlic paste and chilli; rest for 20 minutes.'),
+  (3, 'Grill on skewers for 8-10 minutes, basting with oil.'),
+  (4, 'Sprinkle chaat masala and serve with lemon wedges.')
+) as v(position, body);
+
+-- Anda Curry
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('anda-curry', 'Anda Curry', 'Boiled eggs in a home-style onion-tomato masala.', 'Main Course', 'Pakistani', 35, 4, '{"sweet": 1, "salty": 6, "sour": 4, "spicy": 6}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Eggs'), 1, 300, '6, boiled and peeled'),
+    ((select id from public.ingredients where name = 'Onion'), 2, 200, '2'),
+    ((select id from public.ingredients where name = 'Tomato'), 3, 250, '2 large'),
+    ((select id from public.ingredients where name = 'Ginger Garlic Paste'), 4, 15, '1 tbsp'),
+    ((select id from public.ingredients where name = 'Red Chilli Powder'), 5, 5, '1 tsp'),
+    ((select id from public.ingredients where name = 'Turmeric (Haldi)'), 6, 2, '1/2 tsp'),
+    ((select id from public.ingredients where name = 'Coriander Powder'), 7, 5, '1 tsp'),
+    ((select id from public.ingredients where name = 'Garam Masala'), 8, 2, '1/2 tsp'),
+    ((select id from public.ingredients where name = 'Cooking Oil'), 9, 50, '1/4 cup'),
+    ((select id from public.ingredients where name = 'Salt'), 10, 7, '1 1/4 tsp'),
+    ((select id from public.ingredients where name = 'Fresh Coriander'), 11, 10, 'chopped'),
+    ((select id from public.ingredients where name = 'Green Chilli'), 12, 10, '2')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Lightly fry the boiled eggs with a pinch of turmeric; set aside.'),
+  (2, 'Fry the onions golden, add ginger garlic paste, tomatoes and spices; bhuno until the oil separates.'),
+  (3, 'Add 1 cup water, then the eggs; simmer for 8 minutes.'),
+  (4, 'Finish with garam masala, green chillies and coriander.')
+) as v(position, body);
+
+-- Palak Paneer
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('palak-paneer', 'Palak Paneer', 'Cubes of paneer in a smooth, garlicky spinach gravy.', 'Vegetables', 'Pakistani', 35, 4, '{"sweet": 1, "salty": 5, "sour": 2, "spicy": 4}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Spinach'), 1, 500, '500 g'),
+    ((select id from public.ingredients where name = 'Paneer'), 2, 250, '250 g, cubed'),
+    ((select id from public.ingredients where name = 'Onion'), 3, 120, '1'),
+    ((select id from public.ingredients where name = 'Tomato'), 4, 100, '1'),
+    ((select id from public.ingredients where name = 'Garlic'), 5, 15, '5 cloves'),
+    ((select id from public.ingredients where name = 'Ginger'), 6, 10, '1 inch'),
+    ((select id from public.ingredients where name = 'Green Chilli'), 7, 10, '2'),
+    ((select id from public.ingredients where name = 'Cumin (Zeera)'), 8, 3, '1 tsp'),
+    ((select id from public.ingredients where name = 'Garam Masala'), 9, 2, '1/2 tsp'),
+    ((select id from public.ingredients where name = 'Fresh Cream (Malai)'), 10, 40, '3 tbsp'),
+    ((select id from public.ingredients where name = 'Cooking Oil'), 11, 40, '3 tbsp'),
+    ((select id from public.ingredients where name = 'Salt'), 12, 6, '1 tsp')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Blanch the spinach with the green chillies for 2 minutes, cool and blend smooth.'),
+  (2, 'Heat oil, crackle the cumin, then fry onion, garlic and ginger until golden.'),
+  (3, 'Add the tomato and cook until soft; add the spinach puree and salt and simmer for 5 minutes.'),
+  (4, 'Add the paneer and garam masala, simmer 3 minutes and finish with cream.')
+) as v(position, body);
+
+-- Matar Paneer
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('matar-paneer', 'Matar Paneer', 'Peas and paneer in a lightly spiced tomato gravy.', 'Vegetables', 'Pakistani', 35, 4, '{"sweet": 2, "salty": 5, "sour": 3, "spicy": 5}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Paneer'), 1, 250, '250 g'),
+    ((select id from public.ingredients where name = 'Green Peas'), 2, 250, '1 1/2 cups'),
+    ((select id from public.ingredients where name = 'Tomato'), 3, 300, '3'),
+    ((select id from public.ingredients where name = 'Onion'), 4, 120, '1'),
+    ((select id from public.ingredients where name = 'Ginger Garlic Paste'), 5, 15, '1 tbsp'),
+    ((select id from public.ingredients where name = 'Red Chilli Powder'), 6, 4, '1 tsp'),
+    ((select id from public.ingredients where name = 'Turmeric (Haldi)'), 7, 2, '1/2 tsp'),
+    ((select id from public.ingredients where name = 'Coriander Powder'), 8, 5, '1 tsp'),
+    ((select id from public.ingredients where name = 'Garam Masala'), 9, 2, '1/2 tsp'),
+    ((select id from public.ingredients where name = 'Cooking Oil'), 10, 40, '3 tbsp'),
+    ((select id from public.ingredients where name = 'Salt'), 11, 6, '1 tsp')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Fry the onion until soft, add ginger garlic paste and spices.'),
+  (2, 'Add pureed tomatoes and cook until the oil separates.'),
+  (3, 'Add peas and 1 cup water; cook for 8 minutes.'),
+  (4, 'Add paneer cubes and garam masala and simmer for 4 minutes.')
+) as v(position, body);
+
+-- Mix Sabzi
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('mix-sabzi', 'Mix Sabzi', 'Seasonal vegetables cooked together with cumin and a little tomato.', 'Vegetables', 'Pakistani', 35, 4, '{"sweet": 2, "salty": 5, "sour": 2, "spicy": 4}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Potato'), 1, 200, '2'),
+    ((select id from public.ingredients where name = 'Carrot'), 2, 150, '2'),
+    ((select id from public.ingredients where name = 'Green Peas'), 3, 150, '1 cup'),
+    ((select id from public.ingredients where name = 'Cauliflower'), 4, 200, '1 small'),
+    ((select id from public.ingredients where name = 'Green Beans (Fali)'), 5, 100, 'a handful'),
+    ((select id from public.ingredients where name = 'Tomato'), 6, 150, '1 large'),
+    ((select id from public.ingredients where name = 'Onion'), 7, 100, '1'),
+    ((select id from public.ingredients where name = 'Cumin (Zeera)'), 8, 3, '1 tsp'),
+    ((select id from public.ingredients where name = 'Turmeric (Haldi)'), 9, 2, '1/2 tsp'),
+    ((select id from public.ingredients where name = 'Red Chilli Powder'), 10, 4, '1 tsp'),
+    ((select id from public.ingredients where name = 'Cooking Oil'), 11, 40, '3 tbsp'),
+    ((select id from public.ingredients where name = 'Salt'), 12, 7, '1 1/4 tsp')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Crackle cumin in oil and fry the onion until soft.'),
+  (2, 'Add tomato and spices and cook for 3 minutes.'),
+  (3, 'Add all vegetables and salt, cover and cook on low heat for 15-20 minutes until tender.'),
+  (4, 'Uncover and stir-fry for 2 minutes.')
+) as v(position, body);
+
+-- Aloo Matar
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('aloo-matar', 'Aloo Matar', 'Potatoes and peas in a simple home-style tomato curry.', 'Vegetables', 'Pakistani', 30, 4, '{"sweet": 2, "salty": 5, "sour": 3, "spicy": 5}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Potato'), 1, 400, '3 medium, cubed'),
+    ((select id from public.ingredients where name = 'Green Peas'), 2, 250, '1 1/2 cups'),
+    ((select id from public.ingredients where name = 'Tomato'), 3, 250, '2'),
+    ((select id from public.ingredients where name = 'Onion'), 4, 100, '1'),
+    ((select id from public.ingredients where name = 'Ginger Garlic Paste'), 5, 10, '2 tsp'),
+    ((select id from public.ingredients where name = 'Turmeric (Haldi)'), 6, 2, '1/2 tsp'),
+    ((select id from public.ingredients where name = 'Red Chilli Powder'), 7, 5, '1 tsp'),
+    ((select id from public.ingredients where name = 'Cumin (Zeera)'), 8, 3, '1 tsp'),
+    ((select id from public.ingredients where name = 'Cooking Oil'), 9, 40, '3 tbsp'),
+    ((select id from public.ingredients where name = 'Salt'), 10, 7, '1 1/4 tsp'),
+    ((select id from public.ingredients where name = 'Fresh Coriander'), 11, 10, 'chopped')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Crackle cumin in oil, add onion and ginger garlic paste and fry until golden.'),
+  (2, 'Add tomatoes and spices; cook until soft.'),
+  (3, 'Add potatoes, peas and 1 1/2 cups water; cover and cook for 15 minutes.'),
+  (4, 'Garnish with coriander.')
+) as v(position, body);
+
+-- Aloo Methi
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('aloo-methi', 'Aloo Methi', 'Potatoes stir-fried with fresh fenugreek leaves and garlic.', 'Vegetables', 'Pakistani', 30, 4, '{"sweet": 1, "salty": 5, "sour": 1, "spicy": 4}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Potato'), 1, 500, '4 medium'),
+    ((select id from public.ingredients where name = 'Fenugreek Leaves (Methi)'), 2, 150, '2 bunches, chopped'),
+    ((select id from public.ingredients where name = 'Garlic'), 3, 15, '5 cloves'),
+    ((select id from public.ingredients where name = 'Cumin (Zeera)'), 4, 3, '1 tsp'),
+    ((select id from public.ingredients where name = 'Turmeric (Haldi)'), 5, 2, '1/2 tsp'),
+    ((select id from public.ingredients where name = 'Red Chilli Flakes (Kuti Lal Mirch)'), 6, 3, '1 tsp'),
+    ((select id from public.ingredients where name = 'Cooking Oil'), 7, 40, '3 tbsp'),
+    ((select id from public.ingredients where name = 'Salt'), 8, 6, '1 tsp')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Crackle cumin and garlic in oil.'),
+  (2, 'Add potatoes, turmeric, chilli and salt; cover and cook for 10 minutes.'),
+  (3, 'Add the methi and stir-fry on medium heat until the potatoes are tender and the leaves wilt (8 minutes).')
+) as v(position, body);
+
+-- Karela Qeema
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('karela-qeema', 'Karela Qeema', 'Bitter gourd cooked with spiced beef mince; the bitterness balances the rich qeema.', 'Main Course', 'Pakistani', 55, 4, '{"sweet": 1, "salty": 6, "sour": 3, "spicy": 6}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Bitter Gourd (Karela)'), 1, 400, '4, scraped and sliced'),
+    ((select id from public.ingredients where name = 'Beef Qeema'), 2, 400, '400 g'),
+    ((select id from public.ingredients where name = 'Onion'), 3, 200, '2'),
+    ((select id from public.ingredients where name = 'Tomato'), 4, 200, '2'),
+    ((select id from public.ingredients where name = 'Ginger Garlic Paste'), 5, 15, '1 tbsp'),
+    ((select id from public.ingredients where name = 'Red Chilli Powder'), 6, 6, '1 1/2 tsp'),
+    ((select id from public.ingredients where name = 'Turmeric (Haldi)'), 7, 2, '1/2 tsp'),
+    ((select id from public.ingredients where name = 'Coriander Powder'), 8, 5, '1 tsp'),
+    ((select id from public.ingredients where name = 'Cooking Oil'), 9, 70, '1/3 cup'),
+    ((select id from public.ingredients where name = 'Salt'), 10, 10, '1 3/4 tsp')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Rub the karela with salt for 30 minutes, rinse and fry until browned; set aside.'),
+  (2, 'Fry onions, add ginger garlic paste and the qeema and cook until browned.'),
+  (3, 'Add tomatoes and spices and bhuno until the oil separates.'),
+  (4, 'Add the karela, cover and cook on low heat for 10 minutes.')
+) as v(position, body);
+
+-- Tinda Masala
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('tinda-masala', 'Tinda Masala', 'Tender apple gourds in a light tomato and onion masala.', 'Vegetables', 'Pakistani', 30, 4, '{"sweet": 1, "salty": 5, "sour": 3, "spicy": 4}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Apple Gourd (Tinda)'), 1, 500, '6, peeled and quartered'),
+    ((select id from public.ingredients where name = 'Tomato'), 2, 200, '2'),
+    ((select id from public.ingredients where name = 'Onion'), 3, 100, '1'),
+    ((select id from public.ingredients where name = 'Ginger Garlic Paste'), 4, 10, '2 tsp'),
+    ((select id from public.ingredients where name = 'Turmeric (Haldi)'), 5, 2, '1/2 tsp'),
+    ((select id from public.ingredients where name = 'Red Chilli Powder'), 6, 4, '1 tsp'),
+    ((select id from public.ingredients where name = 'Coriander Powder'), 7, 5, '1 tsp'),
+    ((select id from public.ingredients where name = 'Cooking Oil'), 8, 40, '3 tbsp'),
+    ((select id from public.ingredients where name = 'Salt'), 9, 6, '1 tsp'),
+    ((select id from public.ingredients where name = 'Fresh Coriander'), 10, 8, 'chopped')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Fry the onion and ginger garlic paste until golden.'),
+  (2, 'Add tomatoes and spices and cook until soft.'),
+  (3, 'Add the tinda and 1/2 cup water; cover and cook for 15 minutes until tender.'),
+  (4, 'Garnish with coriander.')
+) as v(position, body);
+
+-- Khatta Meetha Kaddu
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('kaddu-ki-sabzi', 'Khatta Meetha Kaddu', 'Sweet-and-sour pumpkin with fenugreek seeds, jaggery and tamarind.', 'Vegetables', 'Pakistani', 30, 4, '{"sweet": 6, "salty": 4, "sour": 5, "spicy": 3}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Pumpkin (Kaddu)'), 1, 600, '600 g, cubed'),
+    ((select id from public.ingredients where name = 'Jaggery (Gur)'), 2, 25, '2 tbsp'),
+    ((select id from public.ingredients where name = 'Tamarind (Imli)'), 3, 15, '1 tbsp pulp'),
+    ((select id from public.ingredients where name = 'Fenugreek (Methi Dana)'), 4, 2, '1/2 tsp'),
+    ((select id from public.ingredients where name = 'Fennel Seeds (Saunf)'), 5, 3, '1 tsp'),
+    ((select id from public.ingredients where name = 'Red Chilli Powder'), 6, 3, '3/4 tsp'),
+    ((select id from public.ingredients where name = 'Turmeric (Haldi)'), 7, 2, '1/2 tsp'),
+    ((select id from public.ingredients where name = 'Mustard Oil'), 8, 30, '2 tbsp'),
+    ((select id from public.ingredients where name = 'Salt'), 9, 5, '1 tsp')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Heat mustard oil and crackle the fenugreek and fennel seeds.'),
+  (2, 'Add pumpkin, turmeric, chilli and salt; cover and cook for 12 minutes, mashing lightly.'),
+  (3, 'Stir in jaggery and tamarind and cook for 3 more minutes.')
+) as v(position, body);
+
+-- Band Gobhi Matar
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('band-gobhi', 'Band Gobhi Matar', 'Shredded cabbage and peas stir-fried with cumin and green chillies.', 'Vegetables', 'Pakistani', 25, 4, '{"sweet": 2, "salty": 5, "sour": 2, "spicy": 4}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Cabbage'), 1, 500, '1 small, shredded'),
+    ((select id from public.ingredients where name = 'Green Peas'), 2, 150, '1 cup'),
+    ((select id from public.ingredients where name = 'Tomato'), 3, 100, '1'),
+    ((select id from public.ingredients where name = 'Green Chilli'), 4, 10, '2'),
+    ((select id from public.ingredients where name = 'Cumin (Zeera)'), 5, 3, '1 tsp'),
+    ((select id from public.ingredients where name = 'Turmeric (Haldi)'), 6, 2, '1/2 tsp'),
+    ((select id from public.ingredients where name = 'Red Chilli Powder'), 7, 3, '3/4 tsp'),
+    ((select id from public.ingredients where name = 'Cooking Oil'), 8, 30, '2 tbsp'),
+    ((select id from public.ingredients where name = 'Salt'), 9, 6, '1 tsp')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Crackle cumin in oil, add the tomato and spices.'),
+  (2, 'Add the cabbage, peas, green chillies and salt.'),
+  (3, 'Cover and cook on low heat for 12 minutes, then stir-fry until dry.')
+) as v(position, body);
+
+-- Lauki Chana Dal
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('lauki-chana-dal', 'Lauki Chana Dal', 'Bottle gourd and split chickpeas cooked together, finished with a garlic tadka.', 'Lentils', 'Pakistani', 50, 4, '{"sweet": 1, "salty": 5, "sour": 3, "spicy": 4}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Bottle Gourd (Lauki)'), 1, 400, '1 medium, cubed'),
+    ((select id from public.ingredients where name = 'Chana Dal'), 2, 150, '3/4 cup, soaked'),
+    ((select id from public.ingredients where name = 'Tomato'), 3, 150, '1 large'),
+    ((select id from public.ingredients where name = 'Onion'), 4, 100, '1'),
+    ((select id from public.ingredients where name = 'Turmeric (Haldi)'), 5, 2, '1/2 tsp'),
+    ((select id from public.ingredients where name = 'Red Chilli Powder'), 6, 4, '1 tsp'),
+    ((select id from public.ingredients where name = 'Garlic'), 7, 10, '4 cloves'),
+    ((select id from public.ingredients where name = 'Cumin (Zeera)'), 8, 3, '1 tsp'),
+    ((select id from public.ingredients where name = 'Cooking Oil'), 9, 40, '3 tbsp'),
+    ((select id from public.ingredients where name = 'Salt'), 10, 7, '1 1/4 tsp')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Boil the chana dal with turmeric until half cooked (20 minutes).'),
+  (2, 'Fry the onion and tomato with chilli and salt; add the dal and lauki.'),
+  (3, 'Cover and cook for 15 minutes until both are tender.'),
+  (4, 'Make a tadka of cumin and sliced garlic in hot oil and pour over.')
+) as v(position, body);
+
+-- Arvi Masala
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('arvi-masala', 'Arvi Masala', 'Colocasia cooked dry with carom seeds and dried mango powder.', 'Vegetables', 'Pakistani', 40, 4, '{"sweet": 1, "salty": 5, "sour": 4, "spicy": 5}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Colocasia (Arvi)'), 1, 500, '500 g, boiled and peeled'),
+    ((select id from public.ingredients where name = 'Onion'), 2, 100, '1'),
+    ((select id from public.ingredients where name = 'Carom Seeds (Ajwain)'), 3, 2, '1/2 tsp'),
+    ((select id from public.ingredients where name = 'Red Chilli Powder'), 4, 4, '1 tsp'),
+    ((select id from public.ingredients where name = 'Coriander Powder'), 5, 5, '1 tsp'),
+    ((select id from public.ingredients where name = 'Dried Mango Powder (Amchur)'), 6, 3, '1 tsp'),
+    ((select id from public.ingredients where name = 'Turmeric (Haldi)'), 7, 2, '1/2 tsp'),
+    ((select id from public.ingredients where name = 'Cooking Oil'), 8, 40, '3 tbsp'),
+    ((select id from public.ingredients where name = 'Salt'), 9, 6, '1 tsp')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Slice the boiled arvi.'),
+  (2, 'Crackle ajwain in oil, fry the onion until soft and add the spices.'),
+  (3, 'Add the arvi and stir-fry until crisp at the edges (10 minutes); finish with amchur.')
+) as v(position, body);
+
+-- Moong Daal
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('moong-daal', 'Moong Daal', 'Yellow moong lentils simmered soft and finished with a cumin and garlic tadka.', 'Lentils', 'Pakistani', 35, 4, '{"sweet": 1, "salty": 5, "sour": 2, "spicy": 4}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Moong Dal'), 1, 200, '1 cup, washed'),
+    ((select id from public.ingredients where name = 'Turmeric (Haldi)'), 2, 2, '1/2 tsp'),
+    ((select id from public.ingredients where name = 'Tomato'), 3, 100, '1'),
+    ((select id from public.ingredients where name = 'Green Chilli'), 4, 10, '2'),
+    ((select id from public.ingredients where name = 'Garlic'), 5, 10, '4 cloves'),
+    ((select id from public.ingredients where name = 'Cumin (Zeera)'), 6, 3, '1 tsp'),
+    ((select id from public.ingredients where name = 'Whole Red Chilli (Sabut Lal Mirch)'), 7, 2, '2'),
+    ((select id from public.ingredients where name = 'Desi Ghee'), 8, 25, '2 tbsp'),
+    ((select id from public.ingredients where name = 'Salt'), 9, 6, '1 tsp'),
+    ((select id from public.ingredients where name = 'Fresh Coriander'), 10, 8, 'chopped')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Boil the dal with turmeric, tomato, green chilli and salt in 4 cups water until soft (25 minutes).'),
+  (2, 'Heat ghee, fry cumin, garlic and whole red chillies until golden.'),
+  (3, 'Pour the tadka over the dal and garnish with coriander.')
+) as v(position, body);
+
+-- Chana Daal Tadka
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('chana-daal', 'Chana Daal Tadka', 'Split chickpeas cooked until creamy, with an onion and tomato tadka.', 'Lentils', 'Pakistani', 50, 4, '{"sweet": 1, "salty": 5, "sour": 3, "spicy": 5}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Chana Dal'), 1, 200, '1 cup, soaked 1 hour'),
+    ((select id from public.ingredients where name = 'Onion'), 2, 120, '1'),
+    ((select id from public.ingredients where name = 'Tomato'), 3, 150, '1 large'),
+    ((select id from public.ingredients where name = 'Ginger Garlic Paste'), 4, 10, '2 tsp'),
+    ((select id from public.ingredients where name = 'Turmeric (Haldi)'), 5, 2, '1/2 tsp'),
+    ((select id from public.ingredients where name = 'Red Chilli Powder'), 6, 4, '1 tsp'),
+    ((select id from public.ingredients where name = 'Cumin (Zeera)'), 7, 3, '1 tsp'),
+    ((select id from public.ingredients where name = 'Garam Masala'), 8, 2, '1/2 tsp'),
+    ((select id from public.ingredients where name = 'Cooking Oil'), 9, 40, '3 tbsp'),
+    ((select id from public.ingredients where name = 'Salt'), 10, 7, '1 1/4 tsp')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Boil the chana dal with turmeric and salt until soft (35 minutes).'),
+  (2, 'Fry cumin and onion, add ginger garlic paste, tomato and chilli; cook until thick.'),
+  (3, 'Mix the masala into the dal, simmer for 5 minutes and add garam masala.')
+) as v(position, body);
+
+-- Lobia Masala
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('lobia-masala', 'Lobia Masala', 'Black-eyed beans in a thick, tangy onion-tomato masala.', 'Lentils', 'Pakistani', 60, 4, '{"sweet": 1, "salty": 6, "sour": 4, "spicy": 5}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Black-eyed Beans (Lobia)'), 1, 250, '1 1/4 cups, soaked overnight'),
+    ((select id from public.ingredients where name = 'Onion'), 2, 150, '1 large'),
+    ((select id from public.ingredients where name = 'Tomato'), 3, 200, '2'),
+    ((select id from public.ingredients where name = 'Ginger Garlic Paste'), 4, 15, '1 tbsp'),
+    ((select id from public.ingredients where name = 'Red Chilli Powder'), 5, 5, '1 tsp'),
+    ((select id from public.ingredients where name = 'Coriander Powder'), 6, 5, '1 tsp'),
+    ((select id from public.ingredients where name = 'Turmeric (Haldi)'), 7, 2, '1/2 tsp'),
+    ((select id from public.ingredients where name = 'Dried Mango Powder (Amchur)'), 8, 2, '1/2 tsp'),
+    ((select id from public.ingredients where name = 'Cooking Oil'), 9, 40, '3 tbsp'),
+    ((select id from public.ingredients where name = 'Salt'), 10, 8, '1 1/2 tsp')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Pressure-cook or boil the lobia until tender.'),
+  (2, 'Fry the onion, add ginger garlic paste, tomatoes and spices; cook until the oil separates.'),
+  (3, 'Add the lobia with some cooking water and simmer for 10 minutes; finish with amchur.')
+) as v(position, body);
+
+-- Kala Chana Masala
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('kala-chana', 'Kala Chana Masala', 'Black chickpeas cooked in a dark, spiced gravy.', 'Lentils', 'Pakistani', 70, 4, '{"sweet": 1, "salty": 6, "sour": 4, "spicy": 6}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Black Chickpeas (Kala Chana)'), 1, 250, '1 1/4 cups, soaked overnight'),
+    ((select id from public.ingredients where name = 'Onion'), 2, 150, '1 large'),
+    ((select id from public.ingredients where name = 'Tomato'), 3, 200, '2'),
+    ((select id from public.ingredients where name = 'Ginger Garlic Paste'), 4, 15, '1 tbsp'),
+    ((select id from public.ingredients where name = 'Chana Masala'), 5, 15, '1 1/2 tbsp'),
+    ((select id from public.ingredients where name = 'Pomegranate Seeds Dried (Anardana)'), 6, 5, '1 tsp, ground'),
+    ((select id from public.ingredients where name = 'Cooking Oil'), 7, 40, '3 tbsp'),
+    ((select id from public.ingredients where name = 'Salt'), 8, 8, '1 1/2 tsp'),
+    ((select id from public.ingredients where name = 'Fresh Coriander'), 9, 8, 'chopped')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Boil the chickpeas until soft.'),
+  (2, 'Fry the onion dark golden, add ginger garlic paste, tomatoes and chana masala.'),
+  (3, 'Add the chickpeas with 1 cup cooking water and simmer for 15 minutes.'),
+  (4, 'Stir in anardana and coriander.')
+) as v(position, body);
+
+-- Matar Pulao
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('matar-pulao', 'Matar Pulao', 'Basmati rice cooked with green peas, cumin and whole spices.', 'Rice', 'Pakistani', 45, 4, '{"sweet": 1, "salty": 5, "sour": 1, "spicy": 2}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Basmati Rice'), 1, 400, '2 cups, soaked'),
+    ((select id from public.ingredients where name = 'Green Peas'), 2, 200, '1 1/2 cups'),
+    ((select id from public.ingredients where name = 'Onion'), 3, 120, '1, sliced'),
+    ((select id from public.ingredients where name = 'Cumin (Zeera)'), 4, 3, '1 tsp'),
+    ((select id from public.ingredients where name = 'Bay Leaf (Tez Patta)'), 5, 1, '2'),
+    ((select id from public.ingredients where name = 'Cloves (Laung)'), 6, 1, '4'),
+    ((select id from public.ingredients where name = 'Black Cardamom (Bari Elaichi)'), 7, 2, '1'),
+    ((select id from public.ingredients where name = 'Cooking Oil'), 8, 50, '1/4 cup'),
+    ((select id from public.ingredients where name = 'Salt'), 9, 10, '1 3/4 tsp')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Fry the onion golden with the whole spices and cumin.'),
+  (2, 'Add the peas and stir for 2 minutes.'),
+  (3, 'Add 3 1/2 cups water and salt and bring to a boil; add the rice.'),
+  (4, 'Cook until the water is absorbed, then steam covered for 12 minutes.')
+) as v(position, body);
+
+-- Moong Dal Khichdi
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('khichdi', 'Moong Dal Khichdi', 'Soft, comforting rice and moong lentils with ghee and cumin.', 'Rice', 'Pakistani', 35, 4, '{"sweet": 1, "salty": 5, "sour": 1, "spicy": 2}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Basmati Rice'), 1, 200, '1 cup'),
+    ((select id from public.ingredients where name = 'Moong Dal'), 2, 100, '1/2 cup'),
+    ((select id from public.ingredients where name = 'Turmeric (Haldi)'), 3, 2, '1/2 tsp'),
+    ((select id from public.ingredients where name = 'Cumin (Zeera)'), 4, 3, '1 tsp'),
+    ((select id from public.ingredients where name = 'Desi Ghee'), 5, 25, '2 tbsp'),
+    ((select id from public.ingredients where name = 'Onion'), 6, 80, '1 small'),
+    ((select id from public.ingredients where name = 'Salt'), 7, 7, '1 1/4 tsp'),
+    ((select id from public.ingredients where name = 'Yogurt (Dahi)'), 8, 150, 'to serve')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Wash rice and dal together.'),
+  (2, 'Heat ghee, crackle cumin and fry the onion until soft.'),
+  (3, 'Add rice, dal, turmeric, salt and 5 cups water; cook covered on low heat for 25 minutes until soft.'),
+  (4, 'Serve with yogurt.')
+) as v(position, body);
+
+-- Prawn Biryani
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('prawn-biryani', 'Prawn Biryani', 'Spiced prawns layered with saffron rice and fried onions.', 'Rice', 'Pakistani', 60, 5, '{"sweet": 1, "salty": 6, "sour": 5, "spicy": 7}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Prawns'), 1, 500, '500 g, cleaned'),
+    ((select id from public.ingredients where name = 'Basmati Rice'), 2, 400, '2 cups, soaked'),
+    ((select id from public.ingredients where name = 'Onion'), 3, 200, '2, sliced'),
+    ((select id from public.ingredients where name = 'Tomato'), 4, 200, '2'),
+    ((select id from public.ingredients where name = 'Yogurt (Dahi)'), 5, 150, '2/3 cup'),
+    ((select id from public.ingredients where name = 'Biryani Masala'), 6, 25, '2 1/2 tbsp'),
+    ((select id from public.ingredients where name = 'Ginger Garlic Paste'), 7, 15, '1 tbsp'),
+    ((select id from public.ingredients where name = 'Green Chilli'), 8, 15, '3'),
+    ((select id from public.ingredients where name = 'Fresh Mint (Pudina)'), 9, 10, 'a handful'),
+    ((select id from public.ingredients where name = 'Lemon'), 10, 30, '1'),
+    ((select id from public.ingredients where name = 'Saffron (Zafran)'), 11, 0.2, 'a pinch'),
+    ((select id from public.ingredients where name = 'Cooking Oil'), 12, 80, '1/3 cup'),
+    ((select id from public.ingredients where name = 'Salt'), 13, 15, '2 1/2 tsp')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Fry the onions golden; keep half for layering.'),
+  (2, 'Cook ginger garlic paste, tomatoes, yogurt and biryani masala until thick; add the prawns for 4 minutes only.'),
+  (3, 'Boil the rice in salted water until 80% cooked and drain.'),
+  (4, 'Layer rice and prawn masala with mint, chillies, lemon, fried onion and saffron milk.'),
+  (5, 'Steam (dum) on low heat for 15 minutes.')
+) as v(position, body);
+
+-- Dahi Bhalla
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('dahi-bhalla', 'Dahi Bhalla', 'Soft lentil dumplings soaked and served in sweet yogurt with chutneys and chaat masala.', 'Snacks', 'Pakistani', 60, 6, '{"sweet": 6, "salty": 5, "sour": 5, "spicy": 3}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Mash Dal'), 1, 200, '1 cup, soaked overnight'),
+    ((select id from public.ingredients where name = 'Yogurt (Dahi)'), 2, 500, '2 cups, whisked'),
+    ((select id from public.ingredients where name = 'White Sugar'), 3, 25, '2 tbsp'),
+    ((select id from public.ingredients where name = 'Tamarind Chutney'), 4, 60, '1/4 cup'),
+    ((select id from public.ingredients where name = 'Mint Chutney'), 5, 40, '3 tbsp'),
+    ((select id from public.ingredients where name = 'Chaat Masala'), 6, 5, '1 1/2 tsp'),
+    ((select id from public.ingredients where name = 'Cumin (Zeera)'), 7, 3, '1 tsp, roasted and ground'),
+    ((select id from public.ingredients where name = 'Red Chilli Powder'), 8, 2, '1/2 tsp'),
+    ((select id from public.ingredients where name = 'Cooking Oil'), 9, 40, 'for frying (about 3 tbsp absorbed)'),
+    ((select id from public.ingredients where name = 'Salt'), 10, 5, '1 tsp')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Grind the soaked dal to a fluffy batter with a little water and salt; beat for 5 minutes.'),
+  (2, 'Drop spoonfuls into hot oil and fry golden; soak the bhallas in warm water for 15 minutes and squeeze gently.'),
+  (3, 'Whisk the yogurt with sugar and a pinch of salt.'),
+  (4, 'Arrange the bhallas, pour over the yogurt and top with chutneys, chaat masala, cumin and chilli.')
+) as v(position, body);
+
+-- Chana Chaat
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('chana-chaat', 'Chana Chaat', 'Chickpeas tossed with onion, tomato, cucumber, chutney and chaat masala.', 'Snacks', 'Pakistani', 15, 4, '{"sweet": 3, "salty": 5, "sour": 7, "spicy": 4}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Kabuli Chickpeas (Chana)'), 1, 400, '2 cups, boiled'),
+    ((select id from public.ingredients where name = 'Onion'), 2, 80, '1 small, chopped'),
+    ((select id from public.ingredients where name = 'Tomato'), 3, 100, '1, chopped'),
+    ((select id from public.ingredients where name = 'Cucumber'), 4, 100, '1, diced'),
+    ((select id from public.ingredients where name = 'Green Chilli'), 5, 5, '1, chopped'),
+    ((select id from public.ingredients where name = 'Tamarind Chutney'), 6, 40, '3 tbsp'),
+    ((select id from public.ingredients where name = 'Lemon'), 7, 15, 'juice of 1/2'),
+    ((select id from public.ingredients where name = 'Chaat Masala'), 8, 5, '1 1/2 tsp'),
+    ((select id from public.ingredients where name = 'Fresh Coriander'), 9, 8, 'chopped'),
+    ((select id from public.ingredients where name = 'Salt'), 10, 3, '1/2 tsp')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Mix the chickpeas with the vegetables.'),
+  (2, 'Add chutney, lemon, chaat masala and salt and toss well.'),
+  (3, 'Garnish with coriander and serve straight away.')
+) as v(position, body);
+
+-- Aloo Tikki
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('aloo-tikki', 'Aloo Tikki', 'Crisp pan-fried potato patties with herbs and spices.', 'Snacks', 'Pakistani', 35, 4, '{"sweet": 1, "salty": 5, "sour": 3, "spicy": 4}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Potato'), 1, 500, '4, boiled and mashed'),
+    ((select id from public.ingredients where name = 'Corn Flour'), 2, 20, '2 tbsp'),
+    ((select id from public.ingredients where name = 'Green Chilli'), 3, 10, '2, chopped'),
+    ((select id from public.ingredients where name = 'Fresh Coriander'), 4, 10, 'chopped'),
+    ((select id from public.ingredients where name = 'Cumin (Zeera)'), 5, 2, '1/2 tsp, roasted'),
+    ((select id from public.ingredients where name = 'Chaat Masala'), 6, 3, '1 tsp'),
+    ((select id from public.ingredients where name = 'Red Chilli Flakes (Kuti Lal Mirch)'), 7, 2, '1/2 tsp'),
+    ((select id from public.ingredients where name = 'Cooking Oil'), 8, 60, 'for shallow frying'),
+    ((select id from public.ingredients where name = 'Salt'), 9, 5, '1 tsp')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Mix the mashed potato with corn flour, herbs and spices.'),
+  (2, 'Shape into flat patties.'),
+  (3, 'Shallow-fry on medium heat until golden and crisp on both sides.'),
+  (4, 'Serve with tamarind and mint chutney.')
+) as v(position, body);
+
+-- Chicken Paratha Roll
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('chicken-paratha-roll', 'Chicken Paratha Roll', 'Spicy chicken tikka strips wrapped in a crisp paratha with garlic sauce and onions.', 'Snacks', 'Pakistani', 40, 4, '{"sweet": 2, "salty": 6, "sour": 4, "spicy": 6}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Chicken Boneless (Boti)'), 1, 400, '400 g, strips'),
+    ((select id from public.ingredients where name = 'Wheat Flour (Atta)'), 2, 300, '2 cups, for 4 parathas'),
+    ((select id from public.ingredients where name = 'Yogurt (Dahi)'), 3, 60, '1/4 cup'),
+    ((select id from public.ingredients where name = 'Tikka Masala'), 4, 15, '1 1/2 tbsp'),
+    ((select id from public.ingredients where name = 'Garlic Sauce'), 5, 60, '1/4 cup'),
+    ((select id from public.ingredients where name = 'Onion'), 6, 100, '1, sliced'),
+    ((select id from public.ingredients where name = 'Mint Chutney'), 7, 30, '2 tbsp'),
+    ((select id from public.ingredients where name = 'Desi Ghee'), 8, 40, 'for parathas'),
+    ((select id from public.ingredients where name = 'Cooking Oil'), 9, 20, '1 1/2 tbsp'),
+    ((select id from public.ingredients where name = 'Salt'), 10, 5, '1 tsp')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Marinate the chicken in yogurt and tikka masala for 30 minutes; stir-fry on high heat until charred.'),
+  (2, 'Knead the atta with water and salt; roll and cook four parathas with ghee.'),
+  (3, 'Spread garlic sauce and mint chutney on each paratha, add chicken and onion.'),
+  (4, 'Roll tightly, wrap the end in paper and serve.')
+) as v(position, body);
+
+-- Suji Halwa
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('suji-halwa', 'Suji Halwa', 'Semolina roasted in ghee and cooked with sugar syrup, cardamom and nuts.', 'Desserts', 'Pakistani', 25, 4, '{"sweet": 9, "salty": 1, "sour": 0, "spicy": 0}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Semolina (Suji)'), 1, 150, '3/4 cup'),
+    ((select id from public.ingredients where name = 'Desi Ghee'), 2, 80, '1/3 cup'),
+    ((select id from public.ingredients where name = 'White Sugar'), 3, 150, '3/4 cup'),
+    ((select id from public.ingredients where name = 'Green Cardamom (Elaichi)'), 4, 2, '4, crushed'),
+    ((select id from public.ingredients where name = 'Almonds (Badam)'), 5, 20, 'sliced'),
+    ((select id from public.ingredients where name = 'Raisins (Kishmish)'), 6, 15, 'a handful')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Make a syrup with the sugar, cardamom and 2 cups water.'),
+  (2, 'Roast the suji in ghee on low heat until golden and fragrant (10 minutes).'),
+  (3, 'Carefully pour in the hot syrup, stirring, and cook until it leaves the sides.'),
+  (4, 'Garnish with almonds and raisins.')
+) as v(position, body);
+
+-- Zarda
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('zarda', 'Zarda', 'Sweet saffron rice with nuts and raisins, served at celebrations.', 'Desserts', 'Pakistani', 45, 6, '{"sweet": 9, "salty": 1, "sour": 0, "spicy": 0}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Basmati Rice'), 1, 300, '1 1/2 cups, soaked'),
+    ((select id from public.ingredients where name = 'White Sugar'), 2, 250, '1 1/4 cups'),
+    ((select id from public.ingredients where name = 'Desi Ghee'), 3, 60, '1/4 cup'),
+    ((select id from public.ingredients where name = 'Green Cardamom (Elaichi)'), 4, 2, '4'),
+    ((select id from public.ingredients where name = 'Cloves (Laung)'), 5, 1, '4'),
+    ((select id from public.ingredients where name = 'Saffron (Zafran)'), 6, 0.3, 'a pinch, in milk'),
+    ((select id from public.ingredients where name = 'Almonds (Badam)'), 7, 25, 'sliced'),
+    ((select id from public.ingredients where name = 'Raisins (Kishmish)'), 8, 25, 'a handful'),
+    ((select id from public.ingredients where name = 'Khoya (Mawa)'), 9, 50, 'crumbled, optional')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Boil the rice until 80% cooked and drain.'),
+  (2, 'Heat ghee with cardamom and cloves, add the sugar and 1/2 cup water and stir until it melts.'),
+  (3, 'Fold in the rice, saffron, nuts and raisins.'),
+  (4, 'Cover and steam on the lowest heat for 15 minutes; top with khoya.')
+) as v(position, body);
+
+-- Firni
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('firni', 'Firni', 'Chilled ground-rice pudding scented with cardamom and kewra, set in clay bowls.', 'Desserts', 'Pakistani', 40, 6, '{"sweet": 8, "salty": 1, "sour": 0, "spicy": 0}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Milk'), 1, 1000, '1 litre'),
+    ((select id from public.ingredients where name = 'Rice Flour'), 2, 60, '1/3 cup'),
+    ((select id from public.ingredients where name = 'White Sugar'), 3, 120, '2/3 cup'),
+    ((select id from public.ingredients where name = 'Green Cardamom (Elaichi)'), 4, 2, '4, ground'),
+    ((select id from public.ingredients where name = 'Kewra Water'), 5, 5, '1 tsp'),
+    ((select id from public.ingredients where name = 'Pistachios (Pista)'), 6, 15, 'chopped')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Mix the rice flour with 1/2 cup cold milk.'),
+  (2, 'Bring the rest of the milk to a boil, stir in the rice flour paste and cook on low heat, stirring, for 15 minutes.'),
+  (3, 'Add sugar and cardamom and cook until thick.'),
+  (4, 'Add kewra, pour into bowls, chill and top with pistachios.')
+) as v(position, body);
+
+-- Shahi Tukray
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('shahi-tukray', 'Shahi Tukray', 'Fried bread soaked in syrup and topped with thick, sweet rabri.', 'Desserts', 'Pakistani', 45, 6, '{"sweet": 9, "salty": 1, "sour": 0, "spicy": 0}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Bread'), 1, 200, '6 slices, crusts removed'),
+    ((select id from public.ingredients where name = 'Desi Ghee'), 2, 60, 'for frying'),
+    ((select id from public.ingredients where name = 'White Sugar'), 3, 150, '3/4 cup'),
+    ((select id from public.ingredients where name = 'Milk'), 4, 750, '3 cups'),
+    ((select id from public.ingredients where name = 'Condensed Milk'), 5, 100, '1/3 cup'),
+    ((select id from public.ingredients where name = 'Green Cardamom (Elaichi)'), 6, 2, '4'),
+    ((select id from public.ingredients where name = 'Saffron (Zafran)'), 7, 0.2, 'a pinch'),
+    ((select id from public.ingredients where name = 'Pistachios (Pista)'), 8, 15, 'sliced'),
+    ((select id from public.ingredients where name = 'Almonds (Badam)'), 9, 15, 'sliced')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Cut the bread into triangles and fry golden in ghee.'),
+  (2, 'Make a syrup with 1/2 cup sugar and 1/2 cup water; dip the fried bread briefly.'),
+  (3, 'Reduce the milk with the rest of the sugar, condensed milk, cardamom and saffron to a thick rabri (25 minutes).'),
+  (4, 'Pour the rabri over the bread and garnish with nuts.')
+) as v(position, body);
+
+-- Gulab Jamun
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('gulab-jamun', 'Gulab Jamun', 'Soft milk-powder dumplings fried golden and soaked in cardamom syrup.', 'Desserts', 'Pakistani', 50, 6, '{"sweet": 10, "salty": 1, "sour": 0, "spicy": 0}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Milk Powder'), 1, 150, '1 1/4 cups'),
+    ((select id from public.ingredients where name = 'Refined Flour (Maida)'), 2, 40, '1/3 cup'),
+    ((select id from public.ingredients where name = 'Baking Powder'), 3, 3, '1/2 tsp'),
+    ((select id from public.ingredients where name = 'Desi Ghee'), 4, 20, '1 1/2 tbsp'),
+    ((select id from public.ingredients where name = 'Milk'), 5, 80, '1/3 cup, as needed'),
+    ((select id from public.ingredients where name = 'White Sugar'), 6, 300, '1 1/2 cups'),
+    ((select id from public.ingredients where name = 'Green Cardamom (Elaichi)'), 7, 2, '4'),
+    ((select id from public.ingredients where name = 'Rose Water (Gulab Jal)'), 8, 5, '1 tsp'),
+    ((select id from public.ingredients where name = 'Cooking Oil'), 9, 40, 'for frying (about 3 tbsp absorbed)')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Boil the sugar with 1 1/2 cups water and cardamom for 5 minutes; add rose water.'),
+  (2, 'Mix milk powder, maida, baking powder and ghee; add milk to make a soft dough.'),
+  (3, 'Shape into smooth balls and fry on low heat until deep golden.'),
+  (4, 'Drop into the warm syrup and soak for at least 1 hour.')
+) as v(position, body);
+
+-- Anda Paratha
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('anda-paratha', 'Anda Paratha', 'A crisp whole-wheat paratha cooked with a spiced egg layer inside.', 'Breakfast', 'Pakistani', 25, 2, '{"sweet": 0, "salty": 5, "sour": 1, "spicy": 3}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Wheat Flour (Atta)'), 1, 200, '1 1/2 cups'),
+    ((select id from public.ingredients where name = 'Eggs'), 2, 100, '2'),
+    ((select id from public.ingredients where name = 'Onion'), 3, 40, '1/2, finely chopped'),
+    ((select id from public.ingredients where name = 'Green Chilli'), 4, 5, '1, chopped'),
+    ((select id from public.ingredients where name = 'Fresh Coriander'), 5, 5, 'chopped'),
+    ((select id from public.ingredients where name = 'Desi Ghee'), 6, 30, '2 tbsp'),
+    ((select id from public.ingredients where name = 'Salt'), 7, 4, '3/4 tsp'),
+    ((select id from public.ingredients where name = 'Black Pepper'), 8, 1, 'a pinch')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Knead the atta with water and a pinch of salt; rest for 10 minutes.'),
+  (2, 'Beat the eggs with onion, chilli, coriander, salt and pepper.'),
+  (3, 'Roll a paratha, cook one side, then make a slit, pour in the egg and seal.'),
+  (4, 'Cook both sides with ghee until crisp and golden.')
+) as v(position, body);
+
+-- Meetha Dalia
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('dalia', 'Meetha Dalia', 'Cracked-wheat porridge cooked in milk with jaggery and nuts.', 'Breakfast', 'Pakistani', 25, 3, '{"sweet": 6, "salty": 1, "sour": 0, "spicy": 0}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Cracked Wheat (Dalia)'), 1, 100, '1/2 cup'),
+    ((select id from public.ingredients where name = 'Milk'), 2, 600, '2 1/2 cups'),
+    ((select id from public.ingredients where name = 'Jaggery (Gur)'), 3, 50, '1/4 cup'),
+    ((select id from public.ingredients where name = 'Desi Ghee'), 4, 10, '2 tsp'),
+    ((select id from public.ingredients where name = 'Green Cardamom (Elaichi)'), 5, 1, '2, crushed'),
+    ((select id from public.ingredients where name = 'Almonds (Badam)'), 6, 15, 'chopped'),
+    ((select id from public.ingredients where name = 'Raisins (Kishmish)'), 7, 15, 'a handful')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Roast the dalia in ghee for 3 minutes.'),
+  (2, 'Add the milk and cook on low heat, stirring, for 15 minutes until soft.'),
+  (3, 'Stir in jaggery and cardamom and top with nuts and raisins.')
+) as v(position, body);
+
+-- Aloo Bhujia
+with new_recipe as (
+  insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source)
+  values ('aloo-bhujia', 'Aloo Bhujia', 'Thin potato slices stir-fried with cumin, turmeric and green chillies, eaten with paratha.', 'Breakfast', 'Pakistani', 25, 4, '{"sweet": 1, "salty": 5, "sour": 2, "spicy": 4}'::jsonb, 'published', 'curated')
+  on conflict (slug) do nothing returning id
+), lines as (
+  insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display)
+  select new_recipe.id, v.ingredient_id, v.position, v.grams, v.display from new_recipe, (values
+    ((select id from public.ingredients where name = 'Potato'), 1, 500, '4, thinly sliced'),
+    ((select id from public.ingredients where name = 'Onion'), 2, 80, '1, sliced'),
+    ((select id from public.ingredients where name = 'Cumin (Zeera)'), 3, 3, '1 tsp'),
+    ((select id from public.ingredients where name = 'Turmeric (Haldi)'), 4, 2, '1/2 tsp'),
+    ((select id from public.ingredients where name = 'Red Chilli Flakes (Kuti Lal Mirch)'), 5, 3, '1 tsp'),
+    ((select id from public.ingredients where name = 'Green Chilli'), 6, 10, '2'),
+    ((select id from public.ingredients where name = 'Cooking Oil'), 7, 40, '3 tbsp'),
+    ((select id from public.ingredients where name = 'Salt'), 8, 6, '1 tsp'),
+    ((select id from public.ingredients where name = 'Fresh Coriander'), 9, 5, 'chopped')
+  ) as v(ingredient_id, position, grams, display) returning recipe_id
+)
+insert into public.recipe_steps(recipe_id, position, body)
+select new_recipe.id, v.position, v.body from new_recipe, (values
+  (1, 'Crackle cumin in oil and fry the onion until soft.'),
+  (2, 'Add the potatoes, spices and salt; cover and cook on low heat for 10 minutes.'),
+  (3, 'Uncover and stir-fry until the potatoes are tender and lightly crisp. Garnish with coriander.')
+) as v(position, body);
+
 -- Compatibility edges: core ingredients used together in curated recipes.
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Almonds (Badam)') x, (select id from public.ingredients where name = 'Basmati Rice') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Almonds (Badam)') x, (select id from public.ingredients where name = 'Basmati Rice') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Almonds (Badam)') x, (select id from public.ingredients where name = 'Bread') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Almonds (Badam)') x, (select id from public.ingredients where name = 'Carrot') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Almonds (Badam)') x, (select id from public.ingredients where name = 'Chicken Leg Piece') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Almonds (Badam)') x, (select id from public.ingredients where name = 'Condensed Milk') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Almonds (Badam)') x, (select id from public.ingredients where name = 'Cracked Wheat (Dalia)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Almonds (Badam)') x, (select id from public.ingredients where name = 'Dates (Khajoor)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Almonds (Badam)') x, (select id from public.ingredients where name = 'Garlic') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Almonds (Badam)') x, (select id from public.ingredients where name = 'Ginger') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Almonds (Badam)') x, (select id from public.ingredients where name = 'Jaggery (Gur)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Almonds (Badam)') x, (select id from public.ingredients where name = 'Kewra Water') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Almonds (Badam)') x, (select id from public.ingredients where name = 'Khoya (Mawa)') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Almonds (Badam)') x, (select id from public.ingredients where name = 'Milk') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Almonds (Badam)') x, (select id from public.ingredients where name = 'Khoya (Mawa)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 5 curated recipes' from (select (select id from public.ingredients where name = 'Almonds (Badam)') x, (select id from public.ingredients where name = 'Milk') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Almonds (Badam)') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Almonds (Badam)') x, (select id from public.ingredients where name = 'Pistachios (Pista)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Almonds (Badam)') x, (select id from public.ingredients where name = 'Pistachios (Pista)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Almonds (Badam)') x, (select id from public.ingredients where name = 'Raisins (Kishmish)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Almonds (Badam)') x, (select id from public.ingredients where name = 'Semolina (Suji)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Almonds (Badam)') x, (select id from public.ingredients where name = 'Vermicelli (Seviyan)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Almonds (Badam)') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Apple') x, (select id from public.ingredients where name = 'Banana') y) ids on conflict do nothing;
@@ -1054,6 +2389,14 @@ insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, 
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Apple') x, (select id from public.ingredients where name = 'Lemon') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Apple') x, (select id from public.ingredients where name = 'Orange (Malta)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Apple') x, (select id from public.ingredients where name = 'Pomegranate (Anar)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Apple Gourd (Tinda)') x, (select id from public.ingredients where name = 'Fresh Coriander') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Apple Gourd (Tinda)') x, (select id from public.ingredients where name = 'Ginger Garlic Paste') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Apple Gourd (Tinda)') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Apple Gourd (Tinda)') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Baking Powder') x, (select id from public.ingredients where name = 'Milk') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Baking Powder') x, (select id from public.ingredients where name = 'Milk Powder') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Baking Powder') x, (select id from public.ingredients where name = 'Refined Flour (Maida)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Baking Powder') x, (select id from public.ingredients where name = 'Rose Water (Gulab Jal)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Baking Soda') x, (select id from public.ingredients where name = 'Fresh Coriander') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Baking Soda') x, (select id from public.ingredients where name = 'Gram Flour (Besan)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Baking Soda') x, (select id from public.ingredients where name = 'Green Chilli') y) ids on conflict do nothing;
@@ -1068,20 +2411,31 @@ insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, 
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Basmati Rice') x, (select id from public.ingredients where name = 'Carrot') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Basmati Rice') x, (select id from public.ingredients where name = 'Chicken Leg Piece') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Basmati Rice') x, (select id from public.ingredients where name = 'Fresh Coriander') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Basmati Rice') x, (select id from public.ingredients where name = 'Fresh Mint (Pudina)') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Basmati Rice') x, (select id from public.ingredients where name = 'Garlic') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Basmati Rice') x, (select id from public.ingredients where name = 'Ginger') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Basmati Rice') x, (select id from public.ingredients where name = 'Green Chilli') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Basmati Rice') x, (select id from public.ingredients where name = 'Green Peas') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Basmati Rice') x, (select id from public.ingredients where name = 'Fresh Mint (Pudina)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Basmati Rice') x, (select id from public.ingredients where name = 'Garlic') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Basmati Rice') x, (select id from public.ingredients where name = 'Ginger') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Basmati Rice') x, (select id from public.ingredients where name = 'Ginger Garlic Paste') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 4 curated recipes' from (select (select id from public.ingredients where name = 'Basmati Rice') x, (select id from public.ingredients where name = 'Green Chilli') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Basmati Rice') x, (select id from public.ingredients where name = 'Green Peas') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Basmati Rice') x, (select id from public.ingredients where name = 'Kewra Water') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Basmati Rice') x, (select id from public.ingredients where name = 'Lemon') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Basmati Rice') x, (select id from public.ingredients where name = 'Khoya (Mawa)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Basmati Rice') x, (select id from public.ingredients where name = 'Lemon') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Basmati Rice') x, (select id from public.ingredients where name = 'Milk') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Basmati Rice') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Basmati Rice') x, (select id from public.ingredients where name = 'Moong Dal') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Basmati Rice') x, (select id from public.ingredients where name = 'Mutton') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 7 curated recipes' from (select (select id from public.ingredients where name = 'Basmati Rice') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Basmati Rice') x, (select id from public.ingredients where name = 'Pistachios (Pista)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Basmati Rice') x, (select id from public.ingredients where name = 'Potato') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Basmati Rice') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Basmati Rice') x, (select id from public.ingredients where name = 'Prawns') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Basmati Rice') x, (select id from public.ingredients where name = 'Raisins (Kishmish)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Basmati Rice') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Basmati Rice') x, (select id from public.ingredients where name = 'Whole Chicken') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Basmati Rice') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 5 curated recipes' from (select (select id from public.ingredients where name = 'Basmati Rice') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Beef Boneless') x, (select id from public.ingredients where name = 'Ginger Garlic Paste') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Beef Boneless') x, (select id from public.ingredients where name = 'Green Chilli') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Beef Boneless') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Beef Boneless') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Beef Boneless') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Beef Nihari Shank') x, (select id from public.ingredients where name = 'Fresh Coriander') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Beef Nihari Shank') x, (select id from public.ingredients where name = 'Garlic') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Beef Nihari Shank') x, (select id from public.ingredients where name = 'Ginger') y) ids on conflict do nothing;
@@ -1089,58 +2443,122 @@ insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, 
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Beef Nihari Shank') x, (select id from public.ingredients where name = 'Lemon') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Beef Nihari Shank') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Beef Nihari Shank') x, (select id from public.ingredients where name = 'Wheat Flour (Atta)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Beef Qeema') x, (select id from public.ingredients where name = 'Bitter Gourd (Karela)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Beef Qeema') x, (select id from public.ingredients where name = 'Butter (Makhan)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Beef Qeema') x, (select id from public.ingredients where name = 'Chana Dal') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Beef Qeema') x, (select id from public.ingredients where name = 'Cornmeal (Makai Atta)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Beef Qeema') x, (select id from public.ingredients where name = 'Eggs') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Beef Qeema') x, (select id from public.ingredients where name = 'Fresh Coriander') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 4 curated recipes' from (select (select id from public.ingredients where name = 'Beef Qeema') x, (select id from public.ingredients where name = 'Fresh Coriander') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Beef Qeema') x, (select id from public.ingredients where name = 'Fresh Mint (Pudina)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Beef Qeema') x, (select id from public.ingredients where name = 'Garlic') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Beef Qeema') x, (select id from public.ingredients where name = 'Ginger') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Beef Qeema') x, (select id from public.ingredients where name = 'Green Chilli') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Beef Qeema') x, (select id from public.ingredients where name = 'Ginger Garlic Paste') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Beef Qeema') x, (select id from public.ingredients where name = 'Green Chilli') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Beef Qeema') x, (select id from public.ingredients where name = 'Green Peas') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Beef Qeema') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Beef Qeema') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 5 curated recipes' from (select (select id from public.ingredients where name = 'Beef Qeema') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Beef Qeema') x, (select id from public.ingredients where name = 'Roasted Chana') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Beef Qeema') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Beef Qeema') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Bitter Gourd (Karela)') x, (select id from public.ingredients where name = 'Ginger Garlic Paste') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Bitter Gourd (Karela)') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Bitter Gourd (Karela)') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Black Chickpeas (Kala Chana)') x, (select id from public.ingredients where name = 'Fresh Coriander') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Black Chickpeas (Kala Chana)') x, (select id from public.ingredients where name = 'Ginger Garlic Paste') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Black Chickpeas (Kala Chana)') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Black Chickpeas (Kala Chana)') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Black-eyed Beans (Lobia)') x, (select id from public.ingredients where name = 'Ginger Garlic Paste') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Black-eyed Beans (Lobia)') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Black-eyed Beans (Lobia)') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Bottle Gourd (Lauki)') x, (select id from public.ingredients where name = 'Chana Dal') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Bottle Gourd (Lauki)') x, (select id from public.ingredients where name = 'Garlic') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Bottle Gourd (Lauki)') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Bottle Gourd (Lauki)') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Bread') x, (select id from public.ingredients where name = 'Condensed Milk') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Bread') x, (select id from public.ingredients where name = 'Milk') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Bread') x, (select id from public.ingredients where name = 'Pistachios (Pista)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Brinjal (Baingan)') x, (select id from public.ingredients where name = 'Fresh Coriander') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Brinjal (Baingan)') x, (select id from public.ingredients where name = 'Garlic') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Brinjal (Baingan)') x, (select id from public.ingredients where name = 'Green Chilli') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Brinjal (Baingan)') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Brinjal (Baingan)') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Butter (Makhan)') x, (select id from public.ingredients where name = 'Chicken Boneless (Boti)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Butter (Makhan)') x, (select id from public.ingredients where name = 'Cornmeal (Makai Atta)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Butter (Makhan)') x, (select id from public.ingredients where name = 'Fresh Coriander') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Butter (Makhan)') x, (select id from public.ingredients where name = 'Fresh Cream (Malai)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Butter (Makhan)') x, (select id from public.ingredients where name = 'Garlic') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Butter (Makhan)') x, (select id from public.ingredients where name = 'Ginger') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Butter (Makhan)') x, (select id from public.ingredients where name = 'Green Chilli') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Butter (Makhan)') x, (select id from public.ingredients where name = 'Ginger Garlic Paste') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Butter (Makhan)') x, (select id from public.ingredients where name = 'Green Chilli') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Butter (Makhan)') x, (select id from public.ingredients where name = 'Lemon') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Butter (Makhan)') x, (select id from public.ingredients where name = 'Mustard Greens (Sarson Saag)') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Butter (Makhan)') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Butter (Makhan)') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Butter (Makhan)') x, (select id from public.ingredients where name = 'Processed Cheese Slice') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Butter (Makhan)') x, (select id from public.ingredients where name = 'Roasted Chana') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Butter (Makhan)') x, (select id from public.ingredients where name = 'Spinach') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Butter (Makhan)') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Butter (Makhan)') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Cabbage') x, (select id from public.ingredients where name = 'Green Chilli') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Cabbage') x, (select id from public.ingredients where name = 'Green Peas') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Cabbage') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Capsicum') x, (select id from public.ingredients where name = 'Chicken Boneless (Boti)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Capsicum') x, (select id from public.ingredients where name = 'Fresh Coriander') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Capsicum') x, (select id from public.ingredients where name = 'Garlic') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Capsicum') x, (select id from public.ingredients where name = 'Ginger') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Capsicum') x, (select id from public.ingredients where name = 'Green Chilli') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Capsicum') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Capsicum') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Capsicum') x, (select id from public.ingredients where name = 'Vinegar') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Carrot') x, (select id from public.ingredients where name = 'Cauliflower') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Carrot') x, (select id from public.ingredients where name = 'Green Beans (Fali)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Carrot') x, (select id from public.ingredients where name = 'Green Chilli') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Carrot') x, (select id from public.ingredients where name = 'Green Peas') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Carrot') x, (select id from public.ingredients where name = 'Green Peas') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Carrot') x, (select id from public.ingredients where name = 'Khoya (Mawa)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Carrot') x, (select id from public.ingredients where name = 'Milk') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Carrot') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Carrot') x, (select id from public.ingredients where name = 'Potato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Carrot') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Carrot') x, (select id from public.ingredients where name = 'Potato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Carrot') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Cauliflower') x, (select id from public.ingredients where name = 'Fresh Coriander') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Cauliflower') x, (select id from public.ingredients where name = 'Ginger') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Cauliflower') x, (select id from public.ingredients where name = 'Green Beans (Fali)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Cauliflower') x, (select id from public.ingredients where name = 'Green Chilli') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Cauliflower') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Cauliflower') x, (select id from public.ingredients where name = 'Potato') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Cauliflower') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Cauliflower') x, (select id from public.ingredients where name = 'Green Peas') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Cauliflower') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Cauliflower') x, (select id from public.ingredients where name = 'Potato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Cauliflower') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chana Dal') x, (select id from public.ingredients where name = 'Chicken Boneless (Boti)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chana Dal') x, (select id from public.ingredients where name = 'Cracked Wheat (Dalia)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chana Dal') x, (select id from public.ingredients where name = 'Eggs') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chana Dal') x, (select id from public.ingredients where name = 'Fresh Coriander') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chana Dal') x, (select id from public.ingredients where name = 'Fresh Mint (Pudina)') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chana Dal') x, (select id from public.ingredients where name = 'Garlic') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Chana Dal') x, (select id from public.ingredients where name = 'Fresh Mint (Pudina)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Chana Dal') x, (select id from public.ingredients where name = 'Garlic') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chana Dal') x, (select id from public.ingredients where name = 'Ginger') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chana Dal') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chicken Boneless (Boti)') x, (select id from public.ingredients where name = 'Fresh Coriander') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chicken Boneless (Boti)') x, (select id from public.ingredients where name = 'Fresh Cream (Malai)') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Chicken Boneless (Boti)') x, (select id from public.ingredients where name = 'Garlic') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Chicken Boneless (Boti)') x, (select id from public.ingredients where name = 'Ginger') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chicken Boneless (Boti)') x, (select id from public.ingredients where name = 'Green Chilli') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chicken Boneless (Boti)') x, (select id from public.ingredients where name = 'Lemon') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chicken Boneless (Boti)') x, (select id from public.ingredients where name = 'Mint Chutney') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Chicken Boneless (Boti)') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chicken Boneless (Boti)') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Chicken Boneless (Boti)') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Chana Dal') x, (select id from public.ingredients where name = 'Ginger Garlic Paste') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chana Dal') x, (select id from public.ingredients where name = 'Lemon') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chana Dal') x, (select id from public.ingredients where name = 'Mash Dal') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chana Dal') x, (select id from public.ingredients where name = 'Masoor Dal') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chana Dal') x, (select id from public.ingredients where name = 'Moong Dal') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 4 curated recipes' from (select (select id from public.ingredients where name = 'Chana Dal') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Chana Dal') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chicken Boneless (Boti)') x, (select id from public.ingredients where name = 'Cracked Wheat (Dalia)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Chicken Boneless (Boti)') x, (select id from public.ingredients where name = 'Fresh Coriander') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Chicken Boneless (Boti)') x, (select id from public.ingredients where name = 'Fresh Cream (Malai)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chicken Boneless (Boti)') x, (select id from public.ingredients where name = 'Fresh Mint (Pudina)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Chicken Boneless (Boti)') x, (select id from public.ingredients where name = 'Garlic') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chicken Boneless (Boti)') x, (select id from public.ingredients where name = 'Garlic Sauce') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Chicken Boneless (Boti)') x, (select id from public.ingredients where name = 'Ginger') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Chicken Boneless (Boti)') x, (select id from public.ingredients where name = 'Ginger Garlic Paste') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Chicken Boneless (Boti)') x, (select id from public.ingredients where name = 'Green Chilli') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Chicken Boneless (Boti)') x, (select id from public.ingredients where name = 'Lemon') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chicken Boneless (Boti)') x, (select id from public.ingredients where name = 'Mash Dal') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chicken Boneless (Boti)') x, (select id from public.ingredients where name = 'Masoor Dal') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Chicken Boneless (Boti)') x, (select id from public.ingredients where name = 'Mint Chutney') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chicken Boneless (Boti)') x, (select id from public.ingredients where name = 'Moong Dal') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 5 curated recipes' from (select (select id from public.ingredients where name = 'Chicken Boneless (Boti)') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chicken Boneless (Boti)') x, (select id from public.ingredients where name = 'Processed Cheese Slice') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Chicken Boneless (Boti)') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chicken Boneless (Boti)') x, (select id from public.ingredients where name = 'Vinegar') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chicken Boneless (Boti)') x, (select id from public.ingredients where name = 'Wheat Flour (Atta)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 5 curated recipes' from (select (select id from public.ingredients where name = 'Chicken Boneless (Boti)') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chicken Breast') x, (select id from public.ingredients where name = 'Chilli Sauce') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chicken Breast') x, (select id from public.ingredients where name = 'Corn (Makai)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chicken Breast') x, (select id from public.ingredients where name = 'Corn Flour') y) ids on conflict do nothing;
@@ -1148,29 +2566,45 @@ insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, 
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chicken Breast') x, (select id from public.ingredients where name = 'Garlic') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chicken Breast') x, (select id from public.ingredients where name = 'Soy Sauce') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chicken Breast') x, (select id from public.ingredients where name = 'Vinegar') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Chicken Leg Piece') x, (select id from public.ingredients where name = 'Fresh Coriander') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Chicken Leg Piece') x, (select id from public.ingredients where name = 'Fresh Coriander') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chicken Leg Piece') x, (select id from public.ingredients where name = 'Fresh Cream (Malai)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chicken Leg Piece') x, (select id from public.ingredients where name = 'Fresh Mint (Pudina)') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Chicken Leg Piece') x, (select id from public.ingredients where name = 'Garlic') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Chicken Leg Piece') x, (select id from public.ingredients where name = 'Ginger') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Chicken Leg Piece') x, (select id from public.ingredients where name = 'Green Chilli') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 4 curated recipes' from (select (select id from public.ingredients where name = 'Chicken Leg Piece') x, (select id from public.ingredients where name = 'Garlic') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 5 curated recipes' from (select (select id from public.ingredients where name = 'Chicken Leg Piece') x, (select id from public.ingredients where name = 'Ginger') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chicken Leg Piece') x, (select id from public.ingredients where name = 'Ginger Garlic Paste') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 4 curated recipes' from (select (select id from public.ingredients where name = 'Chicken Leg Piece') x, (select id from public.ingredients where name = 'Green Chilli') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chicken Leg Piece') x, (select id from public.ingredients where name = 'Kewra Water') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chicken Leg Piece') x, (select id from public.ingredients where name = 'Lemon') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Chicken Leg Piece') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Chicken Leg Piece') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Chicken Leg Piece') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Chicken Leg Piece') x, (select id from public.ingredients where name = 'Lemon') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chicken Leg Piece') x, (select id from public.ingredients where name = 'Mustard Oil') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Chicken Leg Piece') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Chicken Leg Piece') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 4 curated recipes' from (select (select id from public.ingredients where name = 'Chicken Leg Piece') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chicken Qeema') x, (select id from public.ingredients where name = 'Fresh Coriander') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chicken Qeema') x, (select id from public.ingredients where name = 'Ginger Garlic Paste') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chicken Qeema') x, (select id from public.ingredients where name = 'Gram Flour (Besan)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chicken Qeema') x, (select id from public.ingredients where name = 'Green Chilli') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chicken Qeema') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chicken Qeema') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chicken Qeema') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chilli Sauce') x, (select id from public.ingredients where name = 'Corn (Makai)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chilli Sauce') x, (select id from public.ingredients where name = 'Corn Flour') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chilli Sauce') x, (select id from public.ingredients where name = 'Eggs') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chilli Sauce') x, (select id from public.ingredients where name = 'Garlic') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chilli Sauce') x, (select id from public.ingredients where name = 'Soy Sauce') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Chilli Sauce') x, (select id from public.ingredients where name = 'Vinegar') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Colocasia (Arvi)') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Condensed Milk') x, (select id from public.ingredients where name = 'Milk') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Condensed Milk') x, (select id from public.ingredients where name = 'Pistachios (Pista)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Corn (Makai)') x, (select id from public.ingredients where name = 'Corn Flour') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Corn (Makai)') x, (select id from public.ingredients where name = 'Eggs') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Corn (Makai)') x, (select id from public.ingredients where name = 'Garlic') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Corn (Makai)') x, (select id from public.ingredients where name = 'Soy Sauce') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Corn (Makai)') x, (select id from public.ingredients where name = 'Vinegar') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Corn Flour') x, (select id from public.ingredients where name = 'Eggs') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Corn Flour') x, (select id from public.ingredients where name = 'Fresh Coriander') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Corn Flour') x, (select id from public.ingredients where name = 'Garlic') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Corn Flour') x, (select id from public.ingredients where name = 'Green Chilli') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Corn Flour') x, (select id from public.ingredients where name = 'Potato') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Corn Flour') x, (select id from public.ingredients where name = 'Soy Sauce') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Corn Flour') x, (select id from public.ingredients where name = 'Vinegar') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Cornmeal (Makai Atta)') x, (select id from public.ingredients where name = 'Eggs') y) ids on conflict do nothing;
@@ -1182,192 +2616,355 @@ insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, 
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Cornmeal (Makai Atta)') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Cornmeal (Makai Atta)') x, (select id from public.ingredients where name = 'Spinach') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Cornmeal (Makai Atta)') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Cracked Wheat (Dalia)') x, (select id from public.ingredients where name = 'Fresh Mint (Pudina)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Cracked Wheat (Dalia)') x, (select id from public.ingredients where name = 'Ginger Garlic Paste') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Cracked Wheat (Dalia)') x, (select id from public.ingredients where name = 'Jaggery (Gur)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Cracked Wheat (Dalia)') x, (select id from public.ingredients where name = 'Lemon') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Cracked Wheat (Dalia)') x, (select id from public.ingredients where name = 'Mash Dal') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Cracked Wheat (Dalia)') x, (select id from public.ingredients where name = 'Masoor Dal') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Cracked Wheat (Dalia)') x, (select id from public.ingredients where name = 'Milk') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Cracked Wheat (Dalia)') x, (select id from public.ingredients where name = 'Moong Dal') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Cracked Wheat (Dalia)') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Cracked Wheat (Dalia)') x, (select id from public.ingredients where name = 'Raisins (Kishmish)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Cucumber') x, (select id from public.ingredients where name = 'Fresh Coriander') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Cucumber') x, (select id from public.ingredients where name = 'Green Chilli') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Cucumber') x, (select id from public.ingredients where name = 'Kabuli Chickpeas (Chana)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Cucumber') x, (select id from public.ingredients where name = 'Lemon') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Cucumber') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Cucumber') x, (select id from public.ingredients where name = 'Tamarind Chutney') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Cucumber') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Curry Leaves (Kari Patta)') x, (select id from public.ingredients where name = 'Gram Flour (Besan)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Curry Leaves (Kari Patta)') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Curry Leaves (Kari Patta)') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Dates (Khajoor)') x, (select id from public.ingredients where name = 'Milk') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Dates (Khajoor)') x, (select id from public.ingredients where name = 'Pistachios (Pista)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Dates (Khajoor)') x, (select id from public.ingredients where name = 'Vermicelli (Seviyan)') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 4 curated recipes' from (select (select id from public.ingredients where name = 'Eggs') x, (select id from public.ingredients where name = 'Fresh Coriander') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 6 curated recipes' from (select (select id from public.ingredients where name = 'Eggs') x, (select id from public.ingredients where name = 'Fresh Coriander') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Eggs') x, (select id from public.ingredients where name = 'Fresh Mint (Pudina)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Eggs') x, (select id from public.ingredients where name = 'Garlic') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Eggs') x, (select id from public.ingredients where name = 'Ginger') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Eggs') x, (select id from public.ingredients where name = 'Green Chilli') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 4 curated recipes' from (select (select id from public.ingredients where name = 'Eggs') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Eggs') x, (select id from public.ingredients where name = 'Ginger Garlic Paste') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 4 curated recipes' from (select (select id from public.ingredients where name = 'Eggs') x, (select id from public.ingredients where name = 'Green Chilli') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 6 curated recipes' from (select (select id from public.ingredients where name = 'Eggs') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Eggs') x, (select id from public.ingredients where name = 'Potato') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Eggs') x, (select id from public.ingredients where name = 'Soy Sauce') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Eggs') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 4 curated recipes' from (select (select id from public.ingredients where name = 'Eggs') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Eggs') x, (select id from public.ingredients where name = 'Vinegar') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Eggs') x, (select id from public.ingredients where name = 'Wheat Flour (Atta)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Fenugreek Leaves (Methi)') x, (select id from public.ingredients where name = 'Garlic') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Fenugreek Leaves (Methi)') x, (select id from public.ingredients where name = 'Potato') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Fresh Cream (Malai)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Fresh Mint (Pudina)') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 15 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Garlic') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 15 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Ginger') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Gram Flour (Besan)') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 16 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Green Chilli') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Green Peas') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Kabuli Chickpeas (Chana)') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Lemon') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 18 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Garlic') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 17 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Ginger') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 7 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Ginger Garlic Paste') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Gram Flour (Besan)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 26 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Green Chilli') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Green Peas') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Kabuli Chickpeas (Chana)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 5 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Lemon') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Mash Dal') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Masoor Dal') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Moong Dal') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Mustard Oil') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Mutton') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 19 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 6 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Potato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 31 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 9 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Potato') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Prawns') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Red Kidney Beans (Rajma)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Refined Flour (Maida)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Roasted Chana') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Rohu Fish') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Samosa Pastry Sheets') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Spinach') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 15 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Wheat Flour (Atta)') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Fresh Cream (Malai)') x, (select id from public.ingredients where name = 'Garlic') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Fresh Cream (Malai)') x, (select id from public.ingredients where name = 'Ginger') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Fresh Cream (Malai)') x, (select id from public.ingredients where name = 'Green Chilli') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Fresh Cream (Malai)') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Fresh Cream (Malai)') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Fresh Cream (Malai)') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Tamarind (Imli)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Tamarind Chutney') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 25 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Vinegar') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Wheat Flour (Atta)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 5 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Coriander') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Cream (Malai)') x, (select id from public.ingredients where name = 'Garlic') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Cream (Malai)') x, (select id from public.ingredients where name = 'Ginger') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Cream (Malai)') x, (select id from public.ingredients where name = 'Ginger Garlic Paste') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 4 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Cream (Malai)') x, (select id from public.ingredients where name = 'Green Chilli') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Fresh Cream (Malai)') x, (select id from public.ingredients where name = 'Lemon') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Cream (Malai)') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Fresh Cream (Malai)') x, (select id from public.ingredients where name = 'Paneer') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Fresh Cream (Malai)') x, (select id from public.ingredients where name = 'Processed Cheese Slice') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Fresh Cream (Malai)') x, (select id from public.ingredients where name = 'Spinach') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Cream (Malai)') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 4 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Cream (Malai)') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Mint (Pudina)') x, (select id from public.ingredients where name = 'Garlic') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Mint (Pudina)') x, (select id from public.ingredients where name = 'Ginger') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Fresh Mint (Pudina)') x, (select id from public.ingredients where name = 'Green Chilli') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Fresh Mint (Pudina)') x, (select id from public.ingredients where name = 'Lemon') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Mint (Pudina)') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Fresh Mint (Pudina)') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Fresh Mint (Pudina)') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 19 curated recipes' from (select (select id from public.ingredients where name = 'Garlic') x, (select id from public.ingredients where name = 'Ginger') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Mint (Pudina)') x, (select id from public.ingredients where name = 'Ginger Garlic Paste') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Mint (Pudina)') x, (select id from public.ingredients where name = 'Green Chilli') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Mint (Pudina)') x, (select id from public.ingredients where name = 'Lemon') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Fresh Mint (Pudina)') x, (select id from public.ingredients where name = 'Mash Dal') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Fresh Mint (Pudina)') x, (select id from public.ingredients where name = 'Masoor Dal') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Fresh Mint (Pudina)') x, (select id from public.ingredients where name = 'Moong Dal') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 4 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Mint (Pudina)') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Fresh Mint (Pudina)') x, (select id from public.ingredients where name = 'Prawns') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Mint (Pudina)') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Fresh Mint (Pudina)') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 23 curated recipes' from (select (select id from public.ingredients where name = 'Garlic') x, (select id from public.ingredients where name = 'Ginger') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Garlic') x, (select id from public.ingredients where name = 'Gram Flour (Besan)') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 13 curated recipes' from (select (select id from public.ingredients where name = 'Garlic') x, (select id from public.ingredients where name = 'Green Chilli') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 17 curated recipes' from (select (select id from public.ingredients where name = 'Garlic') x, (select id from public.ingredients where name = 'Green Chilli') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Garlic') x, (select id from public.ingredients where name = 'Green Peas') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Garlic') x, (select id from public.ingredients where name = 'Kabuli Chickpeas (Chana)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Garlic') x, (select id from public.ingredients where name = 'Kewra Water') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 5 curated recipes' from (select (select id from public.ingredients where name = 'Garlic') x, (select id from public.ingredients where name = 'Lemon') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 6 curated recipes' from (select (select id from public.ingredients where name = 'Garlic') x, (select id from public.ingredients where name = 'Lemon') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Garlic') x, (select id from public.ingredients where name = 'Mash Dal') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Garlic') x, (select id from public.ingredients where name = 'Masoor Dal') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Garlic') x, (select id from public.ingredients where name = 'Mint Chutney') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Garlic') x, (select id from public.ingredients where name = 'Moong Dal') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Garlic') x, (select id from public.ingredients where name = 'Mustard Greens (Sarson Saag)') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Garlic') x, (select id from public.ingredients where name = 'Mutton') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 18 curated recipes' from (select (select id from public.ingredients where name = 'Garlic') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Garlic') x, (select id from public.ingredients where name = 'Potato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Garlic') x, (select id from public.ingredients where name = 'Mustard Oil') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Garlic') x, (select id from public.ingredients where name = 'Mutton') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 23 curated recipes' from (select (select id from public.ingredients where name = 'Garlic') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Garlic') x, (select id from public.ingredients where name = 'Paneer') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 4 curated recipes' from (select (select id from public.ingredients where name = 'Garlic') x, (select id from public.ingredients where name = 'Potato') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Garlic') x, (select id from public.ingredients where name = 'Prawns') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Garlic') x, (select id from public.ingredients where name = 'Red Kidney Beans (Rajma)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Garlic') x, (select id from public.ingredients where name = 'Rohu Fish') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Garlic') x, (select id from public.ingredients where name = 'Soy Sauce') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Garlic') x, (select id from public.ingredients where name = 'Spinach') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 13 curated recipes' from (select (select id from public.ingredients where name = 'Garlic') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Garlic') x, (select id from public.ingredients where name = 'Vinegar') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Garlic') x, (select id from public.ingredients where name = 'Spinach') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 18 curated recipes' from (select (select id from public.ingredients where name = 'Garlic') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Garlic') x, (select id from public.ingredients where name = 'Vinegar') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Garlic') x, (select id from public.ingredients where name = 'Wheat Flour (Atta)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Garlic') x, (select id from public.ingredients where name = 'Whole Chicken') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 6 curated recipes' from (select (select id from public.ingredients where name = 'Garlic') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 8 curated recipes' from (select (select id from public.ingredients where name = 'Garlic') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Garlic Sauce') x, (select id from public.ingredients where name = 'Mint Chutney') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Garlic Sauce') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Garlic Sauce') x, (select id from public.ingredients where name = 'Wheat Flour (Atta)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Garlic Sauce') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Ginger') x, (select id from public.ingredients where name = 'Ginger Garlic Paste') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Ginger') x, (select id from public.ingredients where name = 'Gram Flour (Besan)') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 12 curated recipes' from (select (select id from public.ingredients where name = 'Ginger') x, (select id from public.ingredients where name = 'Green Chilli') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 16 curated recipes' from (select (select id from public.ingredients where name = 'Ginger') x, (select id from public.ingredients where name = 'Green Chilli') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Ginger') x, (select id from public.ingredients where name = 'Green Peas') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Ginger') x, (select id from public.ingredients where name = 'Kabuli Chickpeas (Chana)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Ginger') x, (select id from public.ingredients where name = 'Kewra Water') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 5 curated recipes' from (select (select id from public.ingredients where name = 'Ginger') x, (select id from public.ingredients where name = 'Lemon') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 7 curated recipes' from (select (select id from public.ingredients where name = 'Ginger') x, (select id from public.ingredients where name = 'Lemon') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Ginger') x, (select id from public.ingredients where name = 'Mash Dal') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Ginger') x, (select id from public.ingredients where name = 'Masoor Dal') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Ginger') x, (select id from public.ingredients where name = 'Mint Chutney') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Ginger') x, (select id from public.ingredients where name = 'Mustard Greens (Sarson Saag)') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Ginger') x, (select id from public.ingredients where name = 'Mutton') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 17 curated recipes' from (select (select id from public.ingredients where name = 'Ginger') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Ginger') x, (select id from public.ingredients where name = 'Mustard Oil') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Ginger') x, (select id from public.ingredients where name = 'Mutton') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Ginger') x, (select id from public.ingredients where name = 'Mutton Paya') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 22 curated recipes' from (select (select id from public.ingredients where name = 'Ginger') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Ginger') x, (select id from public.ingredients where name = 'Paneer') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Ginger') x, (select id from public.ingredients where name = 'Potato') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Ginger') x, (select id from public.ingredients where name = 'Prawns') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Ginger') x, (select id from public.ingredients where name = 'Red Kidney Beans (Rajma)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Ginger') x, (select id from public.ingredients where name = 'Rohu Fish') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Ginger') x, (select id from public.ingredients where name = 'Spinach') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 12 curated recipes' from (select (select id from public.ingredients where name = 'Ginger') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Ginger') x, (select id from public.ingredients where name = 'Spinach') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 15 curated recipes' from (select (select id from public.ingredients where name = 'Ginger') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Ginger') x, (select id from public.ingredients where name = 'Vinegar') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Ginger') x, (select id from public.ingredients where name = 'Wheat Flour (Atta)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Ginger') x, (select id from public.ingredients where name = 'Whole Chicken') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 6 curated recipes' from (select (select id from public.ingredients where name = 'Ginger') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Gram Flour (Besan)') x, (select id from public.ingredients where name = 'Green Chilli') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Gram Flour (Besan)') x, (select id from public.ingredients where name = 'Lemon') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Gram Flour (Besan)') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 10 curated recipes' from (select (select id from public.ingredients where name = 'Ginger') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Ginger Garlic Paste') x, (select id from public.ingredients where name = 'Gram Flour (Besan)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 7 curated recipes' from (select (select id from public.ingredients where name = 'Ginger Garlic Paste') x, (select id from public.ingredients where name = 'Green Chilli') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Ginger Garlic Paste') x, (select id from public.ingredients where name = 'Green Peas') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Ginger Garlic Paste') x, (select id from public.ingredients where name = 'Kewra Water') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 7 curated recipes' from (select (select id from public.ingredients where name = 'Ginger Garlic Paste') x, (select id from public.ingredients where name = 'Lemon') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Ginger Garlic Paste') x, (select id from public.ingredients where name = 'Mash Dal') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Ginger Garlic Paste') x, (select id from public.ingredients where name = 'Masoor Dal') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Ginger Garlic Paste') x, (select id from public.ingredients where name = 'Moong Dal') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Ginger Garlic Paste') x, (select id from public.ingredients where name = 'Mustard Oil') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Ginger Garlic Paste') x, (select id from public.ingredients where name = 'Mutton') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Ginger Garlic Paste') x, (select id from public.ingredients where name = 'Mutton Leg (Raan)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Ginger Garlic Paste') x, (select id from public.ingredients where name = 'Mutton Paya') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 16 curated recipes' from (select (select id from public.ingredients where name = 'Ginger Garlic Paste') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Ginger Garlic Paste') x, (select id from public.ingredients where name = 'Paneer') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Ginger Garlic Paste') x, (select id from public.ingredients where name = 'Potato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Ginger Garlic Paste') x, (select id from public.ingredients where name = 'Prawns') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Ginger Garlic Paste') x, (select id from public.ingredients where name = 'Processed Cheese Slice') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Ginger Garlic Paste') x, (select id from public.ingredients where name = 'Raw Mango (Kairi)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Ginger Garlic Paste') x, (select id from public.ingredients where name = 'Roasted Chana') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Ginger Garlic Paste') x, (select id from public.ingredients where name = 'Rohu Fish') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Ginger Garlic Paste') x, (select id from public.ingredients where name = 'Surmai Fish (King Fish)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Ginger Garlic Paste') x, (select id from public.ingredients where name = 'Tamarind (Imli)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 13 curated recipes' from (select (select id from public.ingredients where name = 'Ginger Garlic Paste') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Ginger Garlic Paste') x, (select id from public.ingredients where name = 'Whole Chicken') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 11 curated recipes' from (select (select id from public.ingredients where name = 'Ginger Garlic Paste') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Gram Flour (Besan)') x, (select id from public.ingredients where name = 'Green Chilli') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Gram Flour (Besan)') x, (select id from public.ingredients where name = 'Lemon') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Gram Flour (Besan)') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Gram Flour (Besan)') x, (select id from public.ingredients where name = 'Potato') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Gram Flour (Besan)') x, (select id from public.ingredients where name = 'Rohu Fish') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Gram Flour (Besan)') x, (select id from public.ingredients where name = 'Spinach') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Gram Flour (Besan)') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Gram Flour (Besan)') x, (select id from public.ingredients where name = 'Surmai Fish (King Fish)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Gram Flour (Besan)') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Gram Flour (Besan)') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Grapes') x, (select id from public.ingredients where name = 'Guava (Amrood)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Grapes') x, (select id from public.ingredients where name = 'Lemon') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Grapes') x, (select id from public.ingredients where name = 'Orange (Malta)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Grapes') x, (select id from public.ingredients where name = 'Pomegranate (Anar)') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Green Chilli') x, (select id from public.ingredients where name = 'Green Peas') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Green Chilli') x, (select id from public.ingredients where name = 'Kabuli Chickpeas (Chana)') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Green Chilli') x, (select id from public.ingredients where name = 'Lemon') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Green Beans (Fali)') x, (select id from public.ingredients where name = 'Green Peas') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Green Beans (Fali)') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Green Beans (Fali)') x, (select id from public.ingredients where name = 'Potato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Green Beans (Fali)') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 4 curated recipes' from (select (select id from public.ingredients where name = 'Green Chilli') x, (select id from public.ingredients where name = 'Green Peas') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Green Chilli') x, (select id from public.ingredients where name = 'Kabuli Chickpeas (Chana)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 7 curated recipes' from (select (select id from public.ingredients where name = 'Green Chilli') x, (select id from public.ingredients where name = 'Lemon') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Green Chilli') x, (select id from public.ingredients where name = 'Mash Dal') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Green Chilli') x, (select id from public.ingredients where name = 'Moong Dal') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Green Chilli') x, (select id from public.ingredients where name = 'Mustard Greens (Sarson Saag)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Green Chilli') x, (select id from public.ingredients where name = 'Mustard Oil') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Green Chilli') x, (select id from public.ingredients where name = 'Mutton') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Green Chilli') x, (select id from public.ingredients where name = 'Okra (Bhindi)') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 19 curated recipes' from (select (select id from public.ingredients where name = 'Green Chilli') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 6 curated recipes' from (select (select id from public.ingredients where name = 'Green Chilli') x, (select id from public.ingredients where name = 'Potato') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Green Chilli') x, (select id from public.ingredients where name = 'Prawns') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 30 curated recipes' from (select (select id from public.ingredients where name = 'Green Chilli') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Green Chilli') x, (select id from public.ingredients where name = 'Paneer') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 8 curated recipes' from (select (select id from public.ingredients where name = 'Green Chilli') x, (select id from public.ingredients where name = 'Potato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Green Chilli') x, (select id from public.ingredients where name = 'Prawns') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Green Chilli') x, (select id from public.ingredients where name = 'Processed Cheese Slice') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Green Chilli') x, (select id from public.ingredients where name = 'Refined Flour (Maida)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Green Chilli') x, (select id from public.ingredients where name = 'Roasted Chana') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Green Chilli') x, (select id from public.ingredients where name = 'Samosa Pastry Sheets') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Green Chilli') x, (select id from public.ingredients where name = 'Spinach') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 13 curated recipes' from (select (select id from public.ingredients where name = 'Green Chilli') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Green Chilli') x, (select id from public.ingredients where name = 'Wheat Flour (Atta)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 4 curated recipes' from (select (select id from public.ingredients where name = 'Green Chilli') x, (select id from public.ingredients where name = 'Spinach') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Green Chilli') x, (select id from public.ingredients where name = 'Tamarind Chutney') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 23 curated recipes' from (select (select id from public.ingredients where name = 'Green Chilli') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Green Chilli') x, (select id from public.ingredients where name = 'Vinegar') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Green Chilli') x, (select id from public.ingredients where name = 'Wheat Flour (Atta)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Green Chilli') x, (select id from public.ingredients where name = 'Whole Chicken') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 4 curated recipes' from (select (select id from public.ingredients where name = 'Green Chilli') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Green Peas') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Green Peas') x, (select id from public.ingredients where name = 'Potato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 10 curated recipes' from (select (select id from public.ingredients where name = 'Green Chilli') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 7 curated recipes' from (select (select id from public.ingredients where name = 'Green Peas') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Green Peas') x, (select id from public.ingredients where name = 'Paneer') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 4 curated recipes' from (select (select id from public.ingredients where name = 'Green Peas') x, (select id from public.ingredients where name = 'Potato') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Green Peas') x, (select id from public.ingredients where name = 'Refined Flour (Maida)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Green Peas') x, (select id from public.ingredients where name = 'Samosa Pastry Sheets') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Green Peas') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 5 curated recipes' from (select (select id from public.ingredients where name = 'Green Peas') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Green Peas') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Guava (Amrood)') x, (select id from public.ingredients where name = 'Lemon') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Guava (Amrood)') x, (select id from public.ingredients where name = 'Orange (Malta)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Guava (Amrood)') x, (select id from public.ingredients where name = 'Pomegranate (Anar)') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Kabuli Chickpeas (Chana)') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Kabuli Chickpeas (Chana)') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Kewra Water') x, (select id from public.ingredients where name = 'Milk') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Kewra Water') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Kewra Water') x, (select id from public.ingredients where name = 'Pistachios (Pista)') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Kewra Water') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Jaggery (Gur)') x, (select id from public.ingredients where name = 'Milk') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Jaggery (Gur)') x, (select id from public.ingredients where name = 'Mustard Oil') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Jaggery (Gur)') x, (select id from public.ingredients where name = 'Pumpkin (Kaddu)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Jaggery (Gur)') x, (select id from public.ingredients where name = 'Raisins (Kishmish)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Jaggery (Gur)') x, (select id from public.ingredients where name = 'Tamarind (Imli)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Kabuli Chickpeas (Chana)') x, (select id from public.ingredients where name = 'Lemon') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Kabuli Chickpeas (Chana)') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Kabuli Chickpeas (Chana)') x, (select id from public.ingredients where name = 'Tamarind Chutney') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Kabuli Chickpeas (Chana)') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Kewra Water') x, (select id from public.ingredients where name = 'Milk') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Kewra Water') x, (select id from public.ingredients where name = 'Mutton') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Kewra Water') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Kewra Water') x, (select id from public.ingredients where name = 'Pistachios (Pista)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Kewra Water') x, (select id from public.ingredients where name = 'Rice Flour') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Kewra Water') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Khoya (Mawa)') x, (select id from public.ingredients where name = 'Milk') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Lemon') x, (select id from public.ingredients where name = 'Mash Dal') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Khoya (Mawa)') x, (select id from public.ingredients where name = 'Raisins (Kishmish)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Lemon') x, (select id from public.ingredients where name = 'Mash Dal') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Lemon') x, (select id from public.ingredients where name = 'Masoor Dal') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Lemon') x, (select id from public.ingredients where name = 'Mint Chutney') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 4 curated recipes' from (select (select id from public.ingredients where name = 'Lemon') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Lemon') x, (select id from public.ingredients where name = 'Moong Dal') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Lemon') x, (select id from public.ingredients where name = 'Mustard Oil') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Lemon') x, (select id from public.ingredients where name = 'Mutton Leg (Raan)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Lemon') x, (select id from public.ingredients where name = 'Mutton Paya') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 9 curated recipes' from (select (select id from public.ingredients where name = 'Lemon') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Lemon') x, (select id from public.ingredients where name = 'Orange (Malta)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Lemon') x, (select id from public.ingredients where name = 'Pomegranate (Anar)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Lemon') x, (select id from public.ingredients where name = 'Prawns') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Lemon') x, (select id from public.ingredients where name = 'Processed Cheese Slice') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Lemon') x, (select id from public.ingredients where name = 'Raw Mango (Kairi)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Lemon') x, (select id from public.ingredients where name = 'Rohu Fish') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Lemon') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Lemon') x, (select id from public.ingredients where name = 'Surmai Fish (King Fish)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Lemon') x, (select id from public.ingredients where name = 'Tamarind Chutney') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 4 curated recipes' from (select (select id from public.ingredients where name = 'Lemon') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Lemon') x, (select id from public.ingredients where name = 'Wheat Flour (Atta)') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Lemon') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Mash Dal') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Masoor Dal') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Lemon') x, (select id from public.ingredients where name = 'Whole Chicken') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 9 curated recipes' from (select (select id from public.ingredients where name = 'Lemon') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Mash Dal') x, (select id from public.ingredients where name = 'Masoor Dal') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Mash Dal') x, (select id from public.ingredients where name = 'Mint Chutney') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Mash Dal') x, (select id from public.ingredients where name = 'Moong Dal') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Mash Dal') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Mash Dal') x, (select id from public.ingredients where name = 'Tamarind Chutney') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Mash Dal') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Masoor Dal') x, (select id from public.ingredients where name = 'Moong Dal') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Masoor Dal') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Masoor Dal') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Milk') x, (select id from public.ingredients where name = 'Pistachios (Pista)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Milk') x, (select id from public.ingredients where name = 'Milk Powder') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 4 curated recipes' from (select (select id from public.ingredients where name = 'Milk') x, (select id from public.ingredients where name = 'Pistachios (Pista)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Milk') x, (select id from public.ingredients where name = 'Raisins (Kishmish)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Milk') x, (select id from public.ingredients where name = 'Refined Flour (Maida)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Milk') x, (select id from public.ingredients where name = 'Rice Flour') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Milk') x, (select id from public.ingredients where name = 'Rose Water (Gulab Jal)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Milk') x, (select id from public.ingredients where name = 'Vermicelli (Seviyan)') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Mint Chutney') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Mint Chutney') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Milk Powder') x, (select id from public.ingredients where name = 'Refined Flour (Maida)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Milk Powder') x, (select id from public.ingredients where name = 'Rose Water (Gulab Jal)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Mint Chutney') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Mint Chutney') x, (select id from public.ingredients where name = 'Tamarind Chutney') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Mint Chutney') x, (select id from public.ingredients where name = 'Wheat Flour (Atta)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Mint Chutney') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Moong Dal') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Moong Dal') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Moong Dal') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Mustard Greens (Sarson Saag)') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Mustard Greens (Sarson Saag)') x, (select id from public.ingredients where name = 'Spinach') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Mutton') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Mustard Oil') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Mustard Oil') x, (select id from public.ingredients where name = 'Pumpkin (Kaddu)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Mustard Oil') x, (select id from public.ingredients where name = 'Rohu Fish') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Mustard Oil') x, (select id from public.ingredients where name = 'Tamarind (Imli)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Mustard Oil') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Mustard Oil') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Mutton') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Mutton') x, (select id from public.ingredients where name = 'Potato') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Mutton') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Mutton') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Mutton Leg (Raan)') x, (select id from public.ingredients where name = 'Raw Mango (Kairi)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Mutton Leg (Raan)') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Mutton Paya') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Mutton Paya') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Okra (Bhindi)') x, (select id from public.ingredients where name = 'Onion') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Okra (Bhindi)') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 8 curated recipes' from (select (select id from public.ingredients where name = 'Onion') x, (select id from public.ingredients where name = 'Potato') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Onion') x, (select id from public.ingredients where name = 'Prawns') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Onion') x, (select id from public.ingredients where name = 'Paneer') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 11 curated recipes' from (select (select id from public.ingredients where name = 'Onion') x, (select id from public.ingredients where name = 'Potato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Onion') x, (select id from public.ingredients where name = 'Prawns') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Onion') x, (select id from public.ingredients where name = 'Red Kidney Beans (Rajma)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Onion') x, (select id from public.ingredients where name = 'Refined Flour (Maida)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Onion') x, (select id from public.ingredients where name = 'Roasted Chana') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Onion') x, (select id from public.ingredients where name = 'Rohu Fish') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Onion') x, (select id from public.ingredients where name = 'Samosa Pastry Sheets') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Onion') x, (select id from public.ingredients where name = 'Spinach') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 15 curated recipes' from (select (select id from public.ingredients where name = 'Onion') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Onion') x, (select id from public.ingredients where name = 'Wheat Flour (Atta)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 4 curated recipes' from (select (select id from public.ingredients where name = 'Onion') x, (select id from public.ingredients where name = 'Spinach') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Onion') x, (select id from public.ingredients where name = 'Tamarind (Imli)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Onion') x, (select id from public.ingredients where name = 'Tamarind Chutney') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 33 curated recipes' from (select (select id from public.ingredients where name = 'Onion') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Onion') x, (select id from public.ingredients where name = 'Vinegar') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 4 curated recipes' from (select (select id from public.ingredients where name = 'Onion') x, (select id from public.ingredients where name = 'Wheat Flour (Atta)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Onion') x, (select id from public.ingredients where name = 'Whole Chicken') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 7 curated recipes' from (select (select id from public.ingredients where name = 'Onion') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 16 curated recipes' from (select (select id from public.ingredients where name = 'Onion') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Orange (Malta)') x, (select id from public.ingredients where name = 'Pomegranate (Anar)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Paneer') x, (select id from public.ingredients where name = 'Spinach') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Paneer') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Pistachios (Pista)') x, (select id from public.ingredients where name = 'Rice Flour') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Pistachios (Pista)') x, (select id from public.ingredients where name = 'Vermicelli (Seviyan)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Potato') x, (select id from public.ingredients where name = 'Refined Flour (Maida)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Potato') x, (select id from public.ingredients where name = 'Samosa Pastry Sheets') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Potato') x, (select id from public.ingredients where name = 'Spinach') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 4 curated recipes' from (select (select id from public.ingredients where name = 'Potato') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 6 curated recipes' from (select (select id from public.ingredients where name = 'Potato') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Potato') x, (select id from public.ingredients where name = 'Wheat Flour (Atta)') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Prawns') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Prawns') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Prawns') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Processed Cheese Slice') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Pumpkin (Kaddu)') x, (select id from public.ingredients where name = 'Tamarind (Imli)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Raisins (Kishmish)') x, (select id from public.ingredients where name = 'Semolina (Suji)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Raw Mango (Kairi)') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Red Kidney Beans (Rajma)') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Refined Flour (Maida)') x, (select id from public.ingredients where name = 'Rose Water (Gulab Jal)') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Refined Flour (Maida)') x, (select id from public.ingredients where name = 'Samosa Pastry Sheets') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Rohu Fish') x, (select id from public.ingredients where name = 'Tamarind (Imli)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Rohu Fish') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
 insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Soy Sauce') x, (select id from public.ingredients where name = 'Vinegar') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Spinach') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 3 curated recipes' from (select (select id from public.ingredients where name = 'Tomato') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
-insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Whole Chicken') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Spinach') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Surmai Fish (King Fish)') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Tamarind (Imli)') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Tamarind Chutney') x, (select id from public.ingredients where name = 'Tomato') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Tamarind Chutney') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Tomato') x, (select id from public.ingredients where name = 'Vinegar') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 1.0, 'co-occurrence', 'used together in 8 curated recipes' from (select (select id from public.ingredients where name = 'Tomato') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.667, 'co-occurrence', 'used together in 1 curated recipe' from (select (select id from public.ingredients where name = 'Wheat Flour (Atta)') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence) select least(x, y), greatest(x, y), 0.833, 'co-occurrence', 'used together in 2 curated recipes' from (select (select id from public.ingredients where name = 'Whole Chicken') x, (select id from public.ingredients where name = 'Yogurt (Dahi)') y) ids on conflict do nothing;
 
 commit;

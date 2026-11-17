@@ -37,9 +37,12 @@ describe('routing', () => {
     expect(await screen.findByRole('heading', { name: 'Your Kitchen' })).toBeInTheDocument();
     expect(screen.getByText('Turn your ingredients into amazing recipes.')).toBeInTheDocument();
     const [sidebar] = screen.getAllByRole('navigation', { name: 'Main' });
-    for (const label of ['Kitchen', 'Ingredient Selection', 'Recommendations', 'My Recipes', 'My Pantry', 'Profile', 'Settings']) {
+    for (const label of ['Kitchen', 'Recommendations', 'My Recipes', 'My Pantry', 'Profile', 'Settings']) {
       expect(within(sidebar).getByRole('link', { name: label })).toBeInTheDocument();
     }
+    // Ingredient Selection stays reachable from the Kitchen itself, as in the design.
+    expect(within(sidebar).queryByRole('link', { name: 'Ingredient Selection' })).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Smart Matching/ })).toHaveAttribute('href', '/select');
     expect(within(sidebar).queryByRole('link', { name: 'Users' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /sign up|create account/i })).not.toBeInTheDocument();
     // Mocked preferences are not onboarded yet, so the kitchen offers to finish setup.
@@ -51,9 +54,10 @@ describe('routing', () => {
     renderAt('/kitchen');
     const [sidebar] = await screen.findAllByRole('navigation', { name: 'Main' });
     await userEvent.click(within(sidebar).getByRole('link', { name: 'Profile' }));
-    expect(await screen.findByText('Milk & Dairy')).toBeInTheDocument();
-    expect(screen.getByText('prawns')).toBeInTheDocument();
-    expect(screen.getByText('1,800')).toBeInTheDocument();
+    // Saved allergies show in the summary; the calorie goal moved to the Meal Preferences tab.
+    expect(await screen.findByText(/Milk & Dairy.*prawns/)).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('tab', { name: 'Meal Preferences' }));
+    expect(await screen.findByText(/Your saved goal: 1,800 kcal/)).toBeInTheDocument();
   });
 
   it('logs out back to the auth page', async () => {

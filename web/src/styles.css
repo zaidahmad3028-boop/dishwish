@@ -39,7 +39,7 @@ body {
 
 /* Desktop sizes follow the 1672px reference designs: every rem shrinks in proportion on smaller laptops. */
 @media (min-width: 1024px) {
-  :root { font-size: clamp(13px, 0.957vw, 16px); }
+  :root { font-size: clamp(13px, 0.957vw, 19px); }
 }
 
 @layer components {
@@ -203,12 +203,114 @@ body {
     font-weight: 600;
   }
   /* The data-heavy screens use tighter cards, as in the reference designs. */
-  .tight-page .card-title { font-size: 1.22rem; gap: 0.45rem; white-space: nowrap; }
+  .tight-page .card-title { font-size: 1.22rem; gap: 0.45rem; }
+  @media (min-width: 1024px) { .tight-page .card-title { white-space: nowrap; } }
   .tight-page .card-title svg { width: 1.5rem; height: 1.5rem; }
   .tight-page .card.p-5 { padding: 0.8rem 0.9rem !important; }
   .tight-page .card > .mb-4 { margin-bottom: 0.5rem !important; }
   .tight-page .data-table th, .tight-page .data-table td { padding: 0.36rem 0.45rem; }
   .tight-page .select { padding-top: 0.42rem; padding-bottom: 0.42rem; }
+  @media (min-width: 1024px) {
+    .recommendations-page { margin-top: -0.7rem; }
+    .recommendations-page > header { margin-bottom: 0.4rem; }
+    .recommendations-page > header h1 { font-size: 3rem !important; }
+    .recommendations-page > header p { margin-top: 0; font-size: 1.24rem !important; line-height: 1.2; letter-spacing: -0.01em; }
+    .recommendations-page .card-title { font-size: 1.42rem; letter-spacing: -0.02em; }
+    .recommendations-page aside .card-title { font-size: 1.12rem; letter-spacing: -0.025em; }
+  }
+  @media (min-width: 1280px) {
+    .recommendations-page { margin-left: -0.6rem; margin-right: -0.6rem; }
+  }
+  @media (min-width: 1024px) {
+    .pantry-page { margin-top: -0.7rem; }
+    .pantry-page > header { margin-bottom: 0.9rem; }
+    .pantry-page > header h1 { font-size: 3rem !important; }
+    .pantry-page > header p { margin-top: 0.1rem; font-size: 1.2rem !important; letter-spacing: -0.01em; }
+    .pantry-page .card-title { font-size: 1.28rem; letter-spacing: -0.03em; }
+    .pantry-page .pantry-items.card.p-5 { padding-left: 0.5rem !important; padding-right: 0.6rem !important; }
+    .pantry-page .pantry-items.card > .mb-4 { padding-left: 0.5rem; }
+    .pantry-page aside .card-title { font-size: 1.36rem; }
+  }
+  @media (min-width: 1280px) {
+    .pantry-page { margin-left: -0.25rem; margin-right: -0.45rem; }
+  }
+  @media (min-width: 1024px) {
+    .profile-page { margin-top: -0.75rem; }
+    .profile-page > header { margin-bottom: 0.95rem !important; }
+    .profile-page > header h1 { font-size: 2.87rem !important; }
+    .profile-page > header p { margin-top: 0.1rem; font-size: 1.04rem !important; line-height: 1.3; }
+    .profile-page > header svg { width: 4.1rem; height: 4.1rem; margin: -0.2rem 0 -1rem -0.5rem; }
+    .profile-page .card.p-5 { padding: 1rem 1.4rem !important; }
+    .profile-page [role='tabpanel'] .card.p-5 { padding-top: 0.8rem !important; padding-bottom: 0.8rem !important; }
+    .profile-page .card-title { font-size: 1.52rem; letter-spacing: -0.03em; gap: 0.95rem; }
+    .profile-page .card-title svg { width: 1.8rem; height: 1.8rem; }
+    .profile-page aside .card-title { font-size: 1.37rem; }
+  }
+  @media (min-width: 1280px) {
+    .profile-page { margin-left: -0.15rem; margin-right: -0.3rem; margin-bottom: -0.6rem; }
+  }
+  .diet-pill { display: inline-flex; align-items: center; gap: 0.4rem; border-radius: 9999px; background: rgb(255 255 255 / 0.75); border: 1px solid white; box-shadow: 0 2px 6px -3px rgb(159 18 57 / 0.25); padding: 0.38rem 0.6rem; font-size: 0.88rem; letter-spacing: -0.02em; font-weight: 500; cursor: pointer; }
+  .diet-pill input { width: 1.1rem; height: 1.1rem; accent-color: var(--color-crimson); }
+  .settings-sub { margin-top: -0.85rem; padding-left: 3.05rem; font-size: 0.89rem; letter-spacing: -0.015em; line-height: 1.25; }
+  .settings-page .card.p-5 { padding: 0.5rem 1.3rem 0.85rem !important; }
+  .settings-page .card.p-5.settings-roomy { padding-top: 1rem !important; }
+  .settings-page .card > .mb-4 { margin-bottom: 0.75rem !important; }
+  .settings-page .card-title { font-size: 1.36rem; letter-spacing: -0.03em; gap: 1rem; }
+  .settings-page .card-title svg { width: 2.05rem; height: 2.05rem; stroke-width: 1.8; }
+  @media (max-width: 639px) { .settings-sub { padding-left: 0; margin-top: -0.4rem; } }
+  @media (min-width: 1024px) {
+    .settings-page { margin-top: -0.75rem; }
+    .settings-page > header { margin-bottom: 1.65rem !important; }
+    .settings-page > header h1 { font-size: 2.87rem !important; }
+    .settings-page > header p { margin-top: 0.1rem; font-size: 1.06rem !important; line-height: 1.3; }
+    .settings-page > header svg { width: 3.9rem; height: 3.9rem; margin: -0.1rem 0 -1rem -0.1rem; }
+  }
+  @media (min-width: 1280px) { .settings-page { margin-left: -0.15rem; margin-right: -0.3rem; margin-bottom: -0.6rem; } }
+  .admin-page .card.p-5 { padding: 0.75rem 1.05rem !important; }
+  .admin-page .card > .mb-4 { margin-bottom: 0.45rem !important; flex-wrap: wrap; row-gap: 0.3rem; }
+  @media (min-width: 1280px) { .admin-page .card > .mb-4 { flex-wrap: nowrap; } }
+  @media (max-width: 639px) { .admin-page [role='tablist'] { max-width: 100%; flex-wrap: wrap; } }
+  .admin-page .card-title { font-size: 1.3rem; letter-spacing: -0.03em; gap: 0.7rem; }
+  .admin-page .card-title svg { width: 1.75rem; height: 1.75rem; }
+  .admin-page .action-tile { min-height: 4.45rem; gap: 0.2rem; font-size: 0.82rem; line-height: 1.1; padding: 0.35rem; }
+  .admin-page .data-table { font-size: 0.84rem; }
+  .admin-page .data-table th { padding: 0.35rem 0.45rem; }
+  .admin-page .data-table td { padding: 0.28rem 0.45rem; }
+  .admin-page .select { padding-top: 0.42rem; padding-bottom: 0.42rem; }
+  .admin-page .stat-card { padding: 0.65rem 0.85rem !important; }
+  .admin-compact .stat-card { gap: 0.5rem !important; padding: 0.5rem 0.6rem !important; }
+  .admin-compact .stat-icon { width: 3.3rem !important; height: 3.3rem !important; }
+  .admin-compact .stat-icon svg { width: 2.15rem; height: 2.15rem; }
+  .admin-compact .stat-card > div > p:first-child { font-size: 1.45rem !important; }
+  .admin-compact .stat-card > div > p:nth-child(2) { font-size: 0.86rem !important; letter-spacing: -0.02em; margin-top: 0.1rem !important; }
+  .admin-compact .stat-card > div > p:nth-child(3) { margin-top: 0.2rem !important; }
+  @media (min-width: 1024px) {
+    .admin-page { margin-top: -0.75rem; }
+    .admin-page > header { margin-bottom: 0.65rem !important; }
+    .admin-page > header h1 { font-size: 2.97rem !important; }
+    .admin-page > header p { margin-top: 0.1rem; font-size: 1.04rem !important; line-height: 1.3; }
+    .admin-page > header > div:first-child > svg { margin: 0 0 -1rem 0; }
+    .admin-page > header > div + div { margin-top: 1.1rem; }
+  }
+  @media (min-width: 1280px) { .admin-page { margin-left: -0.15rem; margin-right: -0.3rem; margin-bottom: -1.6rem; } }
+  @media (min-width: 1280px) { .admin-compact .stat-card > div > p:nth-child(2) { white-space: nowrap; } }
+  .admin-small-titles .card-title { font-size: 1.14rem; gap: 0.55rem; }
+  .admin-small-titles .card-title svg { width: 1.5rem; height: 1.5rem; }
+  .admin-small-titles .card > .mb-4 { margin-bottom: 0.3rem !important; }
+  .admin-tabs-small [role='tablist'] button { padding-left: 0.5rem; padding-right: 0.5rem; font-size: 0.76rem; }
+  .admin-analytics .card-title, .admin-settings .card-title, .admin-match .card-title { font-size: 1.2rem; }
+  .admin-ingredients .select { font-size: 0.8rem; padding-left: 0.65rem; padding-right: 0.3rem; max-width: 7.6rem; }
+  .admin-recipes .data-table td { padding-top: 0.34rem; padding-bottom: 0.34rem; }
+  .admin-feedback .admin-stats .stat-icon { width: 2.9rem !important; height: 2.9rem !important; }
+  .admin-feedback .admin-stats .stat-icon svg { width: 1.9rem; height: 1.9rem; }
+  .admin-feedback .admin-stats .stat-card > div > p:nth-child(2) { font-size: 0.8rem !important; }
+  .admin-ingredients .admin-stats .stat-card { padding-top: 0.45rem !important; padding-bottom: 0.45rem !important; }
+  .admin-ingredients .action-tile { min-height: 4.15rem; }
+  .admin-feedback .data-table td { padding-top: 0.2rem; padding-bottom: 0.2rem; }
+  .admin-ingredients .data-table td { padding-top: 0.12rem; padding-bottom: 0.12rem; }
+  /* The Kitchen design indents its heading from the cards and uses a larger subtitle. */
+  .kitchen-page > header { padding-left: 1.05rem; margin-bottom: 0.8rem; }
+  @media (min-width: 1024px) { .kitchen-page > header p { font-size: 1.45rem; } }
   .action-tile {
     display: flex;
     flex-direction: column;

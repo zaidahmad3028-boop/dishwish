@@ -49,8 +49,8 @@ export function StatCard({ icon: Icon, value, label, tone = 'red', note, trend }
 }) {
   const down = trend?.startsWith('-');
   return (
-    <div className="card flex items-center gap-3 p-3.5">
-      <span className={`grid h-[4.4rem] w-[4.4rem] shrink-0 place-items-center rounded-full ${TONES[tone]}`}><Icon size={40} strokeWidth={1.7} aria-hidden="true" /></span>
+    <div className="stat-card card flex items-center gap-3 p-3.5">
+      <span className={`stat-icon grid h-[4.4rem] w-[4.4rem] shrink-0 place-items-center rounded-full ${TONES[tone]}`}><Icon size={40} strokeWidth={1.7} aria-hidden="true" /></span>
       <div className="min-w-0 flex-1">
         <p className="text-[1.75rem] font-bold leading-none tracking-tight">{value}</p>
         <p className="mt-1 text-[0.98rem] leading-tight text-stone-700">{label}</p>
@@ -139,15 +139,15 @@ export function Notice({ children }: { children: ReactNode }) {
   return <p role="status" className="rounded-2xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-semibold text-green-800">{children}</p>;
 }
 
-export function SearchBox({ value, onChange, placeholder, label }: {
-  value: string; onChange: (v: string) => void; placeholder: string; label: string;
+export function SearchBox({ value, onChange, placeholder, label, large = false }: {
+  value: string; onChange: (v: string) => void; placeholder: string; label: string; large?: boolean;
 }) {
   return (
     <label className="flex min-w-0 flex-1 items-center gap-2 rounded-full border border-stone-200 bg-white py-1 pl-1 pr-3 shadow-sm focus-within:border-crimson">
-      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gradient-to-br from-crimson to-ember text-white"><Search size={18} aria-hidden="true" /></span>
+      <span className={`grid shrink-0 place-items-center rounded-full text-white ${large ? 'h-[2.65rem] w-[3.6rem] bg-[#e0162f]' : 'h-9 w-9 bg-gradient-to-br from-crimson to-ember'}`}><Search size={large ? 24 : 18} aria-hidden="true" /></span>
       <span className="sr-only">{label}</span>
       <input type="search" value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder}
-        className="min-w-0 flex-1 bg-transparent py-1.5 text-sm outline-none" />
+        className={`min-w-0 flex-1 bg-transparent py-1.5 outline-none ${large ? 'text-[1.02rem] tracking-tight' : 'text-sm'}`} />
     </label>
   );
 }
@@ -213,19 +213,21 @@ export function Toggle({ checked, onChange, label, disabled }: { checked: boolea
 }
 
 // Ring chart: one value out of 100, or several parts that add up to a total.
-export function Donut({ parts, size = 132, center, label }: {
-  parts: { value: number; color: string; label: string }[]; size?: number; center: ReactNode; label: string;
+export function Donut({ parts, size = 132, center, label, thickness = 4 }: {
+  parts: { value: number; color: string; label: string }[]; size?: number; center: ReactNode; label: string; thickness?: number;
 }) {
   const total = parts.reduce((s, p) => s + p.value, 0);
   const r = 15.9155;
   let offset = 25;
+  // Thick rings need extra room, or their outer edge is cut off by the square.
+  const pad = Math.max(0, r + thickness / 2 - 18);
   return (
     <figure className="relative shrink-0" style={{ width: size, height: size }} aria-label={label} role="img">
-      <svg viewBox="0 0 36 36" className="h-full w-full">
-        <circle cx="18" cy="18" r={r} fill="none" stroke="#f5ebe7" strokeWidth="4" />
+      <svg viewBox={`${-pad} ${-pad} ${36 + 2 * pad} ${36 + 2 * pad}`} className="h-full w-full">
+        <circle cx="18" cy="18" r={r} fill="none" stroke="#f5ebe7" strokeWidth={thickness} />
         {total > 0 && parts.map((p) => {
           const pct = (p.value / total) * 100;
-          const el = <circle key={p.label} cx="18" cy="18" r={r} fill="none" stroke={p.color} strokeWidth="4"
+          const el = <circle key={p.label} cx="18" cy="18" r={r} fill="none" stroke={p.color} strokeWidth={thickness}
             strokeDasharray={`${pct} ${100 - pct}`} strokeDashoffset={offset} />;
           offset -= pct;
           return el;
@@ -247,10 +249,10 @@ export function Bar({ value, max = 1, color = 'var(--color-crimson)', label }: {
 
 // A profile photo (square, cover-cropped) when the user uploaded one, otherwise their initial.
 export function Avatar({ name, size = 40, src }: { name: string; size?: number; src?: string | null }) {
-  if (src) return <img src={src} alt="" aria-hidden="true" className="shrink-0 rounded-full object-cover shadow-md" style={{ width: size, height: size }} />;
+  if (src) return <img src={src} alt="" aria-hidden="true" className="shrink-0 rounded-full object-cover shadow-md" style={{ width: `${size / 16}rem`, height: `${size / 16}rem` }} />;
   return (
     <span className="grid shrink-0 place-items-center rounded-full bg-gradient-to-br from-crimson to-crimson-deep font-display font-bold text-white shadow-md"
-      style={{ width: size, height: size, fontSize: size * 0.42 }} aria-hidden="true">
+      style={{ width: `${size / 16}rem`, height: `${size / 16}rem`, fontSize: `${(size * 0.42) / 16}rem` }} aria-hidden="true">
       {(name.trim().charAt(0) || '?').toUpperCase()}
     </span>
   );
@@ -292,9 +294,12 @@ export function toCsv(rows: Record<string, unknown>[]): string {
 
 // The red chef-hat mark of the Dish-Wish brand (logo, "Find Recipes").
 export function ChefHatMark({ className = 'h-12 w-12' }: { className?: string }) {
+  // Its own id per copy: a gradient inside a hidden copy (the sidebar on phones) would blank the others.
+  const gradient = `hat-${useId().replace(/\W/g, '')}`;
   return (
     <svg viewBox="0 0 64 56" className={className} aria-hidden="true">
-      <path d="M18 37C10.500 37 4 31.600 4 23.800 4 16 10.200 10.400 17.200 11 19.800 5.200 25.500 2 32 2s12.200 3.200 14.800 9C53.800 10.400 60 16 60 23.800 60 31.600 53.500 37 46 37z" fill="#ef2f2b" />
+      <defs><linearGradient id={gradient} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#ff5a2b" /><stop offset="100%" stopColor="#e8192c" /></linearGradient></defs>
+      <path d="M18 37C10.500 37 4 31.600 4 23.800 4 16 10.200 10.400 17.200 11 19.800 5.200 25.500 2 32 2s12.200 3.200 14.800 9C53.800 10.400 60 16 60 23.800 60 31.600 53.500 37 46 37z" fill={`url(#${gradient})`} />
       <path d="M15 41h34v11a3 3 0 0 1-3 3H18a3 3 0 0 1-3-3z" fill="#d9122a" />
       <path d="M25 26v12M32 26v12M39 26v12" stroke="#fff" strokeWidth="2.600" strokeLinecap="round" />
       <path d="M15 37.500h34" stroke="#fff" strokeWidth="2.600" />

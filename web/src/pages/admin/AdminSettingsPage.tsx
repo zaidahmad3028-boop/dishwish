@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { ArrowRight, BookOpen, CalendarDays, CheckCircle2, Clock, Crown, Database, Download, FileText, Info, KeyRound, Leaf, Lock, Mail, Megaphone, MessageSquare, Monitor, Pencil, RefreshCw, RotateCcw, Save, Server, Settings, ShieldCheck, Sparkles, UserRound, Users, Zap } from 'lucide-react';
+import { ArrowRight, BookOpen, CalendarDays, CheckCircle2, ChevronRight, Clock, Crown, Database, Download, FileText, Globe, Info, KeyRound, LayoutGrid, Leaf, Lock, Mail, Megaphone, Palette, MessageSquare, Monitor, Pencil, RefreshCw, RotateCcw, Save, Server, Settings, ShieldCheck, Sparkles, UserRound, Users, Zap } from 'lucide-react';
 import { useAuth } from '../../auth/AuthProvider';
 import { displayName } from '../../components/AppShell';
-import { ActionTile, Avatar, Card, EmptyState, ErrorNote, Notice, PageHeader, Spinner, downloadFile, formatDate, toCsv } from '../../components/ui';
+import { ActionTile, Avatar, Card, EmptyState, ErrorNote, Modal, Notice, PageHeader, Spinner, Toggle, downloadFile, formatDate, toCsv } from '../../components/ui';
 import { changePassword, saveDisplayName } from '../../lib/accountApi';
 import { getSetting, listAudit, saveSetting, systemStatus, validateRecommendationSettings, type AuditRow, type RecommendationSettings } from '../../lib/adminApi';
 import { API_URL } from '../../lib/recipes';
+import { useLiveTick } from '../../lib/useLiveTick';
 
 type Tab = 'general' | 'roles' | 'engine' | 'system' | 'security' | 'audit' | 'about';
 const TABS: { key: Tab; label: string; icon: typeof Settings }[] = [
@@ -14,8 +15,8 @@ const TABS: { key: Tab; label: string; icon: typeof Settings }[] = [
   { key: 'system', label: 'System & Database', icon: Database }, { key: 'security', label: 'Security', icon: ShieldCheck },
   { key: 'audit', label: 'Audit Logs', icon: FileText }, { key: 'about', label: 'About', icon: Info },
 ];
-export const DEFAULT_ENGINE: RecommendationSettings = { weights: { coverage: 0.45, compatibility: 0.3, taste: 0.2, cooking: 0.05 }, missing_penalty: 0.03, missing_tolerance: 3, min_score: 0.2 };
-const WEIGHT_LABEL = { coverage: 'Ingredient coverage', compatibility: 'Graph compatibility', taste: 'Taste similarity', cooking: 'Cooking time' } as const;
+export const DEFAULT_ENGINE: RecommendationSettings = { weights: { coverage: 0.45, similarity: 0.1, compatibility: 0.3, taste: 0.2, cooking: 0.05 }, missing_penalty: 0.03, missing_tolerance: 3, min_score: 0.2, personalization: { enabled: true, strength: 0.6 } };
+const WEIGHT_LABEL = { coverage: 'Ingredient coverage', similarity: 'TF-IDF similarity', compatibility: 'Graph compatibility', taste: 'Taste similarity', cooking: 'Cooking time' } as const;
 
 function Slider({ label, value, min, max, step, onChange, format = (v: number) => v.toFixed(2) }: {
   label: string; value: number; min: number; max: number; step: number; onChange: (v: number) => void; format?: (v: number) => string;
@@ -36,28 +37,45 @@ export function AdminSettingsPage() {
   const tab = (TABS.some((t) => t.key === params.get('tab')) ? params.get('tab') : 'general') as Tab;
   const [engine, setEngine] = useState<RecommendationSettings | null>(null);
   const [announcement, setAnnouncement] = useState('');
+  const [announcementOpen, setAnnouncementOpen] = useState(false);
   const [audit, setAudit] = useState<AuditRow[] | null>(null);
   const [status, setStatus] = useState<Awaited<ReturnType<typeof systemStatus>> | null>(null);
   const [name, setName] = useState(displayName(user));
   const [editingName, setEditingName] = useState(false);
   const [apiStatus, setApiStatus] = useState('…');
+  const [storageStatus, setStorageStatus] = useState('…');
   const [pw, setPw] = useState({ current: '', next: '' });
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
 
   useEffect(() => {
-    getSetting<RecommendationSettings>('recommendation').then((s) => setEngine(s ?? DEFAULT_ENGINE)).catch((e: Error) => setError(e.message));
+    // Personalisation lives in its own settings row, so the stored engine weights keep their original shape.
+    Promise.all([getSetting<RecommendationSettings>('recommendation'), getSetting<RecommendationSettings['personalization']>('personalization')])
+      .then(([s, p]) => setEngine({ ...(s ?? DEFAULT_ENGINE), personalization: p ?? DEFAULT_ENGINE.personalization }))
+      .catch((e: Error) => setError(e.message));
     getSetting<{ announcement?: string }>('general').then((g) => setAnnouncement(g?.announcement ?? '')).catch(() => {});
   }, []);
   const refreshStatus = useCallback(() => {
     systemStatus().then(setStatus).catch((e: Error) => setError(e.message));
     fetch(`${API_URL}/api/health`).then((r) => setApiStatus(r.ok ? 'Online' : `HTTP ${r.status}`)).catch(() => setApiStatus('Offline'));
+    fetch(`${API_URL}/api/uploads/status`).then((r) => r.json()).then((s: { configured: boolean; backend: string | null }) =>
+      setStorageStatus(!s.configured ? 'Not configured' : s.backend === 'r2' ? 'Cloudflare R2' : 'Supabase Storage')).catch(() => setStorageStatus('Unknown'));
   }, []);
   useEffect(() => {
     if (tab === 'audit' || tab === 'general') listAudit(tab === 'audit' ? 100 : 25).then(setAudit).catch((e: Error) => setError(e.message));
     if (tab === 'system' || tab === 'general' || tab === 'roles') refreshStatus();
     setNotice('');
   }, [tab, refreshStatus]);
+  // Keeps the status cards and audit log current. The engine sliders and announcement are left alone, so unsaved edits stay.
+  const tick = useLiveTick();
+  useEffect(() => {
+    if (!tick) return;
+    if (tab === 'audit' || tab === 'general') listAudit(tab === 'audit' ? 100 : 25).then(setAudit).catch(() => {});
+    if (tab === 'system' || tab === 'general' || tab === 'roles') {
+      systemStatus().then(setStatus).catch(() => {});
+      fetch(`${API_URL}/api/health`).then((r) => setApiStatus(r.ok ? 'Online' : `HTTP ${r.status}`)).catch(() => setApiStatus('Offline'));
+    }
+  }, [tick, tab]);
 
   const run = async (fn: () => Promise<void>, done: string) => {
     setError(''); setNotice('');
@@ -67,7 +85,11 @@ export function AdminSettingsPage() {
     if (!engine) return;
     const problem = validateRecommendationSettings(engine);
     if (problem) { setError(problem); return; }
-    run(() => saveSetting('recommendation', engine), 'Recommendation settings saved. The API picks them up within a minute.');
+    const { personalization, ...weights } = engine;
+    run(async () => {
+      await saveSetting('recommendation', weights);
+      await saveSetting('personalization', personalization ?? DEFAULT_ENGINE.personalization);
+    }, 'Recommendation settings saved. The API picks them up within a minute.');
   };
   const weightSum = engine ? Object.values(engine.weights).reduce((a, b) => a + b, 0) : 0;
 
@@ -99,10 +121,10 @@ export function AdminSettingsPage() {
 
   const content: Record<Tab, ReactNode> = {
     general: (
-      <div className="grid gap-3 xl:grid-cols-[1fr_1.2fr_1.1fr]">
+      <div className="grid gap-[0.95rem] xl:grid-cols-[1fr_1.146fr_1fr]">
         <div className="min-w-0 space-y-3">
           <Card title="Admin Profile" icon={UserRound} action={<button type="button" className="btn-sm btn-outline" onClick={() => setEditingName((v) => !v)}><Pencil size={14} />Edit Profile</button>}>
-            <div className="flex items-center gap-4"><Avatar name={name || 'A'} size={96} />
+            <div className="flex items-center gap-4 pb-6 pl-1 pt-5"><Avatar name={name || 'A'} size={108} />
               <div className="min-w-0"><p className="truncate font-display text-xl font-bold">{displayName(user)}</p><span className="badge badge-amber !text-[0.86rem]"><Crown size={14} />Super Admin</span>
                 <p className="mt-1 flex items-center gap-2 truncate text-[0.9rem]"><Mail size={16} className="shrink-0 text-crimson" aria-hidden="true" /><span className="truncate">{user?.email}</span></p>
                 <p className="mt-1 flex items-center gap-2 text-[0.9rem]"><CalendarDays size={16} className="shrink-0 text-crimson" aria-hidden="true" />Last Login: {formatDate(user?.last_sign_in_at, true)}</p></div></div>
@@ -113,7 +135,7 @@ export function AdminSettingsPage() {
           <Card title={<>Users &amp; Roles <span className="font-sans text-base font-normal">(Quick)</span></>} icon={Users} action={<Link to="/admin/users" className="flex items-center gap-1 text-sm font-semibold text-crimson">Manage<ArrowRight size={15} /></Link>}>
             <div className="grid grid-cols-3 gap-2 text-center">
               {[{ icon: ShieldCheck, n: status?.admins, label: 'Super Admin' }, { icon: Users, n: status?.tables.profiles, label: 'Accounts' }, { icon: UserRound, n: status ? Math.max(0, (status.tables.profiles ?? 0) - status.admins) : undefined, label: 'Registered Users' }].map(({ icon: Icon, n, label }) => (
-                <div key={label} className="action-tile"><Icon size={28} className="text-crimson" aria-hidden="true" /><strong className="text-xl leading-none">{n ?? '…'}</strong>{label}</div>
+                <div key={label} className="action-tile !min-h-[5.6rem]"><Icon size={28} className="text-crimson" aria-hidden="true" /><strong className="text-xl leading-none">{n ?? '…'}</strong>{label}</div>
               ))}
             </div>
           </Card>
@@ -121,27 +143,30 @@ export function AdminSettingsPage() {
             <ul className="divide-y divide-stone-100 text-[0.92rem]">
               {[[Lock, 'Passwords hashed by Supabase Auth'], [KeyRound, 'Admin actions checked in the database'], [FileText, 'Admin changes written to the audit log'], [Clock, 'Short-lived sessions that refresh automatically']].map(([Icon, text]) => {
                 const I = Icon as typeof Lock;
-                return <li key={text as string} className="flex items-center gap-3 py-2"><I size={20} className="shrink-0 text-crimson" aria-hidden="true" /><span className="flex-1">{text as string}</span><CheckCircle2 size={18} className="shrink-0 text-green-600" aria-hidden="true" /></li>;
+                return <li key={text as string} className="flex items-center gap-3 py-[0.85rem]"><I size={20} className="shrink-0 text-crimson" aria-hidden="true" /><span className="flex-1">{text as string}</span><CheckCircle2 size={18} className="shrink-0 text-green-600" aria-hidden="true" /></li>;
               })}
             </ul>
           </Card>
         </div>
         <div className="min-w-0 space-y-3">
-          <Card title="User Announcement" icon={Megaphone}>
-            <p className="-mt-2 mb-2 text-[0.9rem]">Shown as a banner at the top of every user page. Leave empty to hide it.</p>
-            <textarea className="field min-h-20" maxLength={280} value={announcement} onChange={(e) => setAnnouncement(e.target.value)} aria-label="Announcement text" />
-            <button type="button" className="btn-sm btn-red mt-2" onClick={() => run(() => saveSetting('general', { announcement: announcement.trim() }), announcement.trim() ? 'Announcement published.' : 'Announcement removed.')}>
-              <Save size={14} />Save announcement</button>
+          <Card title="System Preferences" icon={LayoutGrid}>
+            <dl className="space-y-[0.38rem] text-[0.92rem]">
+              {[[Globe, 'Language', 'English'], [Palette, 'Theme', 'Light (Cream)'], [Clock, 'Your Timezone', Intl.DateTimeFormat().resolvedOptions().timeZone], [LayoutGrid, 'Items per Page', '8']].map(([Icon, label, value]) => {
+                const I = Icon as typeof Globe;
+                return <div key={label as string} className="flex items-center gap-3"><dt className="flex w-[11rem] shrink-0 items-center gap-3"><I size={22} className="text-crimson" aria-hidden="true" />{label as string}</dt><dd className="min-w-0 flex-1 truncate rounded-lg bg-white/80 px-3 py-1 shadow-sm">{value as string}</dd></div>;
+              })}
+            </dl>
+            <button type="button" className="mt-2 flex w-full items-center gap-3 border-t border-stone-100 pt-2 text-left text-[0.92rem] font-medium hover:text-crimson" onClick={() => setAnnouncementOpen(true)}><Megaphone size={22} className="text-crimson" aria-hidden="true" /><span className="flex-1">User Announcement{announcement.trim() ? ' (showing)' : ''}</span><ChevronRight size={20} className="text-crimson" aria-hidden="true" /></button>
           </Card>
           <Card title="Recommendation Engine Configuration" icon={Sparkles} action={<button type="button" className="flex items-center gap-1 text-sm font-semibold text-crimson" onClick={() => setParams({ tab: 'engine' })}>Configure<ArrowRight size={15} /></button>}>
             {!engine ? <Spinner /> : (
-              <div className="space-y-2">
+              <div className="space-y-[0.15rem]">
                 <div className="flex items-center gap-3 text-sm"><span className="w-44 font-semibold">Algorithm</span><span className="field !w-auto flex-1 !py-1.5">Content-Based + Graph Similarity</span></div>
                 <Slider label="Similarity Threshold" value={engine.min_score} min={0} max={1} step={0.01} onChange={(v) => setEngine({ ...engine, min_score: v })} />
                 <Slider label="Ingredient Weight" value={engine.weights.coverage} min={0} max={1} step={0.01} onChange={(v) => setEngine({ ...engine, weights: { ...engine.weights, coverage: v } })} />
                 <Slider label="Compatibility Weight" value={engine.weights.compatibility} min={0} max={1} step={0.01} onChange={(v) => setEngine({ ...engine, weights: { ...engine.weights, compatibility: v } })} />
                 <Slider label="Taste Weight" value={engine.weights.taste} min={0} max={1} step={0.01} onChange={(v) => setEngine({ ...engine, weights: { ...engine.weights, taste: v } })} />
-                <button type="button" className="btn-sm btn-red" onClick={saveEngine}><Save size={14} />Save configuration</button>
+                <button type="button" className="btn-sm btn-red !py-1" onClick={saveEngine}><Save size={14} />Save configuration</button>
               </div>
             )}
           </Card>
@@ -152,14 +177,14 @@ export function AdminSettingsPage() {
         <div className="min-w-0 space-y-3">
           <Card title="Application Status" icon={Monitor}>
             <dl className="divide-y divide-stone-100 text-[0.92rem]">
-              {[[Server, 'Recipe API', apiStatus], [Database, 'Database', status ? 'Connected' : '…'], [BookOpen, 'Recipes', status?.tables.curated_recipes], [Leaf, 'Ingredients', status?.tables.ingredients], [MessageSquare, 'Feedback', status?.tables.feedback]].map(([Icon, label, value]) => {
+              {[[Server, 'Recipe API', apiStatus], [Database, 'Database', status ? 'Connected' : '…'], [Globe, 'Image storage', storageStatus], [BookOpen, 'Recipes', status?.tables.curated_recipes], [Leaf, 'Ingredients', status?.tables.ingredients], [MessageSquare, 'Feedback', status?.tables.feedback]].map(([Icon, label, value]) => {
                 const I = Icon as typeof Server;
-                return <div key={label as string} className="flex items-center gap-3 py-2"><dt className="flex flex-1 items-center gap-3"><I size={20} className="text-crimson" aria-hidden="true" />{label as string}</dt><dd className="font-semibold">{String(value ?? '…')}</dd></div>;
+                return <div key={label as string} className="flex items-center gap-3 py-[0.42rem]"><dt className="flex flex-1 items-center gap-3"><I size={20} className="text-crimson" aria-hidden="true" />{label as string}</dt><dd className="font-semibold">{String(value ?? '…')}</dd></div>;
               })}
             </dl>
           </Card>
           <Card title="Database & System" icon={Database} action={<button type="button" className="flex items-center gap-1 text-sm font-semibold text-crimson" onClick={() => setParams({ tab: 'system' })}>Manage<ArrowRight size={15} /></button>}>
-            <dl className="space-y-2 text-[0.92rem]">
+            <dl className="space-y-[1.05rem] pb-2 pt-1 text-[0.92rem]">
               <div className="flex items-center justify-between"><dt>Database Status</dt><dd><span className="badge badge-green !text-[0.86rem]"><CheckCircle2 size={14} />Connected</span></dd></div>
               <div className="flex items-center justify-between"><dt>PostgreSQL</dt><dd className="font-semibold">{status?.postgres_version ?? '…'}</dd></div>
               <div className="flex items-center justify-between"><dt>Database Size</dt><dd className="font-semibold">{status ? `${(status.database_size_bytes / 1024 / 1024).toFixed(1)} MB` : '…'}</dd></div>
@@ -189,14 +214,26 @@ export function AdminSettingsPage() {
     ),
     engine: !engine ? <Spinner /> : (
       <Card title="Recommendation Engine Configuration" icon={Sparkles}>
-        <p className="-mt-2 mb-4 text-sm text-stone-600">Score = Σ weight × component ÷ Σ weights of the components available, minus the missing-ingredient penalty. Weights are relative, so they don’t need to add up to 1 (now {weightSum.toFixed(2)}). These are engineering defaults, not validated values.</p>
+        <p className="-mt-2 mb-4 text-sm text-stone-600">Score = Σ weight × component ÷ Σ weights of the components available, minus the missing-ingredient penalties. Weights are relative, so they don’t need to add up to 1 (now {weightSum.toFixed(2)}). Check their accuracy on the <Link to="/admin/evaluation" className="font-semibold text-crimson underline">Evaluation</Link> page after a change.</p>
         <div className="space-y-3">
           {(Object.keys(WEIGHT_LABEL) as (keyof typeof WEIGHT_LABEL)[]).map((k) => (
-            <Slider key={k} label={WEIGHT_LABEL[k]} value={engine.weights[k]} min={0} max={1} step={0.01} onChange={(v) => setEngine({ ...engine, weights: { ...engine.weights, [k]: v } })} />
+            <Slider key={k} label={WEIGHT_LABEL[k]} value={engine.weights[k] ?? 0.1} min={0} max={1} step={0.01} onChange={(v) => setEngine({ ...engine, weights: { ...engine.weights, [k]: v } })} />
           ))}
           <Slider label="Similarity threshold (min score)" value={engine.min_score} min={0} max={1} step={0.01} onChange={(v) => setEngine({ ...engine, min_score: v })} />
           <Slider label="Penalty per extra missing" value={engine.missing_penalty} min={0} max={0.2} step={0.01} onChange={(v) => setEngine({ ...engine, missing_penalty: v })} />
           <Slider label="Missing tolerance" value={engine.missing_tolerance} min={0} max={10} step={1} format={(v) => String(v)} onChange={(v) => setEngine({ ...engine, missing_tolerance: v })} />
+          <div className="rounded-2xl border border-rose-100 bg-rose-50/60 p-3">
+            <div className="flex items-center justify-between gap-3">
+              <div><p className="font-semibold">Personalised ranking</p>
+                <p className="text-xs text-stone-600">Learn each cook's weights from the recipes they view, save and cook (pairwise learning to rank).</p></div>
+              <Toggle label="Personalised ranking" checked={engine.personalization?.enabled ?? true}
+                onChange={(v) => setEngine({ ...engine, personalization: { strength: engine.personalization?.strength ?? 0.6, enabled: v } })} />
+            </div>
+            {(engine.personalization?.enabled ?? true) && (
+              <div className="mt-3"><Slider label="Personalisation strength" value={engine.personalization?.strength ?? 0.6} min={0} max={1} step={0.05}
+                onChange={(v) => setEngine({ ...engine, personalization: { enabled: true, strength: v } })} /></div>
+            )}
+          </div>
         </div>
         <div className="mt-5 flex flex-wrap gap-2">
           <button type="button" className="btn-primary" onClick={saveEngine}><Save size={16} />Save configuration</button>
@@ -251,16 +288,22 @@ export function AdminSettingsPage() {
   };
 
   return (
-    <>
+    <div className="admin-page admin-settings">
       <PageHeader title="System" accent="Settings" icon={Settings} subtitle="Manage your account, system configuration, AI recommendation, security and more." />
-      <div role="tablist" aria-label="Settings sections" className="mb-3 flex flex-wrap gap-2">
+      <div role="tablist" aria-label="Settings sections" className="mb-[1.45rem] flex flex-wrap justify-between gap-2">
         {TABS.map(({ key, label, icon: Icon }) => (
-          <button key={key} type="button" role="tab" aria-selected={tab === key} className="pill !px-5 !py-2 text-[0.98rem]" onClick={() => setParams(key === 'general' ? {} : { tab: key })}><Icon size={22} />{label}</button>
+          <button key={key} type="button" role="tab" aria-selected={tab === key} className="pill h-[2.9rem] !px-6 !text-[1rem] xl:!px-[1.95rem]" onClick={() => setParams(key === 'general' ? {} : { tab: key })}><Icon size={22} />{label}</button>
         ))}
       </div>
       {notice && <div className="mb-4"><Notice>{notice}</Notice></div>}
       {error && <div className="mb-4"><ErrorNote>{error}</ErrorNote></div>}
       <div role="tabpanel">{content[tab]}</div>
-    </>
+      <Modal open={announcementOpen} title="User announcement" onClose={() => setAnnouncementOpen(false)}>
+        <p className="mb-2 text-sm text-stone-600">Shown as a banner at the top of every user page. Leave empty to hide it.</p>
+        <textarea className="field min-h-24" maxLength={280} value={announcement} onChange={(e) => setAnnouncement(e.target.value)} aria-label="Announcement text" />
+        <button type="button" className="btn-sm btn-red mt-2" onClick={() => { setAnnouncementOpen(false); run(() => saveSetting('general', { announcement: announcement.trim() }), announcement.trim() ? 'Announcement published.' : 'Announcement removed.'); }}>
+          <Save size={14} aria-hidden="true" />Save announcement</button>
+      </Modal>
+    </div>
   );
 }

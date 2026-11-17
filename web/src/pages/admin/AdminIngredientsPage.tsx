@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { AlertTriangle, Download, Info, Layers, LayoutGrid, Leaf, Link2, Network, Pencil, Plus, PlusCircle, Trash2, Upload, Utensils, Zap } from 'lucide-react';
+import { Link, useSearchParams } from 'react-router-dom';
+import { AlertTriangle, ArrowRight, ArrowUpDown, Download, Info, Layers, LayoutGrid, Leaf, Link2, Network, Pencil, Plus, PlusCircle, Trash2, Upload, Utensils, Zap } from 'lucide-react';
 import { BarTrend, Legend, PALETTE } from '../../components/charts';
 import { CompatibilityGraph } from '../../components/CompatibilityGraph';
 import { CategoryIcon, IngredientBadge } from '../../components/DishArt';
@@ -9,6 +9,7 @@ import {
   addCategory, deleteEdge, deleteIngredient, ingredientUsage, listCategories, listEdges, listIngredients, RELATIONS, saveEdge, saveIngredient,
   validateIngredient, type AdminIngredient, type Edge,
 } from '../../lib/adminApi';
+import { useLiveTick } from '../../lib/useLiveTick';
 import { ALLERGEN_CHIPS, allergenLabel } from '../../lib/preferences';
 
 const PAGE_SIZE = 8;
@@ -59,17 +60,21 @@ export function AdminIngredientsPage() {
   const [edgeForm, setEdgeForm] = useState({ target: 0, weight: 0.8, relation: 'complementary', evidence: '' });
   const [graphOpen, setGraphOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
+  const [allergensOpen, setAllergensOpen] = useState(false);
+  const [checked, setChecked] = useState<number[]>([]);
   const [importText, setImportText] = useState('');
   const [newCategory, setNewCategory] = useState('');
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
 
-  const load = useCallback(() => {
+  const tick = useLiveTick(['ingredients', 'ingredient_compatibility']);
+  const load = useCallback((quiet = false) => {
     Promise.all([listIngredients(), listCategories(), listEdges(), ingredientUsage()])
       .then(([i, c, e, u]) => { setItems(i); setCategories(c); setEdges(e); setUsage(new Map(u.map((r) => [r.ingredient_id, r]))); })
-      .catch((e: Error) => setError(e.message));
+      .catch((e: Error) => { if (!quiet) setError(e.message); });
   }, []);
-  useEffect(load, [load]);
+  useEffect(() => { load(); }, [load]);
+  useEffect(() => { if (tick) load(true); }, [tick, load]);
   useEffect(() => { setPage(1); }, [search, category, allergen, sort]);
   useEffect(() => {
     if (params.get('new') && categories.length) { setEditing({ id: null, draft: blank(categories[0].id) }); setParams({}); }
@@ -126,7 +131,7 @@ export function AdminIngredientsPage() {
       setImportOpen(false); setImportText('');
     }, `Imported ${rows.length} ingredient${rows.length === 1 ? '' : 's'}.`);
   };
-  const exportCsv = () => downloadFile('dishwish-ingredients.csv', toCsv((items ?? []).map((i) => ({
+  const exportCsv = () => downloadFile('dishwish-ingredients.csv', toCsv((items ?? []).filter((i) => !checked.length || checked.includes(i.id)).map((i) => ({
     name: i.name, category: catName(i.category_id), kcal: i.kcal, protein: i.protein, carbs: i.carbs, fat: i.fat, sweet: i.sweet, salty: i.salty,
     sour: i.sour, spicy: i.spicy, allergens: i.allergens.join(';'), priority: i.priority }))), 'text/csv');
 
@@ -135,10 +140,10 @@ export function AdminIngredientsPage() {
   const setD = (patch: Partial<Draft>) => setEditing((e) => (e ? { ...e, draft: { ...e.draft, ...patch } } : e));
 
   return (
-    <>
+    <div className="admin-page admin-ingredients">
       <PageHeader title="Ingredients" accent="Management" icon={Leaf} subtitle="Manage the ingredient database, categories, allergens and compatibility relationships."
         actions={<button type="button" className="btn-primary" onClick={() => setEditing({ id: null, draft: blank(categories[0]?.id ?? 0) })}><Plus size={18} />Add Ingredient</button>} />
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+      <div className="admin-stats grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
         <StatCard icon={Leaf} value={items.length} label="Total Ingredients" tone="green" />
         <StatCard icon={Layers} value={categories.length} label="Categories" tone="amber" />
         <StatCard icon={Network} value={edges.length.toLocaleString()} label="Compatibility Links" />
@@ -148,13 +153,13 @@ export function AdminIngredientsPage() {
       {notice && <div className="mt-4"><Notice>{notice}</Notice></div>}
       {error && <div className="mt-4"><ErrorNote>{error}</ErrorNote></div>}
 
-      <div className="mt-3 grid gap-3 xl:grid-cols-[14rem_minmax(0,1fr)_27rem]">
-        <Card title="Ingredient Categories">
-          <ul className="flex flex-wrap xl:flex-col">
+      <div className="admin-grid-small mt-[1rem] grid gap-[0.9rem] xl:grid-cols-[13.9rem_minmax(0,1fr)_30rem]">
+        <Card title="Ingredient Categories" className="admin-small-titles">
+          <ul className="flex flex-wrap xl:flex-col xl:[&>li]:w-full">
             <li><button type="button" className={`flex w-full items-center gap-2 rounded-xl px-2.5 py-1.5 text-left text-[0.88rem] font-semibold ${!category ? 'bg-gradient-to-r from-crimson to-[#ea2526] text-white' : ''}`} onClick={() => setCategory(0)}>
               <LayoutGrid size={20} aria-hidden="true" /><span className="flex-1">All Ingredients ({items.length})</span></button></li>
             {perCategory.map((c, i) => (
-              <li key={c.name}><button type="button" className={`flex w-full items-center gap-2 rounded-xl px-2.5 py-[0.2rem] text-left text-[0.85rem] font-medium ${category === categories[i].id ? 'bg-gradient-to-r from-crimson to-[#ea2526] text-white [&_svg]:text-white' : ''}`}
+              <li key={c.name}><button type="button" className={`flex w-full items-center gap-2 rounded-xl px-1.5 py-[0.14rem] text-left text-[0.84rem] font-medium ${category === categories[i].id ? 'bg-gradient-to-r from-crimson to-[#ea2526] text-white [&_svg]:text-white' : ''}`}
                 onClick={() => setCategory(categories[i].id)}><CategoryIcon category={c.name} size={20} /><span className="min-w-0 flex-1 truncate" title={c.name}>{c.name}</span><span>({c.count})</span></button></li>
             ))}
           </ul>
@@ -165,23 +170,27 @@ export function AdminIngredientsPage() {
         </Card>
 
         <Card className="min-w-0">
-          <div className="mb-3 flex flex-wrap gap-2">
-            <SearchBox value={search} onChange={setSearch} label="Search ingredients" placeholder="Search ingredient..." />
+          <div className="mb-2 flex flex-wrap items-center gap-2">
+            <div className="min-w-[10rem] flex-1"><SearchBox value={search} onChange={setSearch} label="Search ingredients" placeholder="Search ingredient..." /></div>
+            <select className="select" value={category} onChange={(e) => setCategory(Number(e.target.value))} aria-label="Category filter">
+              <option value={0}>Categories</option>{categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+            </select>
             <select className="select" value={allergen} onChange={(e) => setAllergen(e.target.value)} aria-label="Allergen filter">
-              <option value="">Allergens: All</option>{ALL_TAGS.map((t) => <option key={t} value={t}>{allergenLabel(t)}</option>)}
+              <option value="">Allergens</option>{ALL_TAGS.map((t) => <option key={t} value={t}>{allergenLabel(t)}</option>)}
             </select>
             <select className="select" value={sort} onChange={(e) => setSort(e.target.value as typeof sort)} aria-label="Sort">
-              <option value="name">Sort: Name</option><option value="edges">Sort: Most links</option><option value="recipes">Sort: Most recipes</option>
+              <option value="name">Name (A-Z)</option><option value="edges">Most links</option><option value="recipes">Most recipes</option>
             </select>
           </div>
           {filtered.length === 0 ? <EmptyState title="No ingredients match" /> : (
             <div className="overflow-x-auto">
               <table className="data-table min-w-[520px]">
-                <thead><tr><th>Ingredient</th><th>Category</th><th>Allergens</th><th>Compatibility</th><th>Actions</th></tr></thead>
+                <thead><tr><th className="w-7"><span className="sr-only">Select</span></th><th>Ingredient</th><th>Category</th><th>Allergens</th><th>Compatibility</th><th>Actions</th></tr></thead>
                 <tbody>
                   {filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((i) => (
                     <tr key={i.id} className={focus === i.id ? 'bg-rose-50/60' : ''}>
-                      <td><button type="button" className="flex items-center gap-2 text-left font-semibold hover:text-crimson" onClick={() => setFocus(i.id)}>
+                      <td><input type="checkbox" className="h-4 w-4 accent-crimson" aria-label={`Select ${i.name} for export`} checked={checked.includes(i.id)} onChange={() => setChecked(checked.includes(i.id) ? checked.filter((x) => x !== i.id) : [...checked, i.id])} /></td>
+                      <td><button type="button" className="flex items-center gap-2 whitespace-nowrap text-left font-semibold hover:text-crimson" onClick={() => setFocus(i.id)}>
                         <IngredientBadge name={i.name} category={catName(i.category_id)} size={32} />{short(i.name)}</button></td>
                       <td><span className="badge badge-gray max-w-40 truncate"><CategoryIcon category={catName(i.category_id)} size={14} /><span className="truncate">{catName(i.category_id)}</span></span></td>
                       <td>{i.allergens.length ? i.allergens.map((a) => <span key={a} className="badge badge-red mr-1 whitespace-nowrap"><AlertTriangle size={12} />{allergenLabel(a)}</span>) : '—'}</td>
@@ -199,10 +208,10 @@ export function AdminIngredientsPage() {
           <Pagination page={page} pageSize={PAGE_SIZE} total={filtered.length} onPage={setPage} noun="ingredients" />
         </Card>
 
-        <Card title="Ingredient Compatibility Graph" icon={Network}>
+        <Card title="Ingredient Compatibility Graph" icon={Network} action={<Link to="/admin/match" className="flex items-center gap-1 whitespace-nowrap text-sm font-semibold text-crimson">Check Match<ArrowRight size={15} aria-hidden="true" /></Link>}>
           {focusItem && <>
-            <CompatibilityGraph center={focusItem.name} edges={focusEdges} max={8} onSelect={(n) => { const t = items.find((x) => x.name === n); if (t) setFocus(t.id); }} />
-            <div className="mt-2 rounded-2xl bg-white/70 p-3">
+            <div className="mx-auto max-w-[24rem]"><CompatibilityGraph center={focusItem.name} edges={focusEdges} max={8} onSelect={(n) => { const t = items.find((x) => x.name === n); if (t) setFocus(t.id); }} /></div>
+            <div className="mt-1 rounded-2xl bg-white/70 px-3 py-2">
               <p className="flex items-center gap-1.5 font-display text-lg font-bold">Compatibility Score <span className="font-sans text-sm font-normal">({short(focusItem.name)})</span><Info size={15} className="text-crimson" aria-hidden="true" /></p>
               <div className="mt-2 flex items-center gap-3">
                 <span className="relative h-2.5 flex-1 rounded-full" style={{ background: 'linear-gradient(90deg, #ef4444, #f59e0b, #16a34a)' }}>
@@ -216,8 +225,8 @@ export function AdminIngredientsPage() {
         </Card>
       </div>
 
-      <div className="mt-3 grid gap-3 lg:grid-cols-2 xl:grid-cols-[1.15fr_1fr_1.1fr_1.1fr]">
-        <Card title="Ingredient Analytics" icon={Layers}><BarTrend data={perCategory} x="name" y="count" label="Ingredients per category" height={140} /></Card>
+      <div className="mt-[1rem] grid gap-[0.85rem] lg:grid-cols-2 xl:grid-cols-[1.15fr_0.95fr_1.04fr_1.04fr]">
+        <Card title="Ingredient Analytics" icon={Layers}><BarTrend data={perCategory} x="name" y="count" label="Ingredients per category" height={150} /></Card>
         <Card title="Top Compatible Pairs" icon={Link2}>
           <ul className="space-y-1.5 text-[0.92rem]">
             {[...edges].sort((a, b) => b.weight - a.weight).slice(0, 4).map((e) => {
@@ -234,7 +243,7 @@ export function AdminIngredientsPage() {
         </Card>
         <Card title="Allergen Overview" icon={AlertTriangle}>
           <div className="flex flex-wrap items-center gap-4">
-            <Donut size={130} label="Allergen tags" parts={tagCounts.map((t, i) => ({ value: t.n, color: PALETTE[i % PALETTE.length], label: t.tag }))}
+            <Donut size={140} thickness={6} label="Allergen tags" parts={tagCounts.map((t, i) => ({ value: t.n, color: PALETTE[i % PALETTE.length], label: t.tag }))}
               center={<span><span className="block text-xl font-bold">{tagCounts.reduce((s, t) => s + t.n, 0)}</span><span className="text-sm">Allergens</span></span>} />
             <div className="min-w-32 flex-1"><Legend items={tagCounts.slice(0, 5).map((t, i) => ({ label: allergenLabel(t.tag), value: t.n, color: PALETTE[i % PALETTE.length] }))} /></div>
           </div>
@@ -242,8 +251,8 @@ export function AdminIngredientsPage() {
         <Card title="Quick Actions" icon={Zap}>
           <div className="grid grid-cols-2 gap-2">
             <ActionTile icon={PlusCircle} label="+ Add Ingredient" onClick={() => setEditing({ id: null, draft: blank(categories[0]?.id ?? 0) })} />
-            <ActionTile icon={Upload} label="Import CSV" onClick={() => setImportOpen(true)} />
-            <ActionTile icon={Download} label="Export CSV" onClick={exportCsv} />
+            <ActionTile icon={ArrowUpDown} label="Import / Export" onClick={() => setImportOpen(true)} />
+            <ActionTile icon={AlertTriangle} label="Manage Allergens" onClick={() => setAllergensOpen(true)} />
             <ActionTile icon={Network} label="Update Graph" onClick={() => setGraphOpen(true)} />
           </div>
         </Card>
@@ -315,11 +324,19 @@ export function AdminIngredientsPage() {
           </div>
         )}
       </Modal>
-      <Modal open={importOpen} title="Import ingredients (CSV)" onClose={() => setImportOpen(false)} wide>
+      <Modal open={allergensOpen} title="Manage allergens" onClose={() => setAllergensOpen(false)}>
+        <p className="mb-2 text-sm text-stone-600">Allergen tags are set on each ingredient. Choose a tag to see its ingredients, then edit them in the table.</p>
+        <ul className="divide-y divide-stone-100 text-sm">
+          {tagCounts.map((t) => <li key={t.tag}><button type="button" className="flex w-full items-center justify-between py-2 text-left hover:text-crimson" onClick={() => { setAllergen(t.tag); setAllergensOpen(false); }}><span>{allergenLabel(t.tag)}</span><strong>{t.n}</strong></button></li>)}
+          {tagCounts.length === 0 && <li className="py-2 text-stone-500">No ingredient has an allergen tag yet.</li>}
+        </ul>
+      </Modal>
+      <Modal open={importOpen} title="Import / export ingredients" onClose={() => setImportOpen(false)} wide>
+        <button type="button" className="btn-sm btn-outline mb-3" onClick={exportCsv}><Download size={14} aria-hidden="true" />Export {checked.length ? `${checked.length} selected` : 'all'} as CSV</button>
         <p className="text-sm text-stone-600">Paste CSV with the header <code>name,category,kcal,protein,carbs,fat,sweet,salty,sour,spicy,allergens,priority</code>. Allergens are separated by “;”. Existing names are updated; nothing is written if any row is invalid. Max 500 rows.</p>
         <textarea className="field mt-3 min-h-48 font-mono text-xs" value={importText} onChange={(e) => setImportText(e.target.value)} aria-label="CSV content" />
         <button type="button" className="btn-primary mt-3" onClick={runImport} disabled={!importText.trim()}><Upload size={16} />Validate and import</button>
       </Modal>
-    </>
+    </div>
   );
 }

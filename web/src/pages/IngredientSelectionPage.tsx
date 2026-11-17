@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, Check, CircleCheck, Flame, LayoutGrid, Leaf, List, Network, Plus, ShieldCheck, ShoppingBasket, Star, X } from 'lucide-react';
+import { AlertTriangle, ArrowRight, Candy, Check, ChevronDown, Citrus, CircleCheck, Droplet, Flame, Gauge, LayoutGrid, Leaf, List, Network, Plus, ShieldCheck, ShoppingBasket, SlidersHorizontal, Sparkles, Star, X, type LucideIcon } from 'lucide-react';
 import { useAuth } from '../auth/AuthProvider';
 import { CategoryIcon, IngredientBadge, IngredientHero } from '../components/DishArt';
+import { ConflictAlert } from '../components/ConflictAlert';
 import { Card, ChefHatMark, ErrorNote, PageHeader, SearchBox, Spinner } from '../components/ui';
 import { ALL_DIETS, checkCompatibility, compatibilityVerdict, type CompatibilityReport } from '../lib/curatedApi';
-import { blockReason, effectiveAllergenTags } from '../lib/preferences';
-import { MAX_SELECTED, presetActive, TASTE_PRESETS, togglePreset, useSeedTastes, useSelection } from '../lib/selection';
+import { ingredientConflicts, TASTE_LABEL, type Conflict } from '../lib/conflicts';
+import { allergenLabel, blockReason, effectiveAllergenTags, LEVELS, type Level, type TasteKey } from '../lib/preferences';
+import { MAX_SELECTED, useSeedTastes, useSelection } from '../lib/selection';
 import { useKitchenData } from '../lib/useKitchenData';
 
 // The reference design's first screen, in its order; everything else follows alphabetically.
@@ -43,11 +45,42 @@ export function StepBar({ step }: { step: 1 | 2 | 3 | 4 }) {
   );
 }
 
+const TASTE_ICON: Record<TasteKey, { icon: LucideIcon; cls: string }> = {
+  sweet: { icon: Candy, cls: 'text-pink-500' }, sour: { icon: Citrus, cls: 'text-lime-600' }, salty: { icon: Droplet, cls: 'text-sky-500' }, spicy: { icon: Flame, cls: 'text-crimson' },
+};
+const TASTE_ORDER: TasteKey[] = ['sweet', 'sour', 'salty', 'spicy'];
+const KCAL_CAPS = [400, 500, 600, 800];
+
+// One taste in the Quick Preferences bar: clicking it shows Low / Medium / High.
+function TasteChip({ taste, level, onSet }: { taste: TasteKey; level: Level | null; onSet: (l: Level | null) => void }) {
+  const [open, setOpen] = useState(false);
+  const { icon: Icon, cls } = TASTE_ICON[taste];
+  return (
+    <div className="relative" onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setOpen(false); }}>
+      <button type="button" aria-expanded={open} aria-haspopup="listbox" onClick={() => setOpen((o) => !o)}
+        className={`flex h-[2.6rem] items-center gap-2 rounded-full border px-3.5 text-[0.95rem] font-medium tracking-tight shadow-sm ${level ? 'border-rose-200 bg-rose-50' : 'border-white bg-white/80'}`}>
+        <Icon size={20} className={cls} aria-hidden="true" />{TASTE_LABEL[taste]}: {level ? level[0].toUpperCase() + level.slice(1) : 'Any'}<ChevronDown size={16} aria-hidden="true" />
+      </button>
+      {open && (
+        <ul role="listbox" aria-label={`${TASTE_LABEL[taste]} level`} className="absolute left-0 top-full z-30 mt-1 w-36 rounded-2xl border border-rose-100 bg-white p-1 shadow-xl">
+          {[null, ...LEVELS].map((l) => (
+            <li key={l ?? 'any'} role="option" aria-selected={level === l}>
+              <button type="button" className={`w-full rounded-xl px-3 py-1.5 text-left text-[0.92rem] capitalize hover:bg-rose-50 ${level === l ? 'font-semibold text-crimson' : ''}`}
+                onClick={() => { onSet(l); setOpen(false); }}>{l ?? 'Any'}</button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 export function IngredientSelectionPage() {
   const { session } = useAuth();
   const navigate = useNavigate();
   const { catalog, prefs, error } = useKitchenData(session?.user.id);
-  const { selection, add, remove, clear, setTastes, toggleDiet } = useSelection();
+  const { selection, add, remove, clear, setTastes, setTaste, toggleDiet, setMaxKcal } = useSelection();
+  const [alert, setAlert] = useState<{ name: string; conflicts: Conflict[] } | null>(null);
   useSeedTastes(prefs?.tastes);
   const [category, setCategory] = useState('All');
   const [query, setQuery] = useState('');
@@ -83,11 +116,25 @@ export function IngredientSelectionPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, prefs]);
 
+  const conflictsOf = (name: string) => {
+    const item = (catalog ?? []).find((i) => i.name === name);
+    return item ? ingredientConflicts(item, { tastes: selection.tastes, prefs, diets: selection.diets, maxKcal: selection.maxKcal ?? null }) : [];
+  };
   const toggle = (name: string, reason: string | null) => {
     if (selection.ingredients.includes(name)) { remove(name); setMessage(''); return; }
-    if (reason) { setMessage(`${name} is blocked: ${reason}.`); return; }
-    if (!add(name)) setMessage(selection.ingredients.length >= MAX_SELECTED ? `You can select up to ${MAX_SELECTED} ingredients.` : `${name} is already selected.`);
-    else setMessage('');
+    const found = conflictsOf(name);
+    if (reason) { setMessage(`${name} is blocked: ${reason}.`); setAlert({ name, conflicts: found }); return; }
+    if (!add(name)) { setMessage(selection.ingredients.length >= MAX_SELECTED ? `You can select up to ${MAX_SELECTED} ingredients.` : `${name} is already selected.`); return; }
+    setMessage('');
+    if (found.length) setAlert({ name, conflicts: found });
+  };
+  // Every warning for what is chosen now, so the summary and the cards stay current when preferences change.
+  const selectedConflicts = selection.ingredients.flatMap((n) => conflictsOf(n).filter((c) => c.kind !== 'allergy').map((c) => ({ ...c, name: n })));
+  const changePreferences = () => {
+    if (alert && !alert.conflicts.some((c) => c.kind === 'allergy')) remove(alert.name);
+    if (alert?.conflicts.some((c) => c.kind === 'allergy')) navigate('/settings?tab=diet');
+    setAlert(null);
+    document.getElementById('quick-preferences')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   };
 
   const verdict = compatibilityVerdict(report?.average ?? null);
@@ -100,6 +147,22 @@ export function IngredientSelectionPage() {
       <PageHeader title="Select Your" accent="Ingredients"
         subtitle="Choose at least 2 ingredients. We’ll check compatibility, apply your preferences, and recommend the best meals." />
       <StepBar step={1} />
+      {alert && <ConflictAlert conflicts={alert.conflicts} onChange={changePreferences} onProceed={() => setAlert(null)} onClose={() => setAlert(null)} />}
+      <section id="quick-preferences" aria-label="Quick preferences" className="card relative z-30 mb-4 flex flex-wrap items-center gap-2 px-4 py-2.5">
+        <p className="mr-1 flex items-center gap-2 text-[1rem] font-semibold"><SlidersHorizontal size={20} className="text-crimson" aria-hidden="true" />Quick Preferences:</p>
+        {TASTE_ORDER.map((t) => <TasteChip key={t} taste={t} level={selection.tastes[t]} onSet={(l) => setTaste(t, l)} />)}
+        <span className="mx-1 hidden h-7 w-px bg-stone-200 lg:block" aria-hidden="true" />
+        <Link to="/settings?tab=diet" className="flex h-[2.6rem] items-center gap-2 rounded-full border border-white bg-white/80 px-3.5 text-[0.95rem] font-medium shadow-sm">
+          <Leaf size={20} className="text-green-600" aria-hidden="true" />Allergens{prefs && (prefs.allergens.length + prefs.customAllergens.length) > 0 ? ` (${prefs.allergens.length + prefs.customAllergens.length})` : ''}</Link>
+        <label className="flex h-[2.6rem] items-center gap-2 rounded-full border border-white bg-white/80 px-3.5 text-[0.95rem] font-medium shadow-sm">
+          <Gauge size={20} className="text-stone-700" aria-hidden="true" />
+          <select className="bg-transparent outline-none" aria-label="Calories per serving" value={selection.maxKcal ?? ''} onChange={(e) => setMaxKcal(e.target.value ? Number(e.target.value) : null)}>
+            <option value="">Calories: Any</option>{KCAL_CAPS.map((k) => <option key={k} value={k}>Calories: ≤ {k} kcal</option>)}
+          </select>
+        </label>
+        <a href="#diet" className="flex h-[2.6rem] items-center gap-2 rounded-full border border-white bg-white/80 px-3.5 text-[0.95rem] font-medium shadow-sm">
+          <Leaf size={20} className="text-green-600" aria-hidden="true" />Diet: {selection.diets.length ? selection.diets.map((d) => ALL_DIETS.find((x) => x.key === d)?.label).join(', ') : 'Any'}</a>
+      </section>
       {error && <ErrorNote>{error}</ErrorNote>}
       {catalog === null ? <Spinner label="Loading ingredients" /> : (
         <div className="grid gap-4 xl:grid-cols-[15.3rem_minmax(0,1fr)_22.800rem] xl:gap-x-[1rem]">
@@ -131,6 +194,7 @@ export function IngredientSelectionPage() {
               {filtered.slice(0, limit).map((item) => {
                 const picked = selection.ingredients.includes(item.name);
                 const reason = prefs ? blockReason(item.name, item.allergens, prefs) : null;
+                const warned = picked && selectedConflicts.some((c) => c.name === item.name);
                 return (
                   <li key={item.id}>
                     <button type="button" onClick={() => toggle(item.name, reason)} aria-pressed={picked}
@@ -143,6 +207,7 @@ export function IngredientSelectionPage() {
                           <span className="relative block aspect-[4/3] w-full"><IngredientHero name={item.name} category={item.category} /></span>
                           <span className="mt-1 flex items-center justify-between gap-1">
                             <span className="min-w-0 text-[0.98rem] font-semibold leading-tight tracking-tight">{item.name}
+                              {warned && <AlertTriangle size={16} className="ml-1 inline fill-amber-400 text-white" aria-label="Goes against your preferences" />}
                               {reason && <span className="block text-[11px] font-semibold text-rose-700">{reason}</span>}</span>
                             {!picked && <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full border border-rose-200 bg-white text-crimson" aria-hidden="true"><Plus size={15} /></span>}
                           </span>
@@ -201,15 +266,20 @@ export function IngredientSelectionPage() {
                 ))}
               </ul>
             </Card>
-            <Card title="Taste Preference" icon={Flame} iconClass="fill-ember text-crimson" id="preferences">
-              <div className="flex justify-between gap-1">
-                {TASTE_PRESETS.map((p) => (
-                  <button key={p.label} type="button" className="pill grow justify-center !px-2 !text-[0.95rem]" aria-pressed={presetActive(selection.tastes, p)}
-                    onClick={() => setTastes(togglePreset(selection.tastes, p))}>{p.label}</button>
-                ))}
-              </div>
+            <Card title="Active Preferences" icon={Flame} iconClass="fill-ember text-crimson" id="preferences">
+              <ul className="divide-y divide-stone-100 text-[0.95rem]">
+                {TASTE_ORDER.filter((t) => selection.tastes[t]).map((t) => { const { icon: Icon, cls } = TASTE_ICON[t]; return (
+                  <li key={t} className="flex items-center gap-2 py-1"><Icon size={18} className={cls} aria-hidden="true" /><span>{TASTE_LABEL[t]}: <span className="capitalize">{selection.tastes[t]}</span></span>
+                    <button type="button" className="ml-auto text-stone-400 hover:text-crimson" aria-label={`Clear ${TASTE_LABEL[t]}`} onClick={() => setTaste(t, null)}><X size={15} /></button></li>
+                ); })}
+                {selection.diets.map((d) => <li key={d} className="flex items-center gap-2 py-1"><Leaf size={18} className="text-green-600" aria-hidden="true" />Diet: {ALL_DIETS.find((x) => x.key === d)?.label}</li>)}
+                {selection.maxKcal && <li className="flex items-center gap-2 py-1"><Gauge size={18} className="text-orange-500" aria-hidden="true" />Calories: ≤ {selection.maxKcal} kcal</li>}
+                {prefs && effectiveAllergenTags(prefs).length > 0 && <li className="flex items-center gap-2 py-1"><ShieldCheck size={18} className="text-crimson" aria-hidden="true" />Avoiding {effectiveAllergenTags(prefs).map(allergenLabel).join(', ')}</li>}
+              </ul>
+              {!TASTE_ORDER.some((t) => selection.tastes[t]) && !selection.diets.length && !selection.maxKcal && <p className="text-[0.9rem] text-stone-500">No preferences yet. Pick them in Quick Preferences above.</p>}
+              <button type="button" className="mt-1 text-[0.85rem] font-semibold text-crimson underline" onClick={() => setTastes({ sweet: null, salty: null, sour: null, spicy: null })}>Clear tastes</button>
             </Card>
-            <Card title="Diet & Allergies (Optional)" icon={Leaf} iconClass="fill-green-600 text-green-700">
+            <Card title="Diet & Allergies (Optional)" icon={Leaf} iconClass="fill-green-600 text-green-700" id="diet">
               <div className="grid grid-cols-3 gap-x-2 gap-y-3 text-[0.92rem] tracking-tight">
                 <label className="flex items-center gap-2 whitespace-nowrap" title="Your allergies are managed in Settings and always enforced">
                   <input type="checkbox" className="h-[1.15rem] w-[1.15rem] accent-crimson" checked={noAllergies} onChange={() => navigate('/settings?tab=diet')} />No Allergies
@@ -227,6 +297,12 @@ export function IngredientSelectionPage() {
                 <p className="font-display text-xl font-bold">Compatibility Check</p>
                 <p>{verdict.label}{report?.average !== null && report?.average !== undefined && <> (average {report.average.toFixed(2)})</>}</p>
                 {reportError && <p className="mt-1 text-rose-700">{reportError}</p>}
+                {selectedConflicts.length > 0 && (
+                  <div className="mt-2 rounded-xl bg-rose-50 p-2 text-[0.88rem]">
+                    <p className="flex items-center gap-1.5 font-semibold text-crimson"><AlertTriangle size={16} aria-hidden="true" />{selectedConflicts.length} conflict{selectedConflicts.length === 1 ? '' : 's'} detected</p>
+                    <ul className="mt-0.5 space-y-0.5">{selectedConflicts.map((c) => <li key={c.message}>{c.message}</li>)}</ul>
+                  </div>
+                )}
                 {report && report.pairs.length > 0 && (
                   <details className="mt-2">
                     <summary className="cursor-pointer font-semibold">Pair details</summary>
@@ -241,6 +317,8 @@ export function IngredientSelectionPage() {
             <button type="button" className="btn-primary h-[3.6rem] lg:text-[1.2rem]" disabled={!canContinue} onClick={() => navigate('/recommendations')}>
               Continue to Recommendations<ArrowRight size={18} aria-hidden="true" />
             </button>
+            <button type="button" className="btn-ghost h-[3rem] justify-center" disabled={selection.ingredients.length < 1} onClick={() => navigate('/generate')}>
+              <Sparkles size={18} className="text-crimson" aria-hidden="true" />Generate a Recipe</button>
             {!canContinue && <p className="-mt-2 text-center text-xs text-stone-500">Select at least 2 different ingredients to continue.</p>}
           </div>
         </div>

@@ -10,6 +10,10 @@ export interface Ingredient {
   carbs: number;
   fat: number;
   allergens: string[];
+  sweet?: number;
+  salty?: number;
+  sour?: number;
+  spicy?: number;
 }
 
 export interface PantryItem {
@@ -38,7 +42,7 @@ export function loadCatalog(): Promise<Ingredient[]> {
   catalogCache ??= (async () => {
     const { data, error } = await supabase
       .from('ingredients')
-      .select('id, name, kcal, protein, carbs, fat, allergens, categories(name)')
+      .select('id, name, kcal, protein, carbs, fat, sweet, salty, sour, spicy, allergens, categories(name)')
       .order('name');
     if (error) throw new Error(error.message);
     return (data ?? []).map((row) => {
@@ -47,6 +51,7 @@ export function loadCatalog(): Promise<Ingredient[]> {
         id: r.id, name: r.name, category: r.categories?.name ?? 'Other',
         kcal: Number(r.kcal), protein: Number(r.protein), carbs: Number(r.carbs), fat: Number(r.fat),
         allergens: r.allergens ?? [],
+        sweet: Number(r.sweet ?? 0), salty: Number(r.salty ?? 0), sour: Number(r.sour ?? 0), spicy: Number(r.spicy ?? 0),
       };
     });
   })().catch((err) => { catalogCache = null; throw err; });

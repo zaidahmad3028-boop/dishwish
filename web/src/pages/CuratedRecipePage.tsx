@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
+import { useLiveTick } from '../lib/useLiveTick';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
-import { AlertTriangle, Apple, ArrowLeft, ArrowRight, Beef, Bookmark, BookmarkCheck, Check, CheckCircle2, ChefHat, Clock, Droplet, Flame, Leaf, Network,
-  Share2, ShoppingBasket, Star, Users, Wheat } from 'lucide-react';
+import { AlertTriangle, Apple, ArrowLeft, ArrowRight, Beef, Bookmark, BookmarkCheck, Check, CheckCircle2, ChefHat, Clock, Droplet, ArrowLeftRight, Flame, Leaf, Network,
+  Copy, Download, Share2, ShoppingBasket, ShoppingCart, Star, Users, Wheat } from 'lucide-react';
+import type { ShoppingLine } from '../lib/recipes';
 import { useAuth } from '../auth/AuthProvider';
 import { CompatibilityGraph } from '../components/CompatibilityGraph';
 import { IngredientBadge, RecipeCardImage } from '../components/DishArt';
@@ -15,22 +17,36 @@ import { useKitchenData } from '../lib/useKitchenData';
 import { tasteWord } from './RecommendationsPage';
 
 const TASTE_ORDER: TasteKey[] = ['spicy', 'salty', 'sour', 'sweet'];
+type TasteAxis = TasteKey | 'savory';
+type FullTaste = Record<TasteKey, number> & { savory?: number };
+// Savory is estimated by the engine from the dish's ingredients, so it only shows when the API sends it.
+const axesOf = (taste: FullTaste): TasteAxis[] => (taste.savory === undefined ? TASTE_ORDER : [...TASTE_ORDER, 'savory']);
+const valueOf = (taste: FullTaste, t: TasteAxis) => (t === 'savory' ? taste.savory ?? 0 : taste[t]);
 
-// Radar of the four editorial taste scores (0–10), as in the reference's Taste Analysis card.
-function TasteRadar({ taste }: { taste: Record<TasteKey, number> }) {
+// What to buy for this dish: main ingredients the cook is short of, in grams.
+export function recipeShopping(ingredients: { name: string; grams: number; staple: boolean; have: boolean }[], pantry: ReadonlyMap<string, number>): ShoppingLine[] {
+  return ingredients.filter((i) => !i.staple && !i.have).map((i) => {
+    const haveG = pantry.get(i.name) ?? 0;
+    return { name: i.name, needG: i.grams, haveG, buyG: Math.max(0, Math.ceil(i.grams - haveG)), costPkr: null };
+  }).filter((l) => l.buyG > 0);
+}
+
+// Radar of the editorial taste scores (0–10), as in the reference's Taste Analysis card.
+function TasteRadar({ taste }: { taste: FullTaste }) {
+  const AXES = axesOf(taste);
   const c = 75, R = 52;
   const point = (i: number, v: number) => {
-    const a = (i / TASTE_ORDER.length) * Math.PI * 2 - Math.PI / 2;
+    const a = (i / AXES.length) * Math.PI * 2 - Math.PI / 2;
     return [c + (R * v) * Math.cos(a), c + (R * v) * Math.sin(a)] as const;
   };
-  const ring = (v: number) => TASTE_ORDER.map((_, i) => point(i, v).join(',')).join(' ');
+  const ring = (v: number) => AXES.map((_, i) => point(i, v).join(',')).join(' ');
   return (
-    <svg viewBox="-16 0 182 150" className="w-44 shrink-0" role="img" aria-label={`Taste: ${TASTE_ORDER.map((t) => `${t} ${taste[t]} of 10`).join(', ')}`}>
+    <svg viewBox="-16 0 182 150" className="w-44 shrink-0" role="img" aria-label={`Taste: ${AXES.map((t) => `${t} ${valueOf(taste, t)} of 10`).join(', ')}`}>
       {[0.33, 0.66, 1].map((v) => <polygon key={v} points={ring(v)} fill="none" stroke="#fecdd3" strokeWidth="1" />)}
-      {TASTE_ORDER.map((t, i) => { const [x, y] = point(i, 1); return <line key={t} x1={c} y1={c} x2={x} y2={y} stroke="#fecdd3" strokeWidth="1" />; })}
-      <polygon points={TASTE_ORDER.map((t, i) => point(i, taste[t] / 10).join(',')).join(' ')} fill="#fb7185" fillOpacity="0.45" stroke="#dc1029" strokeWidth="1.5" />
-      {TASTE_ORDER.map((t, i) => { const [x, y] = point(i, taste[t] / 10); return <circle key={t} cx={x} cy={y} r="2.5" fill="#dc1029" />; })}
-      {TASTE_ORDER.map((t, i) => { const [x, y] = point(i, 1.26); return <text key={t} x={x} y={y + 3} textAnchor="middle" fontSize="9.5" fontWeight="600" fill="#292524" className="capitalize">{t}</text>; })}
+      {AXES.map((t, i) => { const [x, y] = point(i, 1); return <line key={t} x1={c} y1={c} x2={x} y2={y} stroke="#fecdd3" strokeWidth="1" />; })}
+      <polygon points={AXES.map((t, i) => point(i, valueOf(taste, t) / 10).join(',')).join(' ')} fill="#fb7185" fillOpacity="0.45" stroke="#dc1029" strokeWidth="1.5" />
+      {AXES.map((t, i) => { const [x, y] = point(i, valueOf(taste, t) / 10); return <circle key={t} cx={x} cy={y} r="2.5" fill="#dc1029" />; })}
+      {AXES.map((t, i) => { const [x, y] = point(i, 1.26); return <text key={t} x={x} y={y + 3} textAnchor="middle" fontSize="9.5" fontWeight="600" fill="#292524" className="capitalize">{t}</text>; })}
     </svg>
   );
 }
@@ -43,7 +59,8 @@ export function CuratedRecipePage() {
   const location = useLocation();
   const match = (location.state as { match?: CuratedMatch } | null)?.match;
   const { selection } = useSelection();
-  const { prefs, pantryByName } = useKitchenData(userId);
+  const { prefs, pantryByName, addBought } = useKitchenData(userId);
+  const [listNote, setListNote] = useState('');
   const [recipe, setRecipe] = useState<CuratedDetail | null | undefined>(undefined);
   const [error, setError] = useState('');
   const [done, setDone] = useState<boolean[]>([]);
@@ -53,18 +70,20 @@ export function CuratedRecipePage() {
   const [copied, setCopied] = useState(false);
   const cookedLogged = useRef(false);
 
+  const tick = useLiveTick(['curated_recipes', 'ingredients']);
   const haveKey = [...selection.ingredients, ...pantryByName.keys()].join('|');
+  const allergenKey = prefs ? effectiveAllergenTags(prefs).join('|') : '';
   useEffect(() => {
     let live = true;
-    fetchCuratedDetail(slug, haveKey ? haveKey.split('|') : [])
+    fetchCuratedDetail(slug, haveKey ? haveKey.split('|') : [], allergenKey ? allergenKey.split('|') : [])
       .then((r) => {
         if (!live) return;
         setRecipe(r);
         setDone((d) => (d.length === r.steps.length ? d : r.steps.map(() => false)));
       })
-      .catch((e: Error) => { if (live) { setError(e.message); setRecipe(null); } });
+      .catch((e: Error) => { if (live && !tick) { setError(e.message); setRecipe(null); } });
     return () => { live = false; };
-  }, [slug, haveKey]);
+  }, [slug, haveKey, allergenKey, tick]);
 
   useEffect(() => {
     if (!recipe) return;
@@ -113,6 +132,14 @@ export function CuratedRecipePage() {
     try { await navigator.clipboard.writeText(`${window.location.origin}/recipe/${recipe.slug}`); setCopied(true); } catch { setCopied(false); }
   };
 
+  const shopping = recipeShopping(recipe.ingredients, pantryByName);
+  const copyList = async () => {
+    const text = [`Shopping list: ${recipe.name}`, ...shopping.map((l) => `- ${l.name}: ${l.buyG} g`)].join('\n');
+    try { await navigator.clipboard.writeText(text); setListNote('List copied.'); } catch { setListNote('Copying is blocked in this browser.'); }
+  };
+  const bought = async () => {
+    try { await addBought(shopping); setListNote('Added to your pantry.'); } catch (e) { setListNote((e as Error).message); }
+  };
   const blocked = prefs ? effectiveAllergenTags(prefs) : [];
   const conflicts = recipe.allergens.filter((a) => blocked.includes(a as never));
   const missing = recipe.ingredients.filter((i) => !i.have && !i.staple);
@@ -122,8 +149,8 @@ export function CuratedRecipePage() {
   ];
 
   return (
-    <article aria-label={recipe.name} className="tight-page">
-      <div className="mb-2 grid items-center gap-3 lg:grid-cols-[1fr_auto_1fr] lg:pr-32">
+    <article aria-label={recipe.name} className="tight-page print-area">
+      <div className="print-hide mb-2 grid items-center gap-3 lg:grid-cols-[1fr_auto_1fr] lg:pr-32">
         <button type="button" className="btn-ghost justify-self-start !py-1.5" onClick={() => (window.history.length > 1 ? navigate(-1) : navigate('/recommendations'))}>
           <ArrowLeft size={18} className="text-crimson" />Back
         </button>
@@ -158,13 +185,14 @@ export function CuratedRecipePage() {
                   <p className="text-[0.88rem]"><strong>Match Score.</strong> Highly compatible with your selected ingredients and taste.</p>
                 </div>
               )}
-              <div className="mt-2.5 flex flex-wrap gap-2">
+              <div className="print-hide mt-2.5 flex flex-wrap gap-2">
                 <button type="button" className="btn-sm btn-red" onClick={save} disabled={saveState !== 'idle'}>
                   {saveState === 'saved' || saveState === 'exists' ? <BookmarkCheck size={15} /> : <Bookmark size={15} />}
                   {saveState === 'saved' ? 'Saved to My Recipes' : saveState === 'exists' ? 'Already in My Recipes' : 'Save to My Recipes'}
                 </button>
                 <button type="button" className="btn-sm btn-outline" onClick={() => setRateOpen(true)}><Star size={15} />Rate this recipe</button>
                 <button type="button" className="btn-sm btn-outline" onClick={copyLink}><Share2 size={15} />{copied ? 'Link copied' : 'Share'}</button>
+                <button type="button" className="btn-sm btn-outline" onClick={() => window.print()}><Download size={15} />Download PDF</button>
               </div>
             </div>
           </section>
@@ -177,11 +205,29 @@ export function CuratedRecipePage() {
                     <span aria-label={i.have ? 'You have this' : i.staple ? 'Pantry staple' : 'Missing'} role="img"
                       className={`grid h-5 w-5 shrink-0 place-items-center rounded ${i.have ? 'bg-green-600 text-white' : 'border border-stone-300 bg-white'}`}>{i.have && <Check size={14} strokeWidth={3} />}</span>
                     <IngredientBadge name={i.name} category={i.category} size={32} />
-                    <span className="min-w-0 flex-1 leading-tight">{i.name.replace(/\s*\(.*\)$/, '')} <span className="text-stone-600">({i.display})</span></span>
+                    <span className="min-w-0 flex-1 leading-tight">{i.name.replace(/\s*\(.*\)$/, '')} <span className="text-stone-600">({i.display})</span>
+                      {i.substitutes && i.substitutes.length > 0 && (
+                        <span className="mt-0.5 block text-[0.8rem] text-stone-600" title={i.substitutes[0].reason}>
+                          <ArrowLeftRight size={12} className="mr-1 inline text-crimson" aria-hidden="true" />Swap: {i.substitutes.slice(0, 2).map((x, n) => (
+                            <span key={x.name}>{n > 0 && ' or '}<b className={x.have ? 'text-green-700' : 'text-crimson-deep'}>{x.name.replace(/\s*\(.*\)$/, '')}</b>{x.have && ' (you have it)'}</span>))}
+                        </span>
+                      )}
+                    </span>
                   </li>
                 ))}
               </ul>
               {missing.length > 0 && <p className="mt-2 text-[0.86rem]"><strong>Missing:</strong> {missing.map((m) => m.name.replace(/\s*\(.*\)$/, '')).join(', ')}</p>}
+              {shopping.length > 0 && (
+                <section aria-label="Shopping list" className="mt-2 rounded-2xl bg-white/75 p-2.5 text-[0.88rem] shadow-sm">
+                  <p className="flex items-center gap-1.5 font-semibold"><ShoppingCart size={16} className="text-crimson" aria-hidden="true" />Shopping List</p>
+                  <ul className="mt-1 space-y-0.5">{shopping.map((l) => <li key={l.name} className="flex justify-between gap-2"><span>{l.name.replace(/\s*\(.*\)$/, '')}</span><span className="font-medium">{l.buyG} g</span></li>)}</ul>
+                  <div className="print-hide mt-2 flex flex-wrap gap-2">
+                    <button type="button" className="btn-sm btn-outline" onClick={copyList}><Copy size={14} aria-hidden="true" />Copy list</button>
+                    {userId && <button type="button" className="btn-sm btn-red" onClick={bought}><Check size={14} aria-hidden="true" />I bought these</button>}
+                  </div>
+                </section>
+              )}
+              {listNote && <p role="status" className="print-hide mt-1 text-[0.8rem] text-green-700">{listNote}</p>}
             </Card>
 
             <Card title="Cooking Steps" icon={ChefHat} action={<span className="badge bg-white !text-[0.84rem] shadow-sm"><Clock size={15} className="text-crimson" />Total Time: {recipe.minutes} min</span>}>
@@ -214,9 +260,9 @@ export function CuratedRecipePage() {
             <div className="flex items-center gap-3">
               <TasteRadar taste={recipe.taste} />
               <ul className="min-w-0 flex-1 space-y-2 text-[0.9rem]">
-                {TASTE_ORDER.map((t) => (
-                  <li key={t} className="grid grid-cols-[3.2rem_1fr_2.4rem] items-center gap-2 capitalize"><span>{t}</span>
-                    <Bar value={recipe.taste[t]} max={10} label={`${t} level`} /><span className="text-right font-semibold">{recipe.taste[t] * 10}%</span></li>
+                {axesOf(recipe.taste).map((t) => (
+                  <li key={t} className="grid grid-cols-[3.4rem_1fr_2.4rem] items-center gap-2 capitalize" title={t === 'savory' ? 'Estimated from the ingredients' : undefined}><span>{t}</span>
+                    <Bar value={valueOf(recipe.taste, t)} max={10} label={`${t} level`} /><span className="text-right font-semibold">{valueOf(recipe.taste, t) * 10}%</span></li>
                 ))}
               </ul>
             </div>

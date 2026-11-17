@@ -37,7 +37,22 @@ function emptyQuery(): Record<string, unknown> {
   return builder;
 }
 
+// Realtime stand-in: emitRealtime('feedback') plays a change to whoever is subscribed.
+const realtime = new Set<{ table: string; run: () => void }>();
+export function emitRealtime(table: string) { [...realtime].filter((r) => r.table === table).forEach((r) => r.run()); }
+function fakeChannel() {
+  const mine: { table: string; run: () => void }[] = [];
+  const channel = {
+    mine,
+    on: (_type: string, filter: { table: string }, run: () => void) => { mine.push({ table: filter.table, run }); realtime.add(mine[mine.length - 1]); return channel; },
+    subscribe: () => channel,
+  };
+  return channel;
+}
+
 export const supabase = {
+  channel: vi.fn(() => fakeChannel()),
+  removeChannel: vi.fn(async (channel: { mine: { table: string; run: () => void }[] }) => { channel.mine.forEach((r) => realtime.delete(r)); return 'ok'; }),
   from: vi.fn(() => emptyQuery()),
   rpc: vi.fn(async (fn: string): Promise<{ data: unknown; error: { message: string; code?: string } | null }> =>
     (fn === 'my_account' ? { data: { role: accountRole, status: 'active' }, error: null } : { data: [], error: null })),

@@ -19,7 +19,7 @@ vi.mock('../lib/pantryApi', async (orig) => ({
 const MATCH: curatedApi.CuratedMatch = {
   slug: 'chicken-karahi', name: 'Chicken Karahi', category: 'Main Course', cuisine: 'Pakistani', minutes: 40, servings: 4,
   description: 'Wok-cooked chicken.', image_url: null, source: 'curated', match_percent: 62, score: 0.62,
-  components: { coverage: 0.33, compatibility: 0.9, taste: 1, cooking: null }, weights_used: { coverage: 0.47, compatibility: 0.32, taste: 0.21 },
+  components: { coverage: 0.33, similarity: 0.8, compatibility: 0.9, taste: 1, cooking: null }, weights_used: { coverage: 0.47, compatibility: 0.32, taste: 0.21 },
   penalty: 0.03, used: ['Chicken Breast', 'Tomato'], missing: ['Ginger', 'Garlic'], taste: { sweet: 1, salty: 6, sour: 4, spicy: 8 }, diets: [],
   nutrition_per_serving: { kcal: 420, protein: 38, carbs: 8, fat: 22 }, explanation: ['Uses Chicken Breast, Tomato from your selection.', 'Missing 2: Ginger, Garlic.'],
 };
@@ -51,14 +51,16 @@ describe('core journey', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Add Chicken Breast' }));
     await userEvent.click(screen.getByRole('button', { name: 'Add Tomato' }));
     expect(await screen.findByText(/pair well/i)).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Spicy' }));
+    // Tastes are set in the Quick Preferences bar: click a taste, then pick its level.
+    await userEvent.click(screen.getByRole('button', { name: /Spicy: Any/ }));
+    await userEvent.click(within(screen.getByRole('listbox', { name: 'Spicy level' })).getByRole('button', { name: 'high' }));
     await userEvent.click(continueBtn);
 
     expect(await screen.findByRole('heading', { name: 'Chicken Karahi' })).toBeInTheDocument();
     expect(screen.getAllByText('62% Match').length).toBeGreaterThan(0);
     expect(curatedApi.fetchCuratedRecommendations).toHaveBeenCalledWith('token',
       expect.objectContaining({ ingredients: ['Chicken Breast', 'Tomato'], tastes: expect.objectContaining({ spicy: 'high' }) }),
-      expect.objectContaining({ allergens: ['milk'] }), []);
+      expect.objectContaining({ allergens: ['milk'] }), [], { savory: false, history: [] });
     expect(curatedApi.recordEvent).toHaveBeenCalledWith('generated', expect.objectContaining({ slug: 'chicken-karahi' }), ['Chicken Breast', 'Tomato']);
     await userEvent.click(screen.getByRole('button', { name: /add to my recipes/i }));
     expect(curatedApi.saveCurated).toHaveBeenCalledWith('user-1', expect.objectContaining({ slug: 'chicken-karahi' }));

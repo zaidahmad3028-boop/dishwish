@@ -56,8 +56,11 @@ describe('saved recipes', () => {
     setSession(fakeSession('Ayesha'));
     renderAt('/profile');
     expect(await screen.findByRole('heading', { name: 'Ayesha' })).toBeInTheDocument();
-    expect(screen.getByText(/Member since 01 Jan 2026/)).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /edit details/i })).toHaveAttribute('href', '/onboarding');
+    expect(screen.getByText(/Member Since/)).toHaveTextContent('01 Jan 2026');
+    expect(screen.getByRole('button', { name: /edit details/i })).toBeInTheDocument();
+    // Details the cook hasn't given are invited, never invented.
+    expect(screen.getAllByRole('button', { name: 'Add information' }).length).toBeGreaterThan(0);
+    for (const name of ['Overview', 'Activity', 'Meal Preferences', 'Achievements']) expect(screen.getByRole('tab', { name })).toBeInTheDocument();
     const dishes = screen.getByRole('region', { name: 'Recent Recipes' });
     expect(await within(dishes).findByRole('link', { name: /Chicken Breast Karahi/ })).toHaveAttribute('href', '/recipes/r1');
   });

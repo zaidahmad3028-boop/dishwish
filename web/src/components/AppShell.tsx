@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { BarChart3, Bell, BookOpen, ChefHat, ChevronDown, Home, Leaf, LogOut, Megaphone, Menu, MessageSquare, Refrigerator, Settings,
-  Sparkles, UserRound, Users, X, type LucideIcon } from 'lucide-react';
+  ClipboardList, FlaskConical, Sparkles, UserRound, Users, WandSparkles, X, type LucideIcon } from 'lucide-react';
+import { useLiveTick } from '../lib/useLiveTick';
 import { signOut, useAuth } from '../auth/AuthProvider';
 import { useAccount } from '../auth/AccountProvider';
 import { applyTextSize, loadAnnouncement, loadExtraPrefs } from '../lib/accountApi';
@@ -13,12 +14,16 @@ export interface NavItem { to: string; label: string; icon: LucideIcon; end?: bo
 export const USER_NAV: NavItem[] = [
   { to: '/kitchen', label: 'Kitchen', icon: Home },
   { to: '/select', label: 'Ingredient Selection', icon: Sparkles },
+  { to: '/generate', label: 'Generate Recipe', icon: WandSparkles },
   { to: '/recommendations', label: 'Recommendations', icon: ChefHat },
   { to: '/recipes', label: 'My Recipes', icon: BookOpen },
   { to: '/pantry', label: 'My Pantry', icon: Refrigerator },
   { to: '/profile', label: 'Profile', icon: UserRound },
   { to: '/settings', label: 'Settings', icon: Settings },
 ];
+
+const ADMIN_BELL = ['feedback'];
+const USER_BELL = ['app_settings'];
 
 export const ADMIN_NAV: NavItem[] = [
   { to: '/admin', label: 'Dashboard', icon: Home, end: true },
@@ -27,6 +32,8 @@ export const ADMIN_NAV: NavItem[] = [
   { to: '/admin/recipes', label: 'Recipes', icon: BookOpen },
   { to: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
   { to: '/admin/feedback', label: 'Feedback', icon: MessageSquare },
+  { to: '/admin/evaluation', label: 'Evaluation', icon: FlaskConical },
+  { to: '/admin/survey', label: 'User Testing', icon: ClipboardList },
   { to: '/admin/settings', label: 'Settings', icon: Settings },
 ];
 
@@ -35,7 +42,7 @@ export function displayName(user: { email?: string; user_metadata?: Record<strin
   return (typeof username === 'string' && username.trim()) || user?.email?.split('@')[0] || 'Cook';
 }
 
-// The profile photo URL (uploaded to R2 from the Profile page), if any.
+// The profile photo URL (uploaded to image storage from the Profile page), if any.
 export function avatarUrl(user: { user_metadata?: Record<string, unknown> } | undefined): string | null {
   const url = user?.user_metadata?.avatar_url;
   return typeof url === 'string' && url.startsWith('https://') ? url : null;
@@ -57,7 +64,7 @@ function TopActions({ name, photo, admin, announcement, openFeedback }: { name: 
   const count = admin ? openFeedback : announcement ? 1 : 0;
   const message = admin ? (openFeedback ? `${openFeedback} feedback item${openFeedback === 1 ? '' : 's'} waiting for review.` : '') : announcement;
   return (
-    <div className="absolute right-5 top-5 z-20 hidden items-center gap-6 lg:flex">
+    <div className="absolute right-8 top-[1.3rem] z-20 hidden items-center gap-7 lg:flex">
       <div className="relative">
         <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-label={count ? `Notifications, ${count} new` : 'Notifications'}
           className="relative grid h-12 w-12 place-items-center rounded-full bg-white/70 text-ink shadow-sm transition hover:bg-white">
@@ -75,7 +82,7 @@ function TopActions({ name, photo, admin, announcement, openFeedback }: { name: 
   );
 }
 
-function UserCard({ name, photo, admin, onLogout }: { name: string; photo: string | null; admin: boolean; onLogout: () => void }) {
+function UserCard({ name, photo, admin, wide, onLogout }: { name: string; photo: string | null; admin: boolean; wide: boolean; onLogout: () => void }) {
   const [open, setOpen] = useState(false);
   const { account } = useAccount();
   return (
@@ -91,9 +98,9 @@ function UserCard({ name, photo, admin, onLogout }: { name: string; photo: strin
       )}
       <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-haspopup="menu"
         className="card flex w-full items-center gap-2.5 px-3 py-3 text-left">
-        <Avatar name={name} src={photo} size={48} />
+        <Avatar name={name} src={photo} size={wide ? 52 : 48} />
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-lg font-semibold">{name}</span>
+          <span className={`block truncate font-semibold ${wide ? 'text-lg' : 'text-[1.02rem]'}`}>{name}</span>
           <span className="block whitespace-nowrap text-sm text-stone-600">{admin || account?.role === 'super_admin' ? 'Super Admin' : 'Registered User'}</span>
         </span>
         <ChevronDown size={18} className={`transition ${open ? 'rotate-180' : ''}`} aria-hidden="true" />
@@ -113,19 +120,22 @@ export function DashboardShell({ nav, admin = false }: { nav: NavItem[]; admin?:
   const name = displayName(session?.user);
   const photo = avatarUrl(session?.user);
   const userId = session?.user.id;
-  // The designs give only the Kitchen and Ingredient Selection the wider sidebar.
+  // The designs give only the Kitchen and Ingredient Selection the wider sidebar. The Kitchen design also leaves
+  // Ingredient Selection out of the menu; it stays one click away there through "More" and "Smart Matching".
   const wideSidebar = !admin && ['/kitchen', '/select'].includes(location.pathname);
 
-  useEffect(() => { setDrawer(false); }, [location.pathname]);
+  // A new page opens at its top, so its heading is never hidden by the old page's scroll position.
+  useEffect(() => { setDrawer(false); window.scrollTo?.(0, 0); }, [location.pathname]);
+  const liveTick = useLiveTick(admin ? ADMIN_BELL : USER_BELL);
   useEffect(() => {
     if (!admin) return;
-    listFeedback('', '', '', 1, 1).then((r) => setOpenFeedback(Number(r.counts?.open ?? 0))).catch(() => setOpenFeedback(0));
-  }, [admin, location.pathname]);
+    listFeedback('', '', '', 1, 1).then((r) => setOpenFeedback(Number(r.counts?.open ?? 0))).catch(() => {});
+  }, [admin, location.pathname, liveTick]);
   useEffect(() => {
     if (admin || !userId) return;
-    loadAnnouncement().then(setAnnouncement).catch(() => setAnnouncement(''));
+    loadAnnouncement().then(setAnnouncement).catch(() => {});
     loadExtraPrefs(userId).then((p) => applyTextSize(p.textSize)).catch(() => {});
-  }, [admin, userId]);
+  }, [admin, userId, liveTick]);
 
   const logout = async () => {
     await signOut();
@@ -133,26 +143,38 @@ export function DashboardShell({ nav, admin = false }: { nav: NavItem[]; admin?:
   };
 
   const sidebar = (
-    <div className="flex h-full flex-col gap-7 overflow-y-auto px-[0.95rem] pb-5 pt-5">
+    <div className={`flex h-full flex-col overflow-y-auto ${wideSidebar ? 'gap-7 px-[0.95rem] pb-5 pt-5' : 'gap-4 pb-[2.1rem] pl-[0.8rem] pr-[0.5rem] pt-3'}`}>
       <Brand admin={admin} />
       <nav aria-label="Main" className="flex-1">
-        <ul className="flex flex-col gap-3">
-          {nav.map(({ to, label, icon: Icon, end }) => (
+        <ul className={`flex flex-col ${wideSidebar ? 'gap-3' : admin ? 'gap-[0.19rem]' : 'gap-[0.26rem]'}`}>
+          {nav.filter((item) => !(location.pathname === '/kitchen' && item.to === '/select')).map(({ to, label, icon: Icon, end }) => (
             <li key={to}>
               <NavLink to={to} end={end} className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-                <Icon size={27} strokeWidth={1.7} className="shrink-0" aria-hidden="true" />{label}
+                {({ isActive }) => <>
+                  <Icon strokeWidth={1.7} className="h-[1.7rem] w-[1.7rem] shrink-0" fill={isActive && to === '/kitchen' ? 'currentColor' : 'none'} aria-hidden="true" />{label}
+                </>}
               </NavLink>
             </li>
           ))}
         </ul>
       </nav>
-      <UserCard name={name} photo={photo} admin={admin} onLogout={logout} />
+      <UserCard name={name} photo={photo} admin={admin} wide={wideSidebar} onLogout={logout} />
     </div>
   );
 
   return (
     <div className={`relative min-h-dvh ${wideSidebar ? 'lg:pl-[17rem]' : 'lg:pl-[14.8rem]'}`}>
-      <aside className={`fixed inset-y-0 left-0 z-30 hidden rounded-r-[1.75rem] border-r border-white/70 bg-white/40 backdrop-blur-md lg:block ${wideSidebar ? 'w-[17rem]' : 'w-[14.8rem]'} ${!admin && !wideSidebar ? '[&_.nav-link]:!gap-2.5 [&_.nav-link]:!px-2.5 [&_.nav-link]:!text-[1.04rem]' : ''}`}>{sidebar}</aside>
+      <aside className={`fixed inset-y-0 left-0 z-30 hidden rounded-r-[1.75rem] border-r border-white/70 bg-white/40 backdrop-blur-md lg:block ${wideSidebar ? 'w-[17rem]' : 'w-[14.8rem]'} ${!wideSidebar ? '[&_.nav-link]:!gap-[1.5rem] [&_.nav-link]:!px-[1.1rem] [&_.nav-link]:!text-[0.93rem] [&_.nav-link]:!tracking-tight' : ''}`}>
+        {location.pathname !== '/kitchen' && (
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[24rem] overflow-hidden rounded-br-[1.75rem]" aria-hidden="true">
+            <div className="absolute -left-16 top-8 h-52 w-52 rounded-full bg-[#ff8d82]/60 blur-3xl" />
+            <svg viewBox="0 0 237 224" preserveAspectRatio="none" className="absolute inset-x-0 bottom-0 h-[14rem] w-full">
+              <path d="M0 88C70 110 110 70 150 30 180 5 215 0 237 8V224H0Z" fill="#fff" fillOpacity="0.5" />
+            </svg>
+          </div>
+        )}
+        <div className="relative h-full">{sidebar}</div>
+      </aside>
       <TopActions name={name} photo={photo} admin={admin} announcement={announcement} openFeedback={openFeedback} />
       <div className="sticky top-0 z-30 flex items-center justify-between border-b border-white/70 bg-white/80 px-4 py-2 backdrop-blur lg:hidden">
         <button type="button" className="icon-btn" onClick={() => setDrawer(true)} aria-label="Open menu"><Menu size={22} /></button>

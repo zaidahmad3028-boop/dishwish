@@ -28,6 +28,7 @@ interface SelectionState {
   setTastes: (tastes: Selection['tastes']) => void;
   toggleDiet: (diet: Diet) => void;
   setMaxMinutes: (m: number | null) => void;
+  setMaxKcal: (kcal: number | null) => void;
 }
 
 const Ctx = createContext<SelectionState | null>(null);
@@ -53,6 +54,7 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
     setTastes: (tastes) => setSelection((s) => ({ ...s, tastes })),
     toggleDiet: (diet) => setSelection((s) => ({ ...s, diets: s.diets.includes(diet) ? s.diets.filter((d) => d !== diet) : [...s.diets, diet] })),
     setMaxMinutes: (maxMinutes) => setSelection((s) => ({ ...s, maxMinutes })),
+    setMaxKcal: (maxKcal) => setSelection((s) => ({ ...s, maxKcal })),
   }), [selection, add]);
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

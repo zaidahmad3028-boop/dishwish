@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, BarChart3, ChefHat, Database, Flame, HardDrive, Layers, Leaf, MessageSquare, PlusCircle, Server, Settings, ShieldCheck, Star, Trophy, UserRound, Users, UtensilsCrossed, Zap } from 'lucide-react';
+import { ArrowRight, BarChart3, CalendarDays, ChefHat, Database, Flame, HardDrive, Layers, Leaf, MessageSquare, PlusCircle, Server, Settings, ShieldCheck, Star, Trophy, UserRound, Users, UtensilsCrossed, Zap } from 'lucide-react';
 import { AreaTrend, BarTrend, Legend, PALETTE } from '../../components/charts';
 import { IngredientBadge, RecipeCardImage } from '../../components/DishArt';
 import { ActionTile, Avatar, Bar, Card, Donut, EmptyState, ErrorNote, PageHeader, SegmentTabs, Spinner, StatCard, Stars, STATUS_BADGE, formatDate } from '../../components/ui';
@@ -8,12 +8,16 @@ import { categoryUsage, listFeedback, listUsers, overview, pctShort, systemStatu
   type AdminFeedback, type AdminUser, type DayPoint, type Overview } from '../../lib/adminApi';
 import { recipeImage } from '../../lib/images';
 import { API_URL } from '../../lib/recipes';
+import { useLiveTick } from '../../lib/useLiveTick';
 
 export function RangeSelect({ days, onChange }: { days: number; onChange: (d: number) => void }) {
   return (
-    <select className="select" value={days} onChange={(e) => onChange(Number(e.target.value))} aria-label="Date range">
-      <option value={7}>Last 7 Days</option><option value={30}>Last 30 Days</option><option value={90}>Last 90 Days</option><option value={365}>Last 12 Months</option>
-    </select>
+    <span className="relative inline-flex items-center">
+      <CalendarDays size={20} className="pointer-events-none absolute left-3 text-crimson" aria-hidden="true" />
+      <select className="select !pl-10" value={days} onChange={(e) => onChange(Number(e.target.value))} aria-label="Date range">
+        <option value={7}>Last 7 Days</option><option value={30}>Last 30 Days</option><option value={90}>Last 90 Days</option><option value={365}>Last 12 Months</option>
+      </select>
+    </span>
   );
 }
 
@@ -53,6 +57,7 @@ export function AdminDashboardPage() {
   const [status, setStatus] = useState<{ db: string; api: string; size: number } | null>(null);
   const [metric, setMetric] = useState<'generations' | 'active_users' | 'views'>('generations');
   const [error, setError] = useState('');
+  const tick = useLiveTick(['feedback', 'curated_recipes', 'ingredients', 'ingredient_compatibility']);
 
   useEffect(() => {
     let live = true;
@@ -61,22 +66,23 @@ export function AdminDashboardPage() {
       .then(([o, series, ingredients, recipes, categories, users, feedback]) => {
         if (live) setData({ o, series, ingredients, recipes, categories, users: users.rows, feedback: feedback.rows });
       })
-      .catch((e: Error) => { if (live) setError(e.message); });
+      .catch((e: Error) => { if (live && tick === 0) setError(e.message); });
     return () => { live = false; };
-  }, [days]);
+  }, [days, tick]);
 
   useEffect(() => {
     Promise.all([
       systemStatus().then((s) => ({ db: s.database === 'ok' ? 'Healthy' : 'Problem', size: s.database_size_bytes })).catch(() => ({ db: 'Unreachable', size: 0 })),
       fetch(`${API_URL}/api/health`).then((r) => (r.ok ? 'Online' : `HTTP ${r.status}`)).catch(() => 'Offline'),
     ]).then(([db, api]) => setStatus({ db: db.db, size: db.size, api }));
-  }, []);
+  }, [tick]);
 
   if (error) return <><PageHeader title="Admin" accent="Dashboard" /><ErrorNote>{error}</ErrorNote></>;
   if (!data) return <Spinner label="Loading dashboard" />;
   const { o } = data;
   const usageTotal = data.ingredients.reduce((s, i) => s + i.uses, 0);
   const catMax = Math.max(1, ...data.categories.map((c) => c.uses));
+  const catTotal = data.categories.reduce((s, c) => s + c.uses, 0);
   const statusRow = (icon: typeof Server, label: string, value: string | undefined, good: boolean) => {
     const Icon = icon;
     return (
@@ -88,9 +94,9 @@ export function AdminDashboardPage() {
   };
 
   return (
-    <>
-      <PageHeader title="Admin" accent="Dashboard" subtitle="Monitor users, recipes, ingredients and overall platform performance." actions={<RangeSelect days={days} onChange={setDays} />} />
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+    <div className="admin-page admin-dashboard">
+      <PageHeader title="Admin" accent="Dashboard" subtitle="Monitor users, recipes, ingredients and overall platform performance." actions={<><Link to="/admin/overview" className="pill">Overview</Link><RangeSelect days={days} onChange={setDays} /></>} />
+      <div className="admin-stats grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
         <StatCard icon={UserRound} value={o.total_users.toLocaleString()} label="Total Users" trend={pctShort(o.new_users, o.new_users_prev)} />
         <StatCard icon={ChefHat} value={o.total_recipes.toLocaleString()} label="Total Recipes" note={`${o.draft_recipes} drafts`} />
         <StatCard icon={Leaf} value={o.total_ingredients.toLocaleString()} label="Total Ingredients" tone="green" note={`${o.edges.toLocaleString()} compatibility links`} />
@@ -98,37 +104,37 @@ export function AdminDashboardPage() {
         <StatCard icon={Star} value={o.avg_rating !== null ? <>{o.avg_rating}<span className="text-lg font-semibold"> / 5</span></> : '—'} label="Avg. User Rating" tone="amber" note={`${o.ratings} ratings`} />
       </div>
 
-      <div className="mt-2.5 grid gap-2.5 xl:grid-cols-[minmax(0,1fr)_21rem]">
-        <div className="min-w-0 space-y-2.5">
-          <div className="grid gap-2.5 lg:grid-cols-[1.32fr_1.1fr_0.9fr]">
+      <div className="mt-[1.05rem] grid gap-[0.85rem] xl:grid-cols-[minmax(0,1fr)_21.6rem]">
+        <div className="min-w-0 space-y-[0.8rem]">
+          <div className="grid gap-[0.7rem] lg:grid-cols-[1.7fr_1.2fr_1fr]">
             <Card title="User Growth" icon={Users}>
-              <AreaTrend data={cumulativeUsers(data.series, o.total_users)} x="day" y="users" label="Total users" height={148} callout={`${o.total_users.toLocaleString()} Users`} />
+              <AreaTrend data={cumulativeUsers(data.series, o.total_users)} x="day" y="users" label="Total users" height={168} callout={`${o.total_users.toLocaleString()} Users`} />
             </Card>
             <Card title="Ingredient Usage" icon={Leaf} iconClass="text-green-600">
               {data.ingredients.length === 0 ? <EmptyState title="No generations in this period" /> : (
                 <div className="flex items-center gap-3">
-                  <Donut size={112} label="Ingredient usage" parts={data.ingredients.map((i, n) => ({ value: i.uses, color: PALETTE[n % PALETTE.length], label: i.name }))}
-                    center={<span><span className="block text-lg font-bold">{usageTotal.toLocaleString()}</span><span className="text-[0.72rem]">Total Uses</span></span>} />
+                  <Donut size={146} thickness={6} label="Ingredient usage" parts={data.ingredients.map((i, n) => ({ value: i.uses, color: PALETTE[n % PALETTE.length], label: i.name }))}
+                    center={<span><span className="block text-[1.55rem] font-bold leading-tight">{usageTotal.toLocaleString()}</span><span className="text-[0.9rem]">Total Uses</span></span>} />
                   <div className="min-w-0 flex-1"><Legend items={data.ingredients.map((i, n) => ({ label: short(i.name), value: `${Math.round((i.uses / usageTotal) * 100)}%`, color: PALETTE[n % PALETTE.length] }))} /></div>
                 </div>
               )}
             </Card>
             <Card title="Recipe Categories" icon={ChefHat}>
-              <ul className="space-y-1.5 text-[0.86rem]">
+              <ul className="space-y-[0.62rem] text-[0.84rem]">
                 {data.categories.slice(0, 6).map((c) => (
-                  <li key={c.category} className="grid grid-cols-[4.8rem_1fr_2.2rem] items-center gap-2">
+                  <li key={c.category} className="grid grid-cols-[4.7rem_1fr_2rem] items-center gap-1.5">
                     <span className="truncate">{c.category}</span>
                     <Bar value={c.uses} max={catMax} color="linear-gradient(90deg, #dc1029, #fb7185)" label={c.category} />
-                    <span className="text-right font-semibold">{c.uses}</span>
+                    <span className="text-right font-medium">{catTotal ? Math.round((c.uses / catTotal) * 100) : 0}%</span>
                   </li>
                 ))}
               </ul>
             </Card>
           </div>
 
-          <div className="grid gap-2.5 lg:grid-cols-[1.25fr_1fr]">
+          <div className="admin-tabs-small grid gap-[0.8rem] lg:grid-cols-[1.19fr_1fr]">
             <Card title="Platform Analytics" icon={BarChart3} action={<SegmentTabs label="Chart metric" value={metric} options={METRICS} onChange={setMetric} />}>
-              <BarTrend data={data.series} x="day" y={metric} label={metric.replace('_', ' ')} height={128} />
+              <BarTrend data={data.series} x="day" y={metric} label={metric.replace('_', ' ')} height={135} />
             </Card>
             <Card title="Recent Users" icon={Users} action={<Link to="/admin/users" className="flex items-center gap-1 whitespace-nowrap text-sm font-semibold text-crimson">View All<ArrowRight size={15} /></Link>}>
               <div className="overflow-x-auto">
@@ -148,7 +154,7 @@ export function AdminDashboardPage() {
             </Card>
           </div>
 
-          <div className="grid gap-2.5 lg:grid-cols-[1.2fr_1fr_0.95fr]">
+          <div className="admin-small-titles grid gap-[0.7rem] lg:grid-cols-[1.31fr_1.05fr_1fr]">
             <Card title={<>Top Recipes <span className="font-sans text-base font-normal">(This Period)</span></>} icon={Trophy} iconClass="text-amber-600">
               {data.recipes.length === 0 ? <EmptyState title="No recipe activity yet" /> : (
                 <ul className="grid grid-cols-3 gap-2">
@@ -179,7 +185,7 @@ export function AdminDashboardPage() {
           </div>
         </div>
 
-        <div className="min-w-0 space-y-2.5">
+        <div className="min-w-0 space-y-[0.8rem]">
           <Card title="Quick Actions" icon={Zap}>
             <div className="grid grid-cols-3 gap-2">
               <ActionTile icon={PlusCircle} label="Add Recipe" onClick={() => navigate('/admin/recipes?new=1')} />
@@ -194,11 +200,11 @@ export function AdminDashboardPage() {
             {data.feedback.length === 0 ? <EmptyState title="No feedback yet" /> : (
               <ul className="divide-y divide-stone-100">
                 {data.feedback.map((f) => (
-                  <li key={f.id} className="flex gap-3 py-3 first:pt-0">
+                  <li key={f.id} className="flex gap-3 py-[0.72rem] first:pt-0">
                     <Avatar name={f.author} size={32} />
                     <div className="min-w-0 flex-1 text-[0.92rem]">
                       <p className="flex flex-wrap items-center justify-between gap-x-2"><strong className="truncate">{f.author}</strong>{f.rating && <Stars value={f.rating} />}<span className="text-[0.8rem] text-stone-600">{formatDate(f.created_at)}</span></p>
-                      <p className="mt-1 line-clamp-3">“{f.message}”</p>
+                      <p className="mt-1 line-clamp-2 leading-snug">“{f.message}”</p>
                     </div>
                   </li>
                 ))}
@@ -207,6 +213,6 @@ export function AdminDashboardPage() {
           </Card>
         </div>
       </div>
-    </>
+    </div>
   );
 }

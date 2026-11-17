@@ -7,8 +7,9 @@ Two separate ideas live here (see docs/RECOMMENDATION_ENGINE.md):
 - Recipe suitability: how well a whole curated recipe fits this cook's selection, tastes,
   diet, allergies and time.
 
-Score = Σ wᵢ·cᵢ / Σ wᵢ over the components that are available (coverage, compatibility,
-taste, cooking time), minus missing_penalty × max(0, missing − tolerance), clamped to 0-1.
+Score = Σ wᵢ·cᵢ / Σ wᵢ over the components that are available (coverage, TF-IDF similarity,
+compatibility, taste, cooking time), minus missing_penalty × max(0, missing − tolerance), minus
+main_missing_penalty when the cook lacks the dish's main ingredient, clamped to 0-1.
 A component with no input (e.g. no taste chosen) is left out and the remaining weights are
 renormalised, so a missing input never fabricates a score. The weights are engineering
 defaults, not validated against user outcomes.
@@ -23,16 +24,24 @@ import networkx as nx
 from .data import ALLERGENS, TASTES, Ingredient
 from .recommender import pair_weight
 
-COMPONENTS = ("coverage", "compatibility", "taste", "cooking")
+COMPONENTS = ("coverage", "similarity", "compatibility", "taste", "cooking")
 DEFAULT_SETTINGS = {
-    "weights": {"coverage": .45, "compatibility": .30, "taste": .20, "cooking": .05},
+    "weights": {"coverage": .45, "similarity": .10, "compatibility": .30, "taste": .20, "cooking": .05},
     "missing_penalty": .03,
     "missing_tolerance": 3,
+    "main_missing_penalty": .30,
     "min_score": .20,
 }
-DIETS = ("vegetarian", "vegan", "gluten_free", "low_calorie", "high_protein")
+DIETS = ("vegetarian", "vegan", "gluten_free", "low_calorie", "high_protein", "low_carb", "keto")
 LOW_CALORIE_KCAL = 500  # per serving
 HIGH_PROTEIN_G = 25  # per serving
+LOW_CARB_G = 30  # per serving
+KETO_CARB_G = 15  # per serving
+# Savory (umami) isn't one of the catalog's taste scores, so it is estimated from the share of a dish's main
+# ingredients that are known umami sources: meat, fish, eggs, dairy, pulses and the classic savory vegetables.
+SAVORY_CATEGORIES = frozenset({"Meat", "Dairy", "Pulses & Nuts"})
+SAVORY_WORDS = ("tomato", "onion", "garlic", "mushroom", "soy", "cheese", "egg", "fish", "prawn", "beef", "chicken",
+                "mutton", "lamb", "keema", "yogurt", "yoghurt", "dahi", "paneer", "stock")
 TASTE_TARGETS = {"low": 2.0, "medium": 5.0, "high": 8.0}
 # Everyday items most kitchens hold; they are listed but never count as "missing".
 STAPLE_NAMES = frozenset({"Salt", "Cooking Oil", "Sunflower Oil", "Corn Oil", "Desi Ghee", "Banaspati Ghee", "White Sugar"})
@@ -63,6 +72,14 @@ def family(item: Ingredient) -> str:
 
 def is_staple(item: Ingredient) -> bool:
     return item.category == "Spices" or item.name in STAPLE_NAMES
+
+
+def main_ingredient(lines: Iterable[RecipeLine], catalog: Mapping[str, Ingredient]) -> Ingredient | None:
+    """What the dish is built around: its meat, else its heaviest core ingredient. Eggs count as meat here."""
+    core = [l for l in lines if not is_staple(catalog[l.name])]
+    meat = [l for l in core if catalog[l.name].category == "Meat"]
+    pool = meat or core
+    return catalog[max(pool, key=lambda l: l.grams).name] if pool else None
 
 
 @dataclass(frozen=True)
@@ -107,7 +124,7 @@ def validate_settings(raw: Mapping | None) -> dict:
         s["weights"][key] = float(value)
     if sum(s["weights"].values()) <= 0:
         raise SuitabilityError("At least one weight must be above 0")
-    for key, low, high in (("missing_penalty", 0, .2), ("missing_tolerance", 0, 10), ("min_score", 0, 1)):
+    for key, low, high in (("missing_penalty", 0, .2), ("missing_tolerance", 0, 10), ("main_missing_penalty", 0, .5), ("min_score", 0, 1)):
         if key in raw:
             value = raw[key]
             if not isinstance(value, (int, float)) or not math.isfinite(value) or not low <= value <= high:
@@ -152,6 +169,41 @@ class SuitabilityEngine:
         self.members: dict[str, list[str]] = {}
         for name, item in self.catalog.items():
             self.members.setdefault(family(item), []).append(name)
+        # TF-IDF over the main ingredients of every recipe: an ingredient used by few dishes says more about
+        # a match than one used by nearly all of them (onion, tomato).
+        counts: dict[str, int] = {}
+        for recipe in self.recipes:
+            for fam in self.core_families(recipe):
+                counts[fam] = counts.get(fam, 0) + 1
+        n = len(self.recipes)
+        self.idf = {fam: math.log((n + 1) / (df + 1)) + 1 for fam, df in counts.items()}
+        # How many dishes use each ingredient: breaks ties between equally strong suggestions.
+        self.popularity: dict[str, int] = {}
+        for recipe in self.recipes:
+            for name in {l.name for l in recipe.lines}:
+                self.popularity[name] = self.popularity.get(name, 0) + 1
+
+    def core_families(self, recipe: CuratedRecipe) -> set[str]:
+        return {family(self.catalog[l.name]) for l in recipe.lines if not is_staple(self.catalog[l.name])}
+
+    def tfidf_similarity(self, selected_families: set[str], recipe: CuratedRecipe) -> float:
+        """Cosine similarity of the selection and the recipe as TF-IDF vectors over ingredient families."""
+        dish = self.core_families(recipe)
+        weight = lambda fam: self.idf.get(fam, math.log(len(self.recipes) + 1) + 1)  # noqa: E731
+        dot = sum(weight(f) ** 2 for f in selected_families & dish)
+        norm = math.sqrt(sum(weight(f) ** 2 for f in selected_families)) * math.sqrt(sum(weight(f) ** 2 for f in dish))
+        return dot / norm if norm else 0.0
+
+    def savory(self, recipe: CuratedRecipe) -> int:
+        """Estimated savory (umami) score 0-10: share of main ingredients that are umami sources."""
+        core = [self.catalog[l.name] for l in recipe.lines if not is_staple(self.catalog[l.name])]
+        if not core:
+            return 0
+        hits = sum(1 for i in core if i.category in SAVORY_CATEGORIES or any(w in i.name.casefold() for w in SAVORY_WORDS))
+        return round(10 * hits / len(core))
+
+    def full_taste(self, recipe: CuratedRecipe) -> dict:
+        return {**recipe.taste, "savory": self.savory(recipe)}
 
     # ---- ingredient compatibility -------------------------------------------------------
     def compatibility(self, left: str, right: str) -> tuple[float, str]:
@@ -179,7 +231,7 @@ class SuitabilityEngine:
                         best[neighbour] = max(best.get(neighbour, 0), data["weight"])
             for neighbour, weight in best.items():
                 support[neighbour] = support.get(neighbour, 0) + weight
-        top = sorted(support.items(), key=lambda kv: (-kv[1], kv[0]))[:limit]
+        top = sorted(support.items(), key=lambda kv: (-round(kv[1], 6), -self.popularity.get(kv[0], 0), kv[0]))[:limit]
         return [{"name": name, "category": self.catalog[name].category,
                  "support": round(score / len(selected), 3)} for name, score in top]
 
@@ -221,11 +273,16 @@ class SuitabilityEngine:
             tags.append("low_calorie")
         if per["protein"] >= HIGH_PROTEIN_G:
             tags.append("high_protein")
+        if per["carbs"] <= LOW_CARB_G:
+            tags.append("low_carb")
+        if per["carbs"] <= KETO_CARB_G:
+            tags.append("keto")
         return tags
 
     def recommend(self, selected: Sequence[str], *, tastes: Mapping[str, str | None] | None = None,
                   allergens: Sequence[str] = (), blocked_words: Sequence[str] = (), diets: Sequence[str] = (),
-                  pantry: Sequence[str] = (), max_minutes: int | None = None, limit: int = 12) -> dict:
+                  pantry: Sequence[str] = (), max_minutes: int | None = None, max_kcal: int | None = None,
+                  limit: int = 12, weights_override: Mapping[str, float] | None = None, min_score: float | None = None) -> dict:
         names = self.resolve(selected)
         blocked = set(allergens)
         if not blocked <= ALLERGENS:
@@ -236,13 +293,15 @@ class SuitabilityEngine:
         conflicts = [n for n in names if not self._allowed(self.catalog[n], blocked, words)]
         if conflicts:
             raise SuitabilityError(f"These selected ingredients conflict with your allergies: {', '.join(conflicts)}")
-        targets = {t: TASTE_TARGETS[v] for t, v in (tastes or {}).items() if t in TASTES and v in TASTE_TARGETS}
+        targets = {t: TASTE_TARGETS[v] for t, v in (tastes or {}).items() if (t in TASTES or t == "savory") and v in TASTE_TARGETS}
         pantry_names = [self.canonical[p.casefold()] for p in pantry if p.casefold() in self.canonical]
         selected_families = {family(self.catalog[n]) for n in names}
         have = selected_families | {family(self.catalog[n]) for n in pantry_names}
-        weights, s = self.settings["weights"], self.settings
+        s = self.settings
+        weights = {k: float(weights_override.get(k, 0)) for k in COMPONENTS} if weights_override else s["weights"]
+        threshold = s["min_score"] if min_score is None else min_score
 
-        results, excluded = [], {"allergy": 0, "diet": 0, "no_overlap": 0}
+        results, excluded = [], {"allergy": 0, "diet": 0, "calories": 0, "no_overlap": 0}
         for recipe in self.recipes:
             items = [self.catalog[l.name] for l in recipe.lines]
             if any(not self._allowed(i, blocked, words) for i in items):
@@ -252,6 +311,9 @@ class SuitabilityEngine:
             if not set(diets) <= set(recipe_diets):
                 excluded["diet"] += 1
                 continue
+            if max_kcal and self.nutrition(recipe)["kcal"] > max_kcal:
+                excluded["calories"] += 1
+                continue
             core = [i for i in items if not is_staple(i)]
             used = [i.name for i in core if family(i) in selected_families]
             if not used:
@@ -259,7 +321,8 @@ class SuitabilityEngine:
                 continue
             have_core = [i for i in core if family(i) in have]
             missing = [i.name for i in core if family(i) not in have]
-            components: dict[str, float | None] = {"coverage": len(have_core) / len(core)}
+            components: dict[str, float | None] = {"coverage": len(have_core) / len(core),
+                                                   "similarity": self.tfidf_similarity(selected_families, recipe)}
             # Compatibility: every selected ingredient against every other core ingredient of the dish.
             # Each unordered family pair counts once (Chicken+Tomato is not counted again as Tomato+Chicken).
             pairs, seen = [], set()
@@ -271,35 +334,44 @@ class SuitabilityEngine:
                         pairs.append((n, i.name))
             pair_rows = [(a, b, *self.compatibility(a, b)) for a, b in pairs]
             components["compatibility"] = sum(r[2] for r in pair_rows) / len(pair_rows) if pair_rows else None
-            components["taste"] = (1 - sum(abs(recipe.taste[t] - v) for t, v in targets.items()) / (10 * len(targets))
+            taste = self.full_taste(recipe)
+            components["taste"] = (1 - sum(abs(taste[t] - v) for t, v in targets.items()) / (10 * len(targets))
                                    if targets else None)
             components["cooking"] = ((1.0 if recipe.minutes <= max_minutes
                                       else max(0.0, 1 - (recipe.minutes - max_minutes) / max_minutes))
                                      if max_minutes else None)
             active = {k: v for k, v in components.items() if v is not None and weights[k] > 0}
-            base = sum(weights[k] * v for k, v in active.items()) / sum(weights[k] for k in active)
-            penalty = s["missing_penalty"] * max(0, len(missing) - s["missing_tolerance"])
+            wk = weights
+            if not active:  # every weighted component is unavailable here: fall back to an even blend
+                active, wk = {k: v for k, v in components.items() if v is not None}, {k: 1.0 for k in COMPONENTS}
+            base = sum(wk[k] * v for k, v in active.items()) / sum(wk[k] for k in active)
+            missing_cost = s["missing_penalty"] * max(0, len(missing) - s["missing_tolerance"])
+            main = main_ingredient(recipe.lines, self.catalog)
+            main_missing = main.name if main and family(main) not in have else None
+            penalty = missing_cost + (s["main_missing_penalty"] if main_missing else 0)
             score = min(1.0, max(0.0, base - penalty))
-            if score < s["min_score"]:
+            if score < threshold:
                 continue
             strongest = max(pair_rows, key=lambda r: r[2]) if pair_rows else None
             explanation = [f"Uses {', '.join(used)} from your selection."]
             if strongest:
                 explanation.append(f"{strongest[0]} + {strongest[1]}: {strongest[3]} (weight {strongest[2]:.2f}).")
             for t, v in targets.items():
-                explanation.append(f"{t.title()} {recipe.taste[t]:.0f}/10 vs your {t} target {v:.0f}/10.")
+                explanation.append(f"{t.title()} {taste[t]:.0f}/10 vs your {t} target {v:.0f}/10.")
             explanation.append(f"Missing {len(missing)}: {', '.join(missing)}." if missing else "You have every main ingredient.")
-            if penalty:
-                explanation.append(f"-{round(penalty * 100)} points for {len(missing) - s['missing_tolerance']} missing beyond your tolerance.")
+            if missing_cost:
+                explanation.append(f"-{round(missing_cost * 100)} points for {len(missing) - s['missing_tolerance']} missing beyond your tolerance.")
+            if main_missing:
+                explanation.append(f"-{round(s['main_missing_penalty'] * 100)} points: you don't have the main ingredient, {main_missing}.")
             results.append({
                 "slug": recipe.slug, "name": recipe.name, "category": recipe.category, "cuisine": recipe.cuisine,
                 "minutes": recipe.minutes, "servings": recipe.servings, "description": recipe.description,
                 "image_url": recipe.image_url, "source": recipe.source,
                 "match_percent": round(score * 100), "score": round(score, 4),
                 "components": {k: (round(v, 4) if v is not None else None) for k, v in components.items()},
-                "weights_used": {k: round(weights[k] / sum(weights[a] for a in active), 4) for k in active},
-                "penalty": round(penalty, 4), "used": used, "missing": missing,
-                "taste": dict(recipe.taste), "diets": recipe_diets, "nutrition_per_serving": self.nutrition(recipe),
+                "weights_used": {k: round(wk[k] / sum(wk[a] for a in active), 4) for k in active},
+                "penalty": round(penalty, 4), "main_ingredient_missing": main_missing, "used": used, "missing": missing,
+                "taste": taste, "diets": recipe_diets, "nutrition_per_serving": self.nutrition(recipe),
                 "explanation": explanation,
             })
         results.sort(key=lambda r: (-r["score"], len(r["missing"]), r["name"]))
@@ -308,7 +380,8 @@ class SuitabilityEngine:
             "suggestions": self.suggest_additions(names, blocked, words),
             "excluded": excluded,
             "settings": {"weights": weights, "missing_penalty": s["missing_penalty"],
-                         "missing_tolerance": s["missing_tolerance"], "min_score": s["min_score"]},
+                         "missing_tolerance": s["missing_tolerance"], "main_missing_penalty": s["main_missing_penalty"],
+                         "min_score": s["min_score"]},
         }
 
     def detail(self, slug: str, *, selected: Sequence[str] = (), pantry: Sequence[str] = ()) -> dict | None:
@@ -324,7 +397,7 @@ class SuitabilityEngine:
         allergens = sorted({a for l in recipe.lines for a in self.catalog[l.name].allergens})
         return {"slug": recipe.slug, "name": recipe.name, "category": recipe.category, "cuisine": recipe.cuisine,
                 "minutes": recipe.minutes, "servings": recipe.servings, "description": recipe.description,
-                "image_url": recipe.image_url, "source": recipe.source, "taste": dict(recipe.taste),
+                "image_url": recipe.image_url, "source": recipe.source, "taste": self.full_taste(recipe),
                 "ingredients": lines, "steps": list(recipe.steps), "allergens": allergens, "diets": self.diets(recipe),
                 "nutrition_per_serving": self.nutrition(recipe)}
 
@@ -345,3 +418,4 @@ class EngineData:
     settings: Mapping | None = None
     source: str = "bundled"
     notes: list[str] = field(default_factory=list)
+    personalization: Mapping | None = None

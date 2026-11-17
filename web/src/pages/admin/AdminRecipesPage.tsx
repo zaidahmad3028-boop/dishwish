@@ -1,15 +1,16 @@
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Archive, BarChart3, BookOpen, CheckCircle2, ChefHat, Clock, Download, Eye, FileEdit, LayoutGrid, Moon, Pencil, Plus, PlusCircle, Star, Trash2, Upload, X, Zap } from 'lucide-react';
+import { Archive, BarChart3, BookOpen, CheckCircle2, ChefHat, Clock, ClipboardCheck, Download, Eye, FileEdit, Layers, LayoutGrid, Moon, Pencil, Plus, PlusCircle, Star, Trash2, Upload, X, Zap } from 'lucide-react';
 import { Legend, PALETTE } from '../../components/charts';
 import { DishArt, RecipeCardImage } from '../../components/DishArt';
 import { recipeImage } from '../../lib/images';
 import { uploadImage } from '../../lib/uploads';
 import { ActionTile, Card, Donut, EmptyState, ErrorNote, Modal, Notice, PageHeader, Pagination, SearchBox, Spinner, StatCard, STATUS_BADGE, downloadFile, toCsv } from '../../components/ui';
 import {
-  deleteRecipe, listIngredients, listRecipes, recipeParts, recipeRatings, RECIPE_CATEGORIES, saveRecipe, setRecipeStatus, topRecipes, validateRecipe,
+  deleteRecipe, listIngredients, listRecipes, parseRecipeImport, recipeParts, recipeRatings, RECIPE_CATEGORIES, saveRecipe, setRecipeStatus, topRecipes, validateRecipe,
   type AdminIngredient, type AdminRecipe, type RecipeDraft,
 } from '../../lib/adminApi';
+import { useLiveTick } from '../../lib/useLiveTick';
 
 const PAGE_SIZE = 8;
 export const slugify = (s: string) => s.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80);
@@ -25,6 +26,13 @@ export function AdminRecipesPage() {
   const [status, setStatus] = useState<'all' | AdminRecipe['status']>('all');
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('');
+  const [cuisine, setCuisine] = useState('');
+  const [sort, setSort] = useState('newest');
+  const [checked, setChecked] = useState<number[]>([]);
+  const [bulkOpen, setBulkOpen] = useState(false);
+  const [categoriesOpen, setCategoriesOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
+  const [importText, setImportText] = useState('');
   const [page, setPage] = useState(1);
   const [previewId, setPreviewId] = useState<number | null>(null);
   const [draft, setDraft] = useState<RecipeDraft | null>(null);
@@ -34,20 +42,24 @@ export function AdminRecipesPage() {
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
 
-  const load = useCallback(() => {
+  const tick = useLiveTick(['curated_recipes', 'feedback']);
+  const load = useCallback((quiet = false) => {
     Promise.all([listRecipes(), recipeRatings().catch(() => ({})), topRecipes(365, 50).catch(() => [])])
       .then(([r, rt, top]) => { setRecipes(r); setRatings(rt); setViews(Object.fromEntries(top.map((t) => [t.recipe_slug ?? '', t.viewed]))); })
-      .catch((e: Error) => setError(e.message));
+      .catch((e: Error) => { if (!quiet) setError(e.message); });
   }, []);
-  useEffect(load, [load]);
+  useEffect(() => { load(); }, [load]);
+  useEffect(() => { if (tick) load(true); }, [tick, load]);
   useEffect(() => { listIngredients().then(setIngredients).catch(() => {}); }, []);
-  useEffect(() => { setPage(1); }, [status, search, category]);
+  useEffect(() => { setPage(1); }, [status, search, category, cuisine, sort]);
   useEffect(() => { if (params.get('new')) { setDraft(emptyDraft()); setParams({}); } }, [params, setParams]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return (recipes ?? []).filter((r) => (status === 'all' || r.status === status) && (!category || r.category === category) && (!q || r.name.toLowerCase().includes(q) || r.slug.includes(q)));
-  }, [recipes, status, search, category]);
+    const rows = (recipes ?? []).filter((r) => (status === 'all' || r.status === status) && (!category || r.category === category) && (!cuisine || r.cuisine === cuisine) && (!q || r.name.toLowerCase().includes(q) || r.slug.includes(q)));
+    return rows.sort((a, b) => sort === 'name' ? a.name.localeCompare(b.name) : sort === 'oldest' ? a.created_at.localeCompare(b.created_at) : b.created_at.localeCompare(a.created_at));
+  }, [recipes, status, search, category, cuisine, sort]);
+  const cuisines = useMemo(() => [...new Set((recipes ?? []).map((r) => r.cuisine))].sort(), [recipes]);
   const preview = (recipes ?? []).find((r) => r.id === previewId) ?? filtered[0] ?? null;
   const totalViews = Object.values(views).reduce((a, b) => a + b, 0);
   const count = (s: AdminRecipe['status']) => (recipes ?? []).filter((r) => r.status === s).length;
@@ -71,6 +83,18 @@ export function AdminRecipesPage() {
     run(async () => { await saveRecipe(draft); setDraft(null); }, draft.id ? 'Recipe updated.' : 'Recipe created.');
   };
   const set = (patch: Partial<RecipeDraft>) => setDraft((d) => (d ? { ...d, ...patch } : d));
+  const bulkStatus = (value: AdminRecipe['status']) => run(async () => {
+    for (const id of checked) await setRecipeStatus(id, value);
+    setChecked([]); setBulkOpen(false);
+  }, `${checked.length} recipe${checked.length === 1 ? '' : 's'} now ${value}.`);
+  const runImport = () => {
+    const { drafts, errors } = parseRecipeImport(importText, ingredients);
+    if (errors.length) { setError(errors.slice(0, 5).join(' · ')); return; }
+    run(async () => {
+      for (const d of drafts) await saveRecipe(d);
+      setImportOpen(false); setImportText('');
+    }, `Imported ${drafts.length} recipe${drafts.length === 1 ? '' : 's'} as drafts.`);
+  };
   const uploadPhoto = (file: File) => {
     setUploading(true);
     setUploadError('');
@@ -83,10 +107,10 @@ export function AdminRecipesPage() {
   if (!recipes) return error ? <ErrorNote>{error}</ErrorNote> : <Spinner label="Loading recipes" />;
 
   return (
-    <>
+    <div className="admin-page admin-recipes">
       <PageHeader title="Recipes" accent="Management" icon={BookOpen} subtitle="Create, review, update and manage all recipes on Dish-Wish."
         actions={<button type="button" className="btn-primary" onClick={() => setDraft(emptyDraft())}><Plus size={18} />Add New Recipe</button>} />
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
+      <div className="admin-stats admin-compact grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
         <StatCard icon={ChefHat} value={recipes.length} label="Total Recipes" />
         <StatCard icon={CheckCircle2} value={count('published')} label="Published" tone="green" />
         <StatCard icon={FileEdit} value={count('draft')} label="Drafts" tone="amber" />
@@ -97,28 +121,38 @@ export function AdminRecipesPage() {
       {notice && <div className="mt-4"><Notice>{notice}</Notice></div>}
       {error && <div className="mt-4"><ErrorNote>{error}</ErrorNote></div>}
 
-      <div className="mt-3 grid gap-3 xl:grid-cols-[minmax(0,1fr)_25rem]">
-        <div className="min-w-0">
-          <div role="tablist" className="mb-3 flex flex-wrap gap-2">
+      <div className="mt-[0.7rem] grid gap-[0.85rem] xl:grid-cols-[minmax(0,1fr)_25.4rem]">
+        <div className="flex min-w-0 flex-col pt-[0.3rem]">
+          <div role="tablist" className="mb-[1.05rem] grid grid-cols-2 gap-2 sm:grid-cols-4">
             {([['all', 'All Recipes', LayoutGrid], ['published', 'Published', CheckCircle2], ['draft', 'Drafts', FileEdit], ['archived', 'Archived', Archive]] as const).map(([s, label, Icon]) => (
-              <button key={s} type="button" role="tab" aria-selected={status === s} className="pill !px-5 !py-2 text-[0.98rem]" onClick={() => setStatus(s)}>
-                <Icon size={20} aria-hidden="true" />{label} ({s === 'all' ? recipes.length : count(s)})</button>
+              <button key={s} type="button" role="tab" aria-selected={status === s} className="pill h-[3rem] justify-center !px-3 !text-[1rem]" onClick={() => setStatus(s)}>
+                <Icon size={24} aria-hidden="true" />{label} ({s === 'all' ? recipes.length : count(s)})</button>
             ))}
           </div>
-          <div className="mb-3 flex flex-wrap gap-2">
-            <SearchBox value={search} onChange={setSearch} label="Search recipes" placeholder="Search recipes (e.g., karahi, biryani)..." />
+          <div className="mb-[0.9rem] flex flex-wrap items-center gap-2">
+            <div className="min-w-[14rem] flex-1"><SearchBox value={search} onChange={setSearch} label="Search recipes" placeholder="Search recipes (e.g., karahi, biryani)..." /></div>
             <select className="select" value={category} onChange={(e) => setCategory(e.target.value)} aria-label="Category filter">
               <option value="">All Categories</option>{RECIPE_CATEGORIES.map((c) => <option key={c}>{c}</option>)}
             </select>
+            <select className="select" value={cuisine} onChange={(e) => setCuisine(e.target.value)} aria-label="Cuisine filter">
+              <option value="">All Cuisines</option>{cuisines.map((c) => <option key={c}>{c}</option>)}
+            </select>
+            <select className="select" value={status} onChange={(e) => setStatus(e.target.value as typeof status)} aria-label="Status filter">
+              <option value="all">All Status</option><option value="published">Published</option><option value="draft">Draft</option><option value="archived">Archived</option>
+            </select>
+            <select className="select" value={sort} onChange={(e) => setSort(e.target.value)} aria-label="Sort">
+              <option value="newest">Sort: Newest</option><option value="oldest">Sort: Oldest</option><option value="name">Sort: Name</option>
+            </select>
           </div>
-          <Card className="min-w-0">
+          <Card className="min-w-0 flex-1">
           {filtered.length === 0 ? <EmptyState title="No recipes match" /> : (
             <div className="overflow-x-auto">
               <table className="data-table min-w-[760px]">
-                <thead><tr><th>Recipe</th><th>Category</th><th>Cuisine</th><th>Prep Time</th><th>Rating</th><th>Views</th><th>Status</th><th>Actions</th></tr></thead>
+                <thead><tr><th className="w-7"><span className="sr-only">Select</span></th><th>Recipe</th><th>Category</th><th>Cuisine</th><th>Prep Time</th><th>Rating</th><th>Views</th><th>Status</th><th>Actions</th></tr></thead>
                 <tbody>
                   {filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((r) => (
                     <tr key={r.id}>
+                      <td><input type="checkbox" className="h-4 w-4 accent-crimson" aria-label={`Select ${r.name}`} checked={checked.includes(r.id)} onChange={() => setChecked(checked.includes(r.id) ? checked.filter((x) => x !== r.id) : [...checked, r.id])} /></td>
                       <td><span className="flex items-center gap-2"><DishArt category={r.category} imageUrl={recipeImage(r.slug, r.image_url)} name={r.name} className="!w-16 shrink-0 !rounded-lg" />
                         <span><strong>{r.name}</strong><span className="block text-xs text-stone-500">{r.slug} · {r.source === 'curated' ? 'Curated' : 'User-generated'}</span></span></span></td>
                       <td><span className="badge badge-red whitespace-nowrap"><ChefHat size={13} />{r.category}</span></td>
@@ -146,11 +180,11 @@ export function AdminRecipesPage() {
           <Pagination page={page} pageSize={PAGE_SIZE} total={filtered.length} onPage={setPage} noun="recipes" />
           </Card>
         </div>
-        <aside className="flex flex-col gap-3">
-          <Card title="Recipe Preview" icon={Eye}>
+        <aside className="flex min-w-0 flex-col gap-[0.7rem]">
+          <Card title="Recipe Preview" icon={Eye} action={preview?.status === 'published' ? <a href={`/recipe/${preview.slug}`} target="_blank" rel="noreferrer" className="whitespace-nowrap text-sm font-semibold text-crimson">Open user view</a> : undefined}>
             {!preview ? <p className="text-sm text-stone-500">No recipe to preview.</p> : (
               <div>
-                <RecipeCardImage category={preview.category} imageUrl={recipeImage(preview.slug, preview.image_url)} name={preview.name} rounded="rounded-2xl">
+                <RecipeCardImage category={preview.category} imageUrl={recipeImage(preview.slug, preview.image_url)} name={preview.name} rounded="rounded-2xl" frame="aspect-[373/170]">
                   <span className={`badge absolute right-2 top-2 capitalize !text-[0.86rem] ${STATUS_BADGE[preview.status]}`}>{preview.status}</span>
                   <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent px-3 pb-2 pt-8 font-display text-xl font-bold text-white">{preview.name}</span>
                 </RecipeCardImage>
@@ -159,13 +193,12 @@ export function AdminRecipesPage() {
                   <span className="inline-flex items-center gap-1"><BarChart3 size={18} className="text-crimson" />{preview.servings} servings</span>
                   <span className="inline-flex items-center gap-1"><Star size={18} className="fill-amber-500 text-amber-500" />{ratings[preview.slug] ? `${ratings[preview.slug].avg.toFixed(1)} (${ratings[preview.slug].count})` : 'No ratings'}</span>
                 </p>
-                {preview.status === 'published' && <a href={`/recipe/${preview.slug}`} target="_blank" rel="noreferrer" className="btn-sm btn-outline mt-2">Open user view</a>}
               </div>
             )}
           </Card>
           <Card title="Recipe Categories Distribution" icon={BarChart3}>
             <div className="flex flex-wrap items-center gap-4">
-              <Donut size={130} label="Recipes by category" parts={byCategory.map((x, i) => ({ value: x.n, color: PALETTE[i % PALETTE.length], label: x.c }))}
+              <Donut size={150} thickness={6} label="Recipes by category" parts={byCategory.map((x, i) => ({ value: x.n, color: PALETTE[i % PALETTE.length], label: x.c }))}
                 center={<span><span className="block text-xl font-bold">{recipes.length}</span><span className="text-sm">Recipes</span></span>} />
               <div className="min-w-32 flex-1"><Legend items={byCategory.map((x, i) => ({ label: x.c, value: `${Math.round((x.n / recipes.length) * 100)}%`, color: PALETTE[i % PALETTE.length] }))} /></div>
             </div>
@@ -175,7 +208,10 @@ export function AdminRecipesPage() {
               <ActionTile icon={PlusCircle} label="Add Recipe" onClick={() => setDraft(emptyDraft())} />
               <ActionTile icon={Download} label="Export Data" onClick={() => downloadFile('dishwish-recipes.csv', toCsv(recipes.map((r) => ({ slug: r.slug, name: r.name, category: r.category,
                 cuisine: r.cuisine, minutes: r.minutes, servings: r.servings, status: r.status, source: r.source }))), 'text/csv')} />
-              <ActionTile icon={FileEdit} label="Review Drafts" onClick={() => setStatus('draft')} />
+              <ActionTile icon={Upload} label="Import Recipes" onClick={() => setImportOpen(true)} />
+              <ActionTile icon={Layers} label="Bulk Update" onClick={() => setBulkOpen(true)} />
+              <ActionTile icon={ClipboardCheck} label="Review Drafts" onClick={() => setStatus('draft')} />
+              <ActionTile icon={LayoutGrid} label="Manage Categories" onClick={() => setCategoriesOpen(true)} />
             </div>
           </Card>
         </aside>
@@ -256,6 +292,28 @@ export function AdminRecipesPage() {
           </form>
         )}
       </Modal>
+      <Modal open={bulkOpen} title="Bulk update" onClose={() => setBulkOpen(false)}>
+        {checked.length === 0 ? <p className="text-sm text-stone-600">Tick recipes in the table first, then choose a status for all of them.</p> : (
+          <div className="space-y-3 text-sm">
+            <p>Set the status of <strong>{checked.length}</strong> selected recipe{checked.length === 1 ? '' : 's'}:</p>
+            <div className="flex flex-wrap gap-2">
+              {(['published', 'draft', 'archived'] as const).map((s) => <button key={s} type="button" className="btn-sm btn-outline capitalize" onClick={() => bulkStatus(s)}>{s}</button>)}
+            </div>
+          </div>
+        )}
+      </Modal>
+      <Modal open={categoriesOpen} title="Recipe categories" onClose={() => setCategoriesOpen(false)}>
+        <p className="mb-2 text-sm text-stone-600">Choose a category to show only its recipes. The category list is fixed in the recipe form.</p>
+        <ul className="divide-y divide-stone-100 text-sm">
+          {RECIPE_CATEGORIES.map((c) => <li key={c}><button type="button" className="flex w-full items-center justify-between py-2 text-left hover:text-crimson" onClick={() => { setCategory(c); setCategoriesOpen(false); }}><span>{c}</span><strong>{recipes.filter((r) => r.category === c).length}</strong></button></li>)}
+        </ul>
+      </Modal>
+      <Modal open={importOpen} title="Import recipes (JSON)" onClose={() => setImportOpen(false)} wide>
+        <p className="text-sm text-stone-600">Paste a JSON list. Each recipe needs <code>name</code>, <code>ingredients</code> (each with <code>name</code> and <code>grams</code>) and <code>steps</code>. Recipes are saved as drafts, and nothing is saved if any recipe is invalid. Max 100.</p>
+        <textarea className="field mt-3 min-h-48 font-mono text-xs" value={importText} onChange={(e) => setImportText(e.target.value)} aria-label="Recipes JSON" />
+        {error && <div className="mt-2"><ErrorNote>{error}</ErrorNote></div>}
+        <button type="button" className="btn-primary mt-3" onClick={runImport} disabled={!importText.trim()}><Upload size={16} aria-hidden="true" />Validate and import</button>
+      </Modal>
       <Modal open={confirmDelete !== null} title="Delete recipe?" onClose={() => setConfirmDelete(null)}>
         {confirmDelete && (
           <div className="space-y-3 text-sm">
@@ -267,6 +325,6 @@ export function AdminRecipesPage() {
           </div>
         )}
       </Modal>
-    </>
+    </div>
   );
 }

@@ -1,6 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { toCsv } from '../components/ui';
 import { cumulativeUsers } from '../pages/admin/AdminDashboardPage';
+import { isBalanced, startingIngredients } from '../pages/RecommendationsPage';
+import { recipeShopping } from '../pages/CuratedRecipePage';
+import { mealCalorieCap } from './curatedApi';
+import { achievementsFor, totalRecipes } from '../pages/ProfilePage';
+import { ageFrom, validateDetails } from './accountApi';
+import { parseRecipeImport } from './adminApi';
+import { filterFeedback } from '../pages/admin/AdminFeedbackPage';
+import { compatibleWith, pairBreakdown } from '../pages/admin/AdminMatchPage';
+import { tasteDistribution } from '../pages/admin/AdminOverviewPage';
 import { heatColor } from '../pages/admin/AdminAnalyticsPage';
 import { parseIngredientCsv } from '../pages/admin/AdminIngredientsPage';
 import { slugify } from '../pages/admin/AdminRecipesPage';
@@ -104,6 +113,128 @@ describe('admin validation', () => {
 
   it('neutralises spreadsheet formulas in CSV exports', () => {
     expect(toCsv([{ name: '=HYPERLINK("x")', note: 'a,b' }])).toBe('name,note\n"\'=HYPERLINK(""x"")","a,b"');
+  });
+});
+
+describe('balanced nutrition check', () => {
+  it('needs enough protein and not too much energy from fat', () => {
+    expect(isBalanced({ kcal: 420, protein: 38, carbs: 18, fat: 22 })).toBe(true);
+    expect(isBalanced({ kcal: 500, protein: 4, carbs: 80, fat: 15 })).toBe(false);
+    expect(isBalanced({ kcal: 600, protein: 25, carbs: 5, fat: 55 })).toBe(false);
+    expect(isBalanced({ kcal: 0, protein: 0, carbs: 0, fat: 0 })).toBe(false);
+  });
+});
+
+describe('admin helpers', () => {
+  const items = [{ id: 1, name: 'Chicken' }, { id: 2, name: 'Tomato' }, { id: 3, name: 'Ginger' }, { id: 4, name: 'Mango' }];
+  const edge = (ingredient_a: number, ingredient_b: number, weight: number) => ({ ingredient_a, ingredient_b, weight, relation_type: 'complementary', evidence: '', updated_at: '' });
+
+  it('ranks compatible ingredients by their average link to the chosen ones', () => {
+    const out = compatibleWith(['Chicken', 'Tomato'], [edge(1, 3, 0.9), edge(2, 3, 0.7), edge(1, 2, 1), edge(2, 4, 0.95)], items);
+    expect(out.map((o) => o.name)).toEqual(['Mango', 'Ginger']);
+    expect(out[1].score).toBeCloseTo(0.8);
+  });
+
+  it('gives each chosen ingredient its own pair score, and none without pairs', () => {
+    const out = pairBreakdown(['A', 'B', 'C'], [{ a: 'A', b: 'B', weight: 0.8 }]);
+    expect(out).toEqual([{ name: 'A', score: 0.8 }, { name: 'B', score: 0.8 }, { name: 'C', score: null }]);
+  });
+
+  it('filters and sorts feedback across every row', () => {
+    const now = Date.parse('2026-11-05T00:00:00Z');
+    const row = (id: number, rating: number | null, created_at: string) => ({ id, rating, created_at }) as never;
+    const rows = [row(1, 5, '2026-11-01T00:00:00Z'), row(2, 3, '2026-11-03T00:00:00Z'), row(3, 5, '2026-01-01T00:00:00Z')];
+    expect(filterFeedback(rows, 30, 0, 'newest', now).map((f: { id: number }) => f.id)).toEqual([2, 1]);
+    expect(filterFeedback(rows, 30, 0, 'oldest', now).map((f: { id: number }) => f.id)).toEqual([1, 2]);
+    expect(filterFeedback(rows, 30, 0, 'rating', now).map((f: { id: number }) => f.id)).toEqual([1, 2]);
+    expect(filterFeedback(rows, 365, 5, 'newest', now).map((f: { id: number }) => f.id)).toEqual([1, 3]);
+  });
+
+  it('counts spice levels and other tastes from saved preferences without inventing any', () => {
+    const out = tasteDistribution({ spicy: { low: 1, medium: 1, high: 2 }, sweet: { low: 0, medium: 0, high: 0 } });
+    expect(out.map((t) => [t.label, t.percent])).toEqual([['Spicy', 50], ['Medium', 25], ['Mild', 25], ['Sweet', 0], ['Sour', 0]]);
+    expect(tasteDistribution({}).every((t) => t.percent === 0)).toBe(true);
+  });
+
+  it('rejects a whole recipe import if an ingredient is unknown', () => {
+    const list = [{ id: 1, name: 'Chicken' }];
+    const good = { name: 'Test Dish', ingredients: [{ name: 'chicken', grams: 200 }], steps: ['Cook it'] };
+    expect(parseRecipeImport(JSON.stringify([good]), list).drafts[0]).toMatchObject({ slug: 'test-dish', status: 'draft', lines: [{ ingredient_id: 1, grams: 200 }] });
+    expect(parseRecipeImport(JSON.stringify([{ ...good, ingredients: [{ name: 'Unicorn', grams: 1 }] }]), list).errors[0]).toMatch(/Unicorn/);
+    expect(parseRecipeImport('not json', list).errors[0]).toMatch(/JSON/);
+  });
+});
+
+describe('checklist additions', () => {
+  it('caps one serving at a third of the daily calorie goal, and only with a goal', () => {
+    expect(mealCalorieCap({ calorieTier: 'low' })).toBe(400);
+    expect(mealCalorieCap({ calorieTier: null })).toBeUndefined();
+  });
+
+  it('asks for savory only when the cook chose it', () => {
+    const sel = { ingredients: ['Tomato', 'Onion'], tastes: { sweet: null, salty: null, sour: null, spicy: null }, diets: [], maxMinutes: null };
+    const prefs = { ...emptyPreferences(), calorieTier: 'high' as const };
+    expect(recommendationRequest(sel, prefs, []).tastes).not.toHaveProperty('savory');
+    expect(recommendationRequest(sel, prefs, [], { savory: true }).tastes).toMatchObject({ savory: 'high' });
+    expect(recommendationRequest(sel, prefs, []).max_kcal).toBe(600);
+  });
+
+  it('lists only what the cook is short of, never staples', () => {
+    const lines = recipeShopping([
+      { name: 'Chicken Breast', grams: 500, staple: false, have: false },
+      { name: 'Salt', grams: 5, staple: true, have: false },
+      { name: 'Tomato', grams: 200, staple: false, have: true },
+      { name: 'Ginger', grams: 20, staple: false, have: false },
+    ], new Map([['Chicken Breast', 200]]));
+    expect(lines.map((l) => [l.name, l.buyG])).toEqual([['Chicken Breast', 300], ['Ginger', 20]]);
+  });
+});
+
+describe('recommendations with nothing chosen', () => {
+  const catalog = ['Chicken Breast', 'Tomato', 'Onion', 'Green Chilli', 'Milk', 'Rice'].map((name) => ({ name, allergens: name === 'Milk' ? ['milk'] : [] }));
+  const none = { allergens: [], customAllergens: [] };
+
+  it('starts from the pantry when it can', () => {
+    expect(startingIngredients(['Rice', 'Onion'], catalog, none)).toEqual({ names: ['Rice', 'Onion'], source: 'pantry' });
+  });
+
+  it('falls back to the starter set', () => {
+    expect(startingIngredients(['Rice'], catalog, none)).toEqual({ names: ['Chicken Breast', 'Tomato', 'Onion', 'Green Chilli'], source: 'starter' });
+  });
+
+  it('never starts with something the cook is allergic to', () => {
+    expect(startingIngredients(['Milk', 'Rice'], catalog, { allergens: ['milk'], customAllergens: [] }).names).not.toContain('Milk');
+    expect(startingIngredients([], catalog, { allergens: [], customAllergens: ['chicken'] }).names).not.toContain('Chicken Breast');
+  });
+});
+
+describe('profile helpers', () => {
+  it('works out age, never inventing one', () => {
+    const today = new Date(2026, 10, 4);
+    expect(ageFrom('2003-08-07', today)).toBe(23);
+    expect(ageFrom('2003-12-07', today)).toBe(22);
+    expect(ageFrom('', today)).toBeNull();
+    expect(ageFrom('2030-01-01', today)).toBeNull();
+  });
+
+  it('validates the optional details', () => {
+    const blank = { phone: '', birthDate: '', location: '', bio: '', cookingLevel: '' };
+    expect(validateDetails(blank)).toBeNull();
+    expect(validateDetails({ ...blank, phone: 'call me' })).toMatch(/phone/);
+    expect(validateDetails({ ...blank, phone: '+92 300 1234567' })).toBeNull();
+    expect(validateDetails({ ...blank, cookingLevel: 'Wizard' })).toMatch(/level/);
+  });
+
+  it('counts each dish once and ignores views', () => {
+    expect(totalRecipes([{ title: 'Karahi' }], [{ kind: 'generated', recipe_name: 'karahi' }, { kind: 'cooked', recipe_name: 'Biryani' }, { kind: 'viewed', recipe_name: 'Kheer' }])).toBe(2);
+  });
+
+  it('unlocks achievements only from recorded activity', () => {
+    const none = achievementsFor([], []);
+    expect(none.every((x) => !x.unlocked)).toBe(true);
+    const some = achievementsFor([{ favorite: true }], [{ kind: 'cooked' }]);
+    const unlocked = (t: string) => some.find((x) => x.title === t)?.unlocked;
+    expect([unlocked('First Recipe Saved'), unlocked('First Recipe Cooked'), unlocked('First Favorite'), unlocked('Five Recipes Cooked'), unlocked('First Ingredient Match')]).toEqual([true, true, true, false, false]);
   });
 });
 

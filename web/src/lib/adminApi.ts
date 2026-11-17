@@ -1,5 +1,6 @@
 // Super Admin data access. Every call is re-checked in the database (RLS + admin RPCs that
 // raise 42501 for non-admins), so this module grants nothing by itself.
+import { API_URL } from './recipes';
 import { supabase } from './supabase';
 
 async function rpc<T>(fn: string, args: Record<string, unknown> = {}): Promise<T> {
@@ -41,6 +42,20 @@ export async function updateFeedback(id: number, patch: { status?: string; admin
   if (patch.admin_note !== undefined && patch.admin_note.length > 2000) throw new Error('Notes are limited to 2,000 characters.');
   const { error } = await supabase.from('feedback').update(patch).eq('id', id);
   if (error) throw new Error(error.message);
+}
+// Every matching row, so the page can filter by rating and date and sort across all of them.
+export async function listAllFeedback(search: string, status: string, kind: string) {
+  const rows: AdminFeedback[] = [];
+  const pageSize = 50;
+  let first = await listFeedback(search, status, kind, 1, pageSize);
+  rows.push(...first.rows);
+  for (let page = 2; first.rows.length === pageSize && rows.length < first.total && page <= 100; page += 1) {
+    const next = await listFeedback(search, status, kind, page, pageSize);
+    rows.push(...next.rows);
+    if (next.rows.length < pageSize) break;
+    first = next;
+  }
+  return { counts: first.counts, rows };
 }
 export async function allFeedbackForStats() {
   const { data, error } = await supabase.from('feedback').select('kind, rating, status, created_at').order('created_at');
@@ -167,6 +182,31 @@ export async function saveRecipe(r: RecipeDraft): Promise<number> {
   const id = await rpc<number>('admin_save_recipe', { payload });
   return Number(id);
 }
+// Admin import: a JSON list using ingredient names. Every recipe is checked before anything is saved.
+export function parseRecipeImport(text: string, ingredients: { id: number; name: string }[]): { drafts: RecipeDraft[]; errors: string[] } {
+  let list: unknown;
+  try { list = JSON.parse(text); } catch { return { drafts: [], errors: ['That isn’t valid JSON.'] }; }
+  if (!Array.isArray(list)) return { drafts: [], errors: ['Paste a JSON list of recipes.'] };
+  const ids = new Map(ingredients.map((i) => [i.name.toLowerCase(), i.id]));
+  const drafts: RecipeDraft[] = [], errors: string[] = [];
+  list.slice(0, 100).forEach((raw, n) => {
+    const r = raw as Record<string, unknown>;
+    const name = String(r.name ?? '');
+    const rows = Array.isArray(r.ingredients) ? (r.ingredients as Record<string, unknown>[]) : [];
+    const unknown = rows.find((l) => !ids.has(String(l.name ?? '').toLowerCase()));
+    if (unknown) { errors.push(`Recipe ${n + 1}: unknown ingredient “${String(unknown.name ?? '')}”`); return; }
+    const draft: RecipeDraft = {
+      id: null, name, slug: String(r.slug ?? name).toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80),
+      description: String(r.description ?? ''), category: String(r.category ?? 'Main Course'), cuisine: String(r.cuisine ?? 'Pakistani'),
+      minutes: Number(r.minutes ?? 30), servings: Number(r.servings ?? 4), taste: { sweet: 0, salty: 5, sour: 2, spicy: 5, ...(r.taste as object) }, image_url: null,
+      status: 'draft', lines: rows.map((l) => ({ ingredient_id: ids.get(String(l.name).toLowerCase()) as number, grams: Number(l.grams), display: String(l.display ?? '') })),
+      steps: Array.isArray(r.steps) ? r.steps.map(String) : [],
+    };
+    const problem = validateRecipe(draft);
+    if (problem) errors.push(`Recipe ${n + 1}: ${problem}`); else drafts.push(draft);
+  });
+  return { drafts, errors };
+}
 export async function setRecipeStatus(id: number, status: AdminRecipe['status']) {
   const { error } = await supabase.from('curated_recipes').update({ status }).eq('id', id);
   if (error) throw new Error(error.message);
@@ -188,7 +228,8 @@ export async function recipeRatings(): Promise<Record<string, { avg: number; cou
 }
 
 // ---- Settings and audit ----
-export interface RecommendationSettings { weights: Record<'coverage' | 'compatibility' | 'taste' | 'cooking', number>; missing_penalty: number; missing_tolerance: number; min_score: number }
+export interface RecommendationSettings { weights: Record<'coverage' | 'compatibility' | 'taste' | 'cooking', number> & { similarity?: number }; missing_penalty: number; missing_tolerance: number; min_score: number;
+  personalization?: { enabled: boolean; strength: number } }
 export async function getSetting<T>(key: string): Promise<T | null> {
   const { data, error } = await supabase.from('app_settings').select('value').eq('key', key).maybeSingle();
   if (error) throw new Error(error.message);
@@ -228,4 +269,26 @@ export function pctChange(now: number, prev: number): string | null {
   if (!prev) return now ? 'new this period' : null;
   const p = ((now - prev) / prev) * 100;
   return `${p >= 0 ? '+' : ''}${p.toFixed(1)}% vs previous period`;
+}
+
+// ---- Engine evaluation (FastAPI, Super Admin only; the API re-checks the admin role) ----
+export interface EvalRow { method: string; 'hit@1': number; 'hit@3': number; 'hit@5': number; mrr: number; trials: number }
+export interface EvalReport {
+  methods: EvalRow[]; best: string; lift_hit5_vs_random: number | null; recipes: number; seeds: number[]; protocol: string; seconds: number;
+  safety: { profiles: number; recipes_checked: number; violations: number }; data_source: string; weights: Record<string, number>;
+  personalization?: { users: number; history_per_user: number; test_cases: number; hit1_global: number; hit1_personal: number; enabled: boolean; strength: number };
+}
+export async function engineEvaluation(fresh = false): Promise<EvalReport> {
+  const { data } = await supabase.auth.getSession();
+  const token = data.session?.access_token;
+  if (!token) throw new Error('Log in again to run the evaluation.');
+  let response: Response;
+  try {
+    response = await fetch(`${API_URL}/api/admin/evaluation${fresh ? '?fresh=true' : ''}`, { headers: { Authorization: `Bearer ${token}` } });
+  } catch {
+    throw new Error('Could not reach the recommendation API.');
+  }
+  const body = await response.json().catch(() => null);
+  if (!response.ok) throw new Error(typeof body?.detail === 'string' ? body.detail : `Evaluation failed (HTTP ${response.status}).`);
+  return body as EvalReport;
 }

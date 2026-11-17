@@ -51,7 +51,7 @@ def fetch_database(url: str, key: str, client: httpx.Client | None = None) -> En
         lines = get("recipe_ingredients?select=recipe_id,ingredient_id,position,grams,display")
         steps = get("recipe_steps?select=recipe_id,position,body")
         edges = get("ingredient_compatibility?select=ingredient_a,ingredient_b,weight,relation_type,evidence")
-        settings = get("app_settings?select=value&key=eq.recommendation")
+        settings_rows = get("app_settings?select=key,value&key=in.(recommendation,personalization)")
     finally:
         if own:
             client.close()
@@ -81,7 +81,9 @@ def fetch_database(url: str, key: str, client: httpx.Client | None = None) -> En
     graph = {frozenset((names[e["ingredient_a"]], names[e["ingredient_b"]])):
              Edge(float(e["weight"]), e["relation_type"], e["evidence"] or e["relation_type"])
              for e in edges if e["ingredient_a"] in names and e["ingredient_b"] in names}
-    return EngineData(ingredients, curated, graph, settings[0]["value"] if settings else None, "database")
+    stored = {row["key"]: row["value"] for row in settings_rows}
+    return EngineData(ingredients, curated, graph, stored.get("recommendation"), "database",
+                      personalization=stored.get("personalization"))
 
 
 def load_engine_data() -> EngineData:

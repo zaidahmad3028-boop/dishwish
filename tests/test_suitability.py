@@ -56,7 +56,9 @@ def test_formula_matches_documented_weights():
     result = tiny_engine().recommend(["Chicken Breast", "Tomato"], tastes={"spicy": "high"}, max_minutes=45)["recipes"][0]
     coverage = 2 / 3  # chicken + tomato of the three core items (salt and chilli powder are staples)
     compatibility = (.8 + .6 + .7) / 3  # chicken-tomato, chicken-ginger, tomato-ginger; each family pair once
-    expected = .45 * coverage + .30 * compatibility + .20 * 1.0 + .05 * 1.0
+    similarity = result["components"]["similarity"]  # TF-IDF cosine, checked on its own below
+    assert 0 < similarity <= 1
+    expected = (.45 * coverage + .10 * similarity + .30 * compatibility + .20 * 1.0 + .05 * 1.0) / 1.10
     assert result["score"] == pytest.approx(expected, abs=1e-4)
     assert result["match_percent"] == round(expected * 100)
     assert result["missing"] == ["Ginger"] and result["penalty"] == 0
@@ -65,9 +67,10 @@ def test_formula_matches_documented_weights():
 def test_unavailable_components_are_renormalised_not_invented():
     result = tiny_engine().recommend(["Chicken Breast", "Tomato"])["recipes"][0]
     assert result["components"]["taste"] is None and result["components"]["cooking"] is None
-    assert set(result["weights_used"]) == {"coverage", "compatibility"}
-    assert sum(result["weights_used"].values()) == pytest.approx(1)
-    expected = (.45 * (2 / 3) + .30 * .7) / .75
+    assert set(result["weights_used"]) == {"coverage", "similarity", "compatibility"}
+    assert sum(result["weights_used"].values()) == pytest.approx(1, abs=1e-3)  # each share is rounded to 4 places
+    similarity = result["components"]["similarity"]
+    expected = (.45 * (2 / 3) + .10 * similarity + .30 * .7) / .85
     assert result["score"] == pytest.approx(expected, abs=1e-4)
 
 
@@ -75,8 +78,36 @@ def test_missing_penalty_only_beyond_tolerance():
     settings = {**DEFAULT_SETTINGS, "missing_tolerance": 0, "missing_penalty": .1}
     result = tiny_engine(settings).recommend(["Chicken Breast", "Tomato"])["recipes"][0]
     assert result["penalty"] == pytest.approx(.1)
-    base = (.45 * (2 / 3) + .30 * .7) / .75
+    base = (.45 * (2 / 3) + .10 * result["components"]["similarity"] + .30 * .7) / .85
     assert result["score"] == pytest.approx(base - .1, abs=1e-4)
+
+
+def test_dishes_built_on_your_main_ingredient_rank_first(engine):
+    result = engine.recommend(["Chicken Breast", "Tomato", "Onion", "Green Chilli"], tastes={"spicy": "high"}, limit=24)
+    by_slug = {r["slug"]: r for r in result["recipes"]}
+    assert result["recipes"][0]["slug"] == "chicken-karahi"
+    assert all(r["main_ingredient_missing"] is None for r in result["recipes"][:7])
+    assert by_slug["chicken-biryani"]["score"] > by_slug["bhindi-masala"]["score"]
+    assert by_slug["bhindi-masala"]["main_ingredient_missing"] == "Okra (Bhindi)"
+    assert by_slug["chicken-karahi"]["main_ingredient_missing"] is None
+    assert by_slug["chicken-karahi"]["score"] > by_slug["bhindi-masala"]["score"]
+    assert any("main ingredient" in line for line in by_slug["bhindi-masala"]["explanation"])
+
+
+def test_main_ingredient_penalty_uses_pantry_and_settings():
+    settings = {**DEFAULT_SETTINGS, "main_missing_penalty": 0}
+    assert validate_settings(settings)["main_missing_penalty"] == 0
+    with pytest.raises(SuitabilityError):
+        validate_settings({"main_missing_penalty": .9})
+
+
+def test_pantry_counts_towards_the_main_ingredient(engine):
+    selected = ["Tomato", "Onion", "Green Chilli"]
+    without = {r["slug"]: r for r in engine.recommend(selected, limit=30)["recipes"]}
+    with_okra = {r["slug"]: r for r in engine.recommend(selected, pantry=["Okra (Bhindi)"], limit=30)["recipes"]}
+    assert without["bhindi-masala"]["main_ingredient_missing"] == "Okra (Bhindi)"
+    assert with_okra["bhindi-masala"]["main_ingredient_missing"] is None
+    assert with_okra["bhindi-masala"]["score"] > without["bhindi-masala"]["score"]
 
 
 def test_score_is_clamped_and_min_score_filters():
@@ -130,7 +161,7 @@ def test_validation_rules(engine):
     with pytest.raises(SuitabilityError):
         validate_settings({"weights": {"coverage": 2}})
     with pytest.raises(SuitabilityError):
-        validate_settings({"weights": {"coverage": 0, "compatibility": 0, "taste": 0, "cooking": 0}})
+        validate_settings({"weights": {"coverage": 0, "similarity": 0, "compatibility": 0, "taste": 0, "cooking": 0}})
 
 
 def test_family_matching():
@@ -164,7 +195,8 @@ def test_database_loader_and_fallback(monkeypatch):
                                    {"recipe_id": 5, "ingredient_id": 10, "position": 2, "grams": 200, "display": "2"}],
             "recipe_steps": [{"recipe_id": 5, "position": 1, "body": "Cook."}],
             "ingredient_compatibility": [{"ingredient_a": 10, "ingredient_b": 11, "weight": .9, "relation_type": "complementary", "evidence": "admin"}],
-            "app_settings": [{"value": {**DEFAULT_SETTINGS, "min_score": .1}}],
+            "app_settings": [{"key": "recommendation", "value": {**DEFAULT_SETTINGS, "min_score": .1}},
+                             {"key": "personalization", "value": {"enabled": False, "strength": .4}}],
         }
         table = request.url.path.rsplit("/", 1)[-1]
         assert request.headers["apikey"] == "anon-key", path
@@ -175,6 +207,7 @@ def test_database_loader_and_fallback(monkeypatch):
     assert data.source == "database" and [r.slug for r in data.recipes] == ["db-dish"]
     engine = SuitabilityEngine(data.ingredients, data.recipes, data.edges, data.settings)
     assert engine.compatibility("Tomato", "Chicken Breast") == (.9, "admin")
+    assert data.personalization == {"enabled": False, "strength": .4}
 
     monkeypatch.delenv("SUPABASE_URL", raising=False)
     fallback = catalog_db.load_engine_data()
@@ -236,3 +269,38 @@ def test_vegan_excludes_meat_eggs_dairy_and_honey():
     for recipe in vegan:
         items = [engine.catalog[line.name] for line in recipe.lines]
         assert all(i.category != "Meat" and not {"milk", "eggs"} & set(i.allergens) and i.name != "Honey" for i in items)
+
+
+def test_tfidf_similarity_prefers_rarer_shared_ingredients(engine):
+    karahi = next(r for r in engine.recipes if r.slug == "chicken-karahi")
+    fams = engine.core_families(karahi)
+    assert engine.tfidf_similarity(fams, karahi) == pytest.approx(1)
+    assert engine.tfidf_similarity(set(), karahi) == 0
+    common = max(fams, key=lambda f: -engine.idf[f])  # most widely used family in the karahi
+    rare = max(fams, key=lambda f: engine.idf[f])
+    if engine.idf[rare] > engine.idf[common]:
+        assert engine.tfidf_similarity({rare}, karahi) > engine.tfidf_similarity({common}, karahi)
+
+
+def test_calorie_goal_hides_heavier_dishes(engine):
+    free = engine.recommend(["Chicken Breast", "Tomato", "Onion"], limit=40)
+    capped = engine.recommend(["Chicken Breast", "Tomato", "Onion"], max_kcal=350, limit=40)
+    assert all(r["nutrition_per_serving"]["kcal"] <= 350 for r in capped["recipes"])
+    assert capped["excluded"]["calories"] >= 1
+    assert len(capped["recipes"]) <= len(free["recipes"])
+
+
+def test_savory_is_estimated_and_can_be_targeted(engine):
+    for r in engine.recipes:
+        assert 0 <= engine.savory(r) <= 10
+    result = engine.recommend(["Chicken Breast", "Tomato", "Onion"], tastes={"savory": "high"})
+    assert result["recipes"] and all("savory" in r["taste"] for r in result["recipes"])
+    assert all(r["components"]["taste"] is not None for r in result["recipes"])
+
+
+def test_low_carb_and_keto_follow_carbs(engine):
+    for r in engine.recipes:
+        carbs = engine.nutrition(r)["carbs"]
+        tags = engine.diets(r)
+        assert ("low_carb" in tags) == (carbs <= 30)
+        assert ("keto" in tags) == (carbs <= 15)

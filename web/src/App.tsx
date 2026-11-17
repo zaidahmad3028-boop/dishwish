@@ -13,6 +13,7 @@ import { CuratedRecipePage } from './pages/CuratedRecipePage';
 import { IngredientSelectionPage } from './pages/IngredientSelectionPage';
 import { KitchenHomePage } from './pages/KitchenHomePage';
 import { KitchenPage } from './pages/KitchenPage';
+import { GenerateRecipePage } from './pages/GenerateRecipePage';
 import { MyRecipesPage } from './pages/MyRecipesPage';
 import { OnboardingPage } from './pages/OnboardingPage';
 import { PantryPage } from './pages/PantryPage';
@@ -21,6 +22,7 @@ import { RecommendationsPage } from './pages/RecommendationsPage';
 import { SavedRecipePage } from './pages/RecipesPage';
 import { ResetPasswordPage } from './pages/ResetPasswordPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { SurveyPage } from './pages/SurveyPage';
 import { SharePage } from './pages/SharePage';
 import { Spinner } from './components/ui';
 
@@ -34,6 +36,10 @@ const AdminRecipesPage = admin('AdminRecipesPage', () => import('./pages/admin/A
 const AdminAnalyticsPage = admin('AdminAnalyticsPage', () => import('./pages/admin/AdminAnalyticsPage'));
 const AdminFeedbackPage = admin('AdminFeedbackPage', () => import('./pages/admin/AdminFeedbackPage'));
 const AdminSettingsPage = admin('AdminSettingsPage', () => import('./pages/admin/AdminSettingsPage'));
+const AdminMatchPage = admin('AdminMatchPage', () => import('./pages/admin/AdminMatchPage'));
+const AdminOverviewPage = admin('AdminOverviewPage', () => import('./pages/admin/AdminOverviewPage'));
+const AdminEvaluationPage = admin('AdminEvaluationPage', () => import('./pages/admin/AdminEvaluationPage'));
+const AdminSurveyPage = admin('AdminSurveyPage', () => import('./pages/admin/AdminSurveyPage'));
 
 function SetupNotice() {
   return (
@@ -83,11 +89,13 @@ export function App() {
                   <Route path="/recommendations" element={<RecommendationsPage />} />
                   <Route path="/recipe/:slug" element={<CuratedRecipePage />} />
                   <Route path="/create" element={<KitchenPage />} />
+                  <Route path="/generate" element={<GenerateRecipePage />} />
                   <Route path="/recipes" element={<MyRecipesPage />} />
                   <Route path="/recipes/:id" element={<SavedRecipePage />} />
                   <Route path="/pantry" element={<PantryPage />} />
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/settings" element={<SettingsPage />} />
+                  <Route path="/survey" element={<SurveyPage />} />
                 </Route>
               </Route>
               <Route element={<RequireAdmin />}>
@@ -99,6 +107,10 @@ export function App() {
                   <Route path="/admin/analytics" element={<AdminAnalyticsPage />} />
                   <Route path="/admin/feedback" element={<AdminFeedbackPage />} />
                   <Route path="/admin/settings" element={<AdminSettingsPage />} />
+                  <Route path="/admin/match" element={<AdminMatchPage />} />
+                  <Route path="/admin/overview" element={<AdminOverviewPage />} />
+                  <Route path="/admin/evaluation" element={<AdminEvaluationPage />} />
+                  <Route path="/admin/survey" element={<AdminSurveyPage />} />
                 </Route>
               </Route>
             </Route>

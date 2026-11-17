@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Ban, Bookmark, CheckCircle2, ChefHat, Clock, Crown, Eye, KeyRound, MessageSquare, ShieldCheck, UserCheck, UserRound, Users, Zap } from 'lucide-react';
 import { AreaTrend, Legend } from '../../components/charts';
 import { ActionRow, Avatar, Card, Donut, EmptyState, ErrorNote, Modal, Notice, PageHeader, Pagination, SearchBox, Spinner, StatCard, STATUS_BADGE, formatDate } from '../../components/ui';
+import { useLiveTick } from '../../lib/useLiveTick';
 import { allFeedbackForStats, listUsers, overview, pctShort, setUserStatus, timeseries, type AdminUser, type DayPoint, type Overview } from '../../lib/adminApi';
 import { sendPasswordReset } from '../../lib/authEmail';
 import { useAuth } from '../../auth/AuthProvider';
@@ -22,15 +23,17 @@ export function AdminUsersPage() {
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
 
-  const load = useCallback(() => {
-    listUsers(search, status, page, PAGE_SIZE).then((r) => { setResult(r); setError(''); }).catch((e: Error) => setError(e.message));
+  const tick = useLiveTick();
+  const load = useCallback((quiet = false) => {
+    listUsers(search, status, page, PAGE_SIZE).then((r) => { setResult(r); if (!quiet) setError(''); }).catch((e: Error) => { if (!quiet) setError(e.message); });
   }, [search, status, page]);
-  useEffect(() => { const t = setTimeout(load, 250); return () => clearTimeout(t); }, [load]);
+  useEffect(() => { const t = setTimeout(() => load(), 250); return () => clearTimeout(t); }, [load]);
+  useEffect(() => { if (tick) load(true); }, [tick, load]);
   useEffect(() => { setPage(1); }, [search, status]);
   useEffect(() => {
     Promise.all([overview(30), timeseries(30), listUsers('', 'admin', 1, 1), allFeedbackForStats()])
       .then(([o, series, admins, feedback]) => setStats({ o, series, admins: admins.total, feedback: feedback.length })).catch(() => {});
-  }, []);
+  }, [tick]);
 
   const rows = useMemo(() => {
     const list = [...(result?.rows ?? [])];
@@ -71,7 +74,7 @@ export function AdminUsersPage() {
   const pct = (n: number) => (o?.total_users ? `${Math.round((n / o.total_users) * 100)}% (${n})` : `${n}`);
 
   return (
-    <>
+    <div className="admin-page admin-users">
       <PageHeader title="Users" accent="Management" icon={Users} subtitle="Manage all registered users, their activity, recipes, and account status." />
       <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_28rem]">
         <div className="min-w-0 space-y-3">
@@ -191,6 +194,6 @@ export function AdminUsersPage() {
           </div>
         )}
       </Modal>
-    </>
+    </div>
   );
 }

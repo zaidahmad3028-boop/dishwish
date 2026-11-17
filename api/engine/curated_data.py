@@ -68,6 +68,32 @@ RECIPES = [
       "Lower the heat, stir in the yogurt and cook for 5 minutes.",
       "Add the cream, green chillies and kasuri methi; simmer for 3 minutes.",
       "Garnish with coriander and serve with naan."]),
+    ("chicken-jalfrezi", "Chicken Jalfrezi", "Main Course", "Pakistani", 35, 4, (2, 5, 4, 7),
+     "Boneless chicken stir-fried on high heat with capsicum, onion, tomato and green chillies in a tangy masala.",
+     [("Chicken Boneless (Boti)", 600, "600 g, in strips"), ("Capsicum", 200, "2, in thick strips"), ("Onion", 200, "2 medium, in wedges"),
+      ("Tomato", 250, "3 medium, chopped"), ("Green Chilli", 20, "4, slit"), ("Ginger", 15, "1 tbsp paste, plus a little julienned"),
+      ("Garlic", 10, "2 tsp paste"), ("Cooking Oil", 60, "1/4 cup"), ("Salt", 6, "1 tsp"), ("Red Chilli Powder", 4, "1 tsp"),
+      ("Turmeric (Haldi)", 1, "1/4 tsp"), ("Coriander Powder", 4, "1 tsp"), ("Cumin (Zeera)", 3, "1 tsp"), ("Black Pepper", 2, "1/2 tsp"),
+      ("Vinegar", 15, "1 tbsp"), ("Fresh Coriander", 10, "to garnish")],
+     ["Heat the oil on high heat and sear the chicken with the ginger and garlic for 5-6 minutes until lightly golden.",
+      "Add the tomatoes, salt, red chilli, turmeric, coriander powder and cumin; cook until the tomatoes break down and the oil separates.",
+      "Add the onion and capsicum and stir-fry on high heat for 3-4 minutes so they stay crunchy.",
+      "Add the green chillies, black pepper and vinegar; toss for 1 minute.",
+      "Garnish with julienned ginger and coriander. Serve hot with naan or plain rice."]),
+    ("chicken-achari", "Chicken Achari", "Main Course", "Pakistani", 45, 4, (1, 6, 7, 7),
+     "Chicken in a tangy yogurt and tomato gravy flavoured with the pickling spices of a Pakistani achar.",
+     [("Chicken Leg Piece", 750, "750 g, cut in pieces"), ("Onion", 200, "2 medium, sliced"), ("Tomato", 250, "3 medium, chopped"),
+      ("Yogurt (Dahi)", 150, "2/3 cup, whisked"), ("Green Chilli", 20, "4, slit"), ("Ginger", 15, "1 tbsp paste"), ("Garlic", 15, "1 tbsp paste"),
+      ("Mustard Oil", 60, "1/4 cup"), ("Salt", 8, "1 1/2 tsp"), ("Red Chilli Powder", 4, "1 tsp"), ("Turmeric (Haldi)", 1, "1/4 tsp"),
+      ("Fennel Seeds (Saunf)", 4, "2 tsp"), ("Cumin (Zeera)", 3, "1 tsp"), ("Mustard Seeds (Sarson)", 3, "1 tsp"),
+      ("Fenugreek (Methi Dana)", 2, "1/2 tsp"), ("Nigella Seeds (Kalonji)", 2, "1/2 tsp"), ("Lemon", 30, "juice of 1"),
+      ("Fresh Coriander", 10, "to garnish")],
+     ["Dry-roast the fennel, cumin, mustard, fenugreek and nigella for 1 minute until fragrant, then lightly crush them.",
+      "Heat the mustard oil until it just smokes, lower the heat and fry the onion until golden.",
+      "Add the chicken, ginger and garlic and cook on high heat for 6-7 minutes until the chicken changes colour.",
+      "Add the tomatoes, salt, red chilli, turmeric and half the crushed spices; cook until the oil separates.",
+      "Lower the heat, stir in the yogurt, cover and cook for 12-15 minutes until the chicken is tender.",
+      "Add the slit green chillies, the remaining spices and the lemon juice; simmer for 2 minutes, garnish with coriander and serve."]),
     ("yakhni-pulao", "Chicken Yakhni Pulao", "Rice", "Pakistani", 70, 4, (1, 5, 1, 3),
      "Fragrant rice cooked in a whole-spice chicken stock (yakhni) with the chicken pieces.",
      [("Whole Chicken", 800, "800 g, in pieces"), ("Basmati Rice", 400, "2 cups, soaked"), ("Onion", 200, "2, sliced"),
@@ -365,3 +391,8 @@ RECIPES = [
       "Add 3 1/2 cups of water, salt and green chillies; bring to the boil.",
       "Add the drained rice; cook until the water is absorbed, then steam covered on low heat for 15 minutes."]),
 ]
+
+# Recipes added for the final phase live in their own file to keep this one readable.
+from .curated_more import MORE_RECIPES  # noqa: E402
+
+RECIPES = RECIPES + MORE_RECIPES

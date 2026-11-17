@@ -185,4 +185,22 @@ export function blockReason(
   return word ? `Matches “${word}”` : null;
 }
 
+// Mild, Medium and Spicy are one choice: how hot the food should be, stored as the spicy level.
+export const SPICE_CHOICES: { level: Level; label: string; image: string }[] = [
+  { level: 'low', label: 'Mild', image: 'mild' }, { level: 'medium', label: 'Medium', image: 'medium' }, { level: 'high', label: 'Spicy', image: 'spicy' },
+];
+
+export function toggleSpice(tastes: Preferences['tastes'], level: Level): Preferences['tastes'] {
+  return { ...tastes, spicy: tastes.spicy === level ? null : level };
+}
+
+// Ticking a taste means medium until the cook picks another strength; unticking clears it.
+export function toggleTaste(tastes: Preferences['tastes'], key: TasteKey): Preferences['tastes'] {
+  return { ...tastes, [key]: tastes[key] === null ? 'medium' : null };
+}
+
+export function resetPreferences(prefs: Preferences): Preferences {
+  return { ...emptyPreferences(), onboarded: prefs.onboarded };
+}
+
 export const TASTE_SCORES: Record<Level, number> = { low: 2, medium: 5, high: 8 };

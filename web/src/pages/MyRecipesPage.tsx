@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useLiveTick } from '../lib/useLiveTick';
 import { Link, useSearchParams } from 'react-router-dom';
 import { ArrowRight, BarChart3, Bookmark, BookOpen, CalendarDays, CheckCircle2, ChefHat, ChevronRight, Clock, CookingPot, Eye, Heart, LayoutGrid, Plus, Trash2, Users, Zap, type LucideIcon } from 'lucide-react';
 import { useAuth } from '../auth/AuthProvider';
@@ -88,13 +89,14 @@ export function MyRecipesPage() {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('All');
   const [error, setError] = useState('');
+  const tick = useLiveTick(['saved_recipes', 'recipe_events', 'curated_recipes']);
 
   useEffect(() => {
     if (!userId) return;
-    listSavedRecipes(userId).then(setSaved).catch((e: Error) => { setSaved([]); setError(e.message); });
-    listEvents(userId).then(setEvents).catch(() => setEvents([]));
-    listCuratedRecipes().then(setCatalog).catch((e: Error) => { setCatalog([]); setError(e.message); });
-  }, [userId]);
+    listSavedRecipes(userId).then(setSaved).catch((e: Error) => { if (!tick) { setSaved([]); setError(e.message); } });
+    listEvents(userId).then(setEvents).catch(() => { if (!tick) setEvents([]); });
+    listCuratedRecipes().then(setCatalog).catch((e: Error) => { if (!tick) { setCatalog([]); setError(e.message); } });
+  }, [userId, tick]);
 
   const count = (kind: EventKind) => (events ?? []).filter((e) => e.kind === kind).length;
   const favorites = (saved ?? []).filter((r) => r.favorite);

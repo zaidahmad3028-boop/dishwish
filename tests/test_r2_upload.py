@@ -43,8 +43,9 @@ def test_upload_checks_the_file_itself(client):
 
 def test_upload_reports_missing_storage_settings(client, monkeypatch):
     monkeypatch.delenv("R2_SECRET_ACCESS_KEY")
+    monkeypatch.delenv("SUPABASE_ANON_KEY", raising=False)
     assert upload(client, token=hs_token()).status_code == 503
-    assert client.get("/api/uploads/status").json() == {"configured": False, "public_url": None}
+    assert client.get("/api/uploads/status").json() == {"configured": False, "backend": None, "public_url": None}
 
 
 def test_upload_puts_a_signed_object_and_returns_its_public_url(client, monkeypatch):

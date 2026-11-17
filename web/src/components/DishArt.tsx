@@ -35,13 +35,23 @@ export function DishArt({ category, imageUrl, name, className = '' }: { category
 }
 
 // The top of every recipe card: edge to edge (the card itself has no padding above it), rounded top corners.
-// The frame is exactly 3:2 like the pictures, so the whole dish shows at any card width. Badges/buttons go in `children`.
+// The frame is exactly 3:2 like the pictures, so the whole dish shows at any card width; a design that crops wider passes `frame`.
+// Badges/buttons go in `children`.
 // The card <li> must be `overflow-hidden p-0` and put its text in its own padded block below.
-export function RecipeCardImage({ category, imageUrl, name, rounded = 'rounded-t-xl', children }:
-  { category: string; imageUrl?: string | null; name: string; rounded?: string; children?: ReactNode }) {
+// `zoomOut` is for frames much wider than the picture: it shrinks the dish to that share of the frame's width so the whole
+// plate shows, with a soft blurred copy of the same picture filling the sides.
+export function RecipeCardImage({ category, imageUrl, name, rounded = 'rounded-t-xl', frame = 'aspect-[3/2]', zoomOut, children }:
+  { category: string; imageUrl?: string | null; name: string; rounded?: string; frame?: string; zoomOut?: number; children?: ReactNode }) {
   return (
-    <div className={`relative aspect-[3/2] w-full overflow-hidden ${rounded}`}>
-      <RecipeImg src={imageUrl} name={name} category={category} className="block h-full w-full" />
+    <div className={`relative ${frame} w-full overflow-hidden ${rounded}`}>
+      {zoomOut ? (
+        <>
+          <img src={imageUrl || DEFAULT_RECIPE_IMAGE} alt="" aria-hidden="true" loading="lazy" onError={showDefaultOnError} className="absolute inset-0 h-full w-full scale-110 object-cover opacity-90 blur-md" />
+          <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 [mask-image:linear-gradient(90deg,transparent,black_9%,black_91%,transparent)]" style={{ width: `${zoomOut}%` }}>
+            <RecipeImg src={imageUrl} name={name} category={category} className="block h-full w-full !bg-transparent" />
+          </div>
+        </>
+      ) : <RecipeImg src={imageUrl} name={name} category={category} className="block h-full w-full" />}
       {children}
     </div>
   );

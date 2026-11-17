@@ -29,11 +29,60 @@ export async function saveDisplayName(userId: string, name: string) {
   await supabase.auth.updateUser({ data: { username: clean } });
 }
 
-// The profile photo lives in R2; its public URL is kept on the auth user (like the username),
+// The profile photo lives in image storage (Supabase Storage or R2); its public URL is kept on the auth user (like the username),
 // so the sidebar, header and profile all show it without another query. null removes it.
 export async function saveAvatarUrl(url: string | null) {
   if (url !== null && !url.startsWith('https://')) throw new Error('The photo address must start with https://');
   const { error } = await supabase.auth.updateUser({ data: { avatar_url: url } });
+  if (error) throw new Error(error.message);
+}
+
+// Optional personal details the cook chooses to add. Like the username and photo they live on the auth user,
+// which only that signed-in user can read or change.
+export interface ProfileDetails { phone: string; birthDate: string; location: string; bio: string; cookingLevel: string }
+export const COOKING_LEVELS = ['Beginner', 'Intermediate', 'Advanced'];
+export const CUISINE_OPTIONS = ['Pakistani', 'Pakistani-Chinese', 'Continental', 'Middle Eastern'];
+
+export function detailsFromUser(user: { user_metadata?: Record<string, unknown> } | undefined): ProfileDetails {
+  const text = (key: string) => { const v = user?.user_metadata?.[key]; return typeof v === 'string' ? v : ''; };
+  return { phone: text('phone'), birthDate: text('birth_date'), location: text('location'), bio: text('bio'), cookingLevel: text('cooking_level') };
+}
+
+// Whole years since a yyyy-mm-dd birth date; null when missing or impossible.
+export function ageFrom(birthDate: string, today = new Date()): number | null {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(birthDate);
+  if (!m) return null;
+  const [y, mo, d] = [Number(m[1]), Number(m[2]), Number(m[3])];
+  let age = today.getFullYear() - y;
+  if (today.getMonth() + 1 < mo || (today.getMonth() + 1 === mo && today.getDate() < d)) age -= 1;
+  return age >= 0 && age <= 120 ? age : null;
+}
+
+export function validateDetails(d: ProfileDetails): string | null {
+  if (d.phone.trim() && !/^\+?[\d\s()-]{7,20}$/.test(d.phone.trim())) return 'Enter a valid phone number.';
+  if (d.birthDate && ageFrom(d.birthDate) === null) return 'Enter a real date of birth.';
+  if (d.location.length > 60) return 'Keep the location under 60 characters.';
+  if (d.bio.length > 300) return 'Keep “About me” under 300 characters.';
+  if (d.cookingLevel && !COOKING_LEVELS.includes(d.cookingLevel)) return 'Choose a cooking level from the list.';
+  return null;
+}
+
+export async function saveProfileDetails(d: ProfileDetails): Promise<ProfileDetails> {
+  const clean = { phone: d.phone.trim(), birthDate: d.birthDate, location: d.location.trim(), bio: d.bio.trim(), cookingLevel: d.cookingLevel };
+  const problem = validateDetails(clean);
+  if (problem) throw new Error(problem);
+  const { error } = await supabase.auth.updateUser({ data: { phone: clean.phone, birth_date: clean.birthDate, location: clean.location, bio: clean.bio, cooking_level: clean.cookingLevel } });
+  if (error) throw new Error(error.message);
+  return clean;
+}
+
+// Savory has no database column and the recommendation engine has no savory score, so the choice is kept on the auth user.
+export function savoryFromUser(user: { user_metadata?: Record<string, unknown> } | undefined): boolean {
+  return user?.user_metadata?.taste_savory === true;
+}
+
+export async function saveSavoryTaste(on: boolean) {
+  const { error } = await supabase.auth.updateUser({ data: { taste_savory: on } });
   if (error) throw new Error(error.message);
 }
 
@@ -42,8 +91,8 @@ export async function touchLastSeen(userId: string) {
     .then(() => undefined, () => undefined);
 }
 
-export interface ExtraPrefs { diets: Diet[]; cuisines: string[]; maxMinutes: number | null; notify: { tips: boolean; feedback_replies: boolean }; textSize: 'normal' | 'large' }
-export const defaultExtraPrefs = (): ExtraPrefs => ({ diets: [], cuisines: [], maxMinutes: null, notify: { tips: false, feedback_replies: true }, textSize: 'normal' });
+export interface ExtraPrefs { diets: Diet[]; cuisines: string[]; maxMinutes: number | null; notify: { recipe_ideas: boolean; reminders: boolean; tips: boolean; feedback_replies: boolean }; textSize: 'normal' | 'large' }
+export const defaultExtraPrefs = (): ExtraPrefs => ({ diets: [], cuisines: [], maxMinutes: null, notify: { recipe_ideas: false, reminders: false, tips: false, feedback_replies: true }, textSize: 'normal' });
 
 export async function loadExtraPrefs(userId: string): Promise<ExtraPrefs> {
   const { data, error } = await supabase.from('preferences').select('diets, cuisines, max_minutes, notify, text_size').eq('user_id', userId).maybeSingle();
@@ -52,7 +101,7 @@ export async function loadExtraPrefs(userId: string): Promise<ExtraPrefs> {
   const notify = (data.notify ?? {}) as Partial<ExtraPrefs['notify']>;
   return {
     diets: (data.diets ?? []) as Diet[], cuisines: data.cuisines ?? [], maxMinutes: data.max_minutes ?? null,
-    notify: { tips: notify.tips ?? false, feedback_replies: notify.feedback_replies ?? true },
+    notify: { recipe_ideas: notify.recipe_ideas ?? false, reminders: notify.reminders ?? false, tips: notify.tips ?? false, feedback_replies: notify.feedback_replies ?? true },
     textSize: data.text_size === 'large' ? 'large' : 'normal',
   };
 }
@@ -61,7 +110,8 @@ export async function saveExtraPrefs(userId: string, p: ExtraPrefs) {
   const { error } = await supabase.from('preferences').update({
     diets: p.diets, cuisines: p.cuisines, max_minutes: p.maxMinutes, notify: p.notify, text_size: p.textSize, updated_at: new Date().toISOString(),
   }).eq('user_id', userId);
-  if (error) throw new Error(error.message);
+  // 23514: the database check on diets doesn't yet allow this choice (see migration 0007).
+  if (error) throw new Error(error.code === '23514' ? 'That diet can’t be saved yet because the database needs an update. Your other choices are safe.' : error.message);
 }
 
 export function applyTextSize(size: 'normal' | 'large') {
@@ -127,9 +177,9 @@ export async function deleteMyAccount(email: string, password: string) {
   await supabase.auth.signOut();
 }
 
-export async function exportMyData(userId: string) {
+export async function exportMyData(userId: string, account?: Record<string, unknown>) {
   const tables = ['profiles', 'preferences', 'pantry_items', 'saved_recipes', 'recipe_events', 'feedback'] as const;
-  const out: Record<string, unknown> = { exported_at: new Date().toISOString(), note: 'Your Dish-Wish data. Passwords are never exported.' };
+  const out: Record<string, unknown> = { exported_at: new Date().toISOString(), note: 'Your Dish-Wish data. Passwords are never exported.', account: account ?? null };
   for (const t of tables) {
     const { data, error } = await supabase.from(t).select('*').eq('user_id', userId);
     if (error) throw new Error(`${t}: ${error.message}`);

@@ -9,6 +9,7 @@ import {
   type DayPoint, type Edge, type Overview, type PreferenceStats,
 } from '../../lib/adminApi';
 import { recipeImage } from '../../lib/images';
+import { useLiveTick } from '../../lib/useLiveTick';
 import { IngredientBars, RangeSelect, cumulativeUsers } from './AdminDashboardPage';
 
 const HEATMAP_DEFAULT = ['Chicken Breast', 'Tomato', 'Onion', 'Garlic', 'Potato', 'Green Chilli'];
@@ -16,8 +17,8 @@ const HEAT_LEGEND = [
   { color: '#16a34a', label: '≥ 0.90', note: 'Highly Compatible' }, { color: '#86efac', label: '0.80 – 0.89', note: 'Compatible' },
   { color: '#fde047', label: '0.70 – 0.79', note: 'Moderate' }, { color: '#fdba74', label: '0.60 – 0.69', note: 'Low' }, { color: '#f87171', label: '< 0.60', note: 'Not Compatible' },
 ];
-const PERIODS = [['daily', 'Daily'], ['weekly', 'Weekly'], ['monthly', 'Monthly']] as const;
-type Period = (typeof PERIODS)[number][0];
+export const PERIODS = [['daily', 'Daily'], ['weekly', 'Weekly'], ['monthly', 'Monthly']] as const;
+export type Period = (typeof PERIODS)[number][0];
 const short = (name: string) => name.replace(/\s*\(.*\)$/, '');
 
 export function heatColor(w: number | null): string {
@@ -30,7 +31,7 @@ export function heatColor(w: number | null): string {
 }
 
 // Groups daily rows into weeks or months. `pick` adds values up, or keeps the last one for running totals.
-function bucket<T extends { day: string }>(rows: T[], period: Period, key: keyof T, pick: 'sum' | 'last'): { day: string; value: number }[] {
+export function bucket<T extends { day: string }>(rows: T[], period: Period, key: keyof T, pick: 'sum' | 'last'): { day: string; value: number }[] {
   const out = new Map<string, number>();
   rows.forEach((r, i) => {
     const label = period === 'daily' ? r.day
@@ -65,17 +66,18 @@ export function AdminAnalyticsPage() {
   const [growthPeriod, setGrowthPeriod] = useState<Period>('weekly');
   const [genPeriod, setGenPeriod] = useState<Period>('weekly');
   const [error, setError] = useState('');
+  const tick = useLiveTick(['feedback', 'curated_recipes', 'ingredients', 'ingredient_compatibility']);
 
   useEffect(() => {
     let live = true;
     Promise.all([overview(days), timeseries(days), topIngredients(days, 8), topRecipes(days, 5), preferenceStats()])
       .then(([o, series, ingredients, recipes, prefs]) => { if (live) setData({ o, series, ingredients, recipes, prefs }); })
-      .catch((e: Error) => { if (live) setError(e.message); });
+      .catch((e: Error) => { if (live && tick === 0) setError(e.message); });
     return () => { live = false; };
-  }, [days]);
+  }, [days, tick]);
   useEffect(() => {
     Promise.all([listEdges(), listIngredients()]).then(([edges, items]) => setGraph({ edges, names: new Map(items.map((i) => [i.id, i.name])) })).catch(() => {});
-  }, []);
+  }, [tick]);
 
   const heat = useMemo(() => {
     if (!graph || !data) return null;
@@ -97,7 +99,7 @@ export function AdminAnalyticsPage() {
   const rate = (part: number) => (o.generations ? Math.round((part / o.generations) * 100) : null);
   const saveRate = rate(o.saves);
   const funnel = [
-    { label: 'Recommendation Runs', value: o.generations, color: PALETTE[0] }, { label: 'Recipe Views', value: o.views, color: PALETTE[1] },
+    { label: 'Recommendations', value: o.generations, color: PALETTE[0] }, { label: 'Recipe Views', value: o.views, color: PALETTE[1] },
     { label: 'Saves', value: o.saves, color: PALETTE[2] }, { label: 'Cooked', value: o.cooked, color: PALETTE[3] },
   ];
   const usageTotal = funnel.reduce((s, f) => s + f.value, 0);
@@ -120,10 +122,10 @@ export function AdminAnalyticsPage() {
   ];
 
   return (
-    <>
+    <div className="admin-page admin-analytics">
       <PageHeader title="Analytics &" accent="Insights" icon={BarChart3} subtitle="Comprehensive platform analytics and usage trends."
         actions={<><RangeSelect days={days} onChange={setDays} /><button type="button" className="btn-primary" onClick={exportReport}><Download size={16} />Export Report</button></>} />
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
+      <div className="admin-stats admin-compact grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
         <StatCard icon={UserRound} value={o.total_users.toLocaleString()} label="Total Users" trend={pctShort(o.new_users, o.new_users_prev)} />
         <StatCard icon={ChefHat} value={o.total_recipes.toLocaleString()} label="Total Recipes" />
         <StatCard icon={Leaf} value={o.total_ingredients.toLocaleString()} label="Total Ingredients" tone="green" />
@@ -132,12 +134,12 @@ export function AdminAnalyticsPage() {
         <StatCard icon={Star} value={o.avg_rating !== null ? <>{o.avg_rating}<span className="text-lg font-semibold"> / 5</span></> : '—'} label="Avg. User Rating" tone="amber" />
       </div>
 
-      <div className="mt-2.5 grid gap-2.5 xl:grid-cols-[1.05fr_1fr_0.98fr]">
+      <div className="admin-tabs-small mt-[0.8rem] grid gap-[0.85rem] xl:grid-cols-[1.05fr_1.07fr_1fr]">
         <Card title="User Growth" icon={Users} action={<SegmentTabs label="User growth period" value={growthPeriod} options={PERIODS} onChange={setGrowthPeriod} />}>
-          <AreaTrend data={bucket(cumulativeUsers(data.series, o.total_users), growthPeriod, 'users', 'last')} x="day" y="value" label="Total users" height={132} callout={`${o.total_users.toLocaleString()} Users`} />
+          <AreaTrend data={bucket(cumulativeUsers(data.series, o.total_users), growthPeriod, 'users', 'last')} x="day" y="value" label="Total users" height={170} callout={`${o.total_users.toLocaleString()} Users`} />
         </Card>
         <Card title="Recipe Generation Trend" icon={Zap} iconClass="text-orange-500" action={<SegmentTabs label="Generation period" value={genPeriod} options={PERIODS} onChange={setGenPeriod} />}>
-          <BarTrend data={bucket(data.series, genPeriod, 'generations', 'sum')} x="day" y="value" label="Generations" height={132} callout={o.generations.toLocaleString()} />
+          <BarTrend data={bucket(data.series, genPeriod, 'generations', 'sum')} x="day" y="value" label="Generations" height={170} callout={o.generations.toLocaleString()} />
         </Card>
         <Card title="Recommendation Engagement" icon={Target}>
           <div className="flex flex-wrap items-center gap-3">
@@ -151,7 +153,7 @@ export function AdminAnalyticsPage() {
         </Card>
       </div>
 
-      <div className="mt-2.5 grid gap-2.5 xl:grid-cols-[1.05fr_0.95fr_1fr]">
+      <div className="mt-[0.75rem] grid gap-[0.8rem] xl:grid-cols-[1.08fr_0.96fr_1fr]">
         <Card title={<>Ingredient Compatibility <span className="font-sans text-base font-normal">(Heatmap)</span></>} icon={Layers}>
           {!heat ? <Spinner /> : (
             <div className="flex flex-wrap items-start gap-3">
@@ -162,7 +164,7 @@ export function AdminAnalyticsPage() {
                       <tr key={row}><th className="w-[4.6rem] truncate pr-1.5 text-right font-medium" title={short(row)}>{short(row).split(' ')[0]}</th>
                         {heat.axis.map((col) => {
                           const w = row === col ? 1 : heat.weight(row, col);
-                          return <td key={col} className="h-6 border border-white" style={{ background: row === col ? '#15803d' : heatColor(w) }} title={w === null ? 'No stored edge' : `${short(row)} + ${short(col)}: ${w.toFixed(2)}`} />;
+                          return <td key={col} className="h-[1.72rem] border border-white" style={{ background: row === col ? '#15803d' : heatColor(w) }} title={w === null ? 'No stored edge' : `${short(row)} + ${short(col)}: ${w.toFixed(2)}`} />;
                         })}</tr>
                     ))}
                   </tbody>
@@ -178,7 +180,7 @@ export function AdminAnalyticsPage() {
         <Card title="Platform Usage Distribution" icon={ChefHat}>
           {usageTotal === 0 ? <EmptyState title="No activity in this period" /> : (
             <div className="flex flex-wrap items-center gap-4">
-              <Donut size={118} label="Usage distribution" parts={funnel.map((f) => ({ value: f.value, color: f.color, label: f.label }))}
+              <Donut size={150} thickness={6} label="Usage distribution" parts={funnel.map((f) => ({ value: f.value, color: f.color, label: f.label }))}
                 center={<span><span className="block text-xl font-bold">{usageTotal.toLocaleString()}</span><span className="text-sm">Total Uses</span></span>} />
               <div className="min-w-36 flex-1"><Legend items={funnel.map((f) => ({ label: f.label, value: `${((f.value / usageTotal) * 100).toFixed(1)}%`, color: f.color }))} /></div>
             </div>
@@ -186,7 +188,7 @@ export function AdminAnalyticsPage() {
         </Card>
         <Card title="Top Generated Recipes" icon={Trophy} iconClass="text-amber-600" action={<Link to="/admin/recipes" className="flex items-center gap-1 whitespace-nowrap text-sm font-semibold text-crimson">View All<ArrowRight size={15} /></Link>}>
           {data.recipes.length === 0 ? <EmptyState title="No recipe activity yet" /> : (
-            <ul className="space-y-1 text-[0.9rem]">
+            <ul className="space-y-[0.3rem] text-[0.9rem]">
               {data.recipes.map((r) => (
                 <li key={r.recipe_slug ?? r.recipe_name} className="grid grid-cols-[3.2rem_7.5rem_1fr_2.8rem] items-center gap-2">
                   <RecipeCardImage category="" imageUrl={r.recipe_slug ? recipeImage(r.recipe_slug) : null} name={r.recipe_name} rounded="rounded-md" />
@@ -200,10 +202,10 @@ export function AdminAnalyticsPage() {
         </Card>
       </div>
 
-      <div className="mt-2.5 grid gap-2.5 xl:grid-cols-[1fr_1fr_1fr]">
+      <div className="mt-[0.8rem] grid gap-[0.8rem] xl:grid-cols-[0.92fr_1fr_1fr]">
         <Card title="Key Insights" icon={Lightbulb} iconClass="text-amber-500">
           {insights.length === 0 ? <p className="text-sm text-stone-500">Not enough activity yet to draw insights.</p> : (
-            <ul className="divide-y divide-stone-100 text-[0.92rem]">{insights.slice(0, 4).map((i) => <li key={i} className="flex items-center gap-3 py-1.5"><span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-green-50 text-green-600"><ArrowUp size={16} aria-hidden="true" /></span>{i}</li>)}</ul>
+            <ul className="divide-y divide-stone-100 text-[0.82rem] leading-[1.2]">{insights.slice(0, 4).map((i) => <li key={i} className="flex items-center gap-3 py-1"><span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-green-50 text-green-600"><ArrowUp size={16} aria-hidden="true" /></span>{i}</li>)}</ul>
           )}
         </Card>
         <Card title="Recommendation Performance" icon={Cpu}>
@@ -213,12 +215,12 @@ export function AdminAnalyticsPage() {
             <ActionTile icon={Bookmark} label={`${o.saves.toLocaleString()} Saves`} />
             <ActionTile icon={ChefHat} label={`${o.cooked.toLocaleString()} Cooked`} />
           </div>
-          <p className="mt-2 text-[0.78rem] text-stone-500">Accuracy, precision and recall need a labelled test set, which Dish-Wish does not have yet, so they aren’t shown.</p>
+          <p className="mt-1 text-[0.7rem] leading-tight text-stone-500">Accuracy, precision and recall need a labelled test set, which Dish-Wish does not have yet, so they aren’t shown.</p>
         </Card>
         <Card title="Most Used Ingredients" icon={Leaf} iconClass="text-green-600" action={<Link to="/admin/ingredients" className="flex items-center gap-1 whitespace-nowrap text-sm font-semibold text-crimson">View All<ArrowRight size={15} /></Link>}>
           {data.ingredients.length === 0 ? <EmptyState title="No generations in this period" /> : <IngredientBars items={data.ingredients.slice(0, 5)} />}
         </Card>
       </div>
-    </>
+    </div>
   );
 }

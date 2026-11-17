@@ -1,11 +1,16 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../auth/AuthProvider';
-import { loadCatalog, loadPantry, setPantryItem, type Ingredient, type PantryItem } from './pantryApi';
+import { useLiveTick } from './useLiveTick';
+import { loadCatalog, loadPantry, resetCatalogCache, setPantryItem, type Ingredient, type PantryItem } from './pantryApi';
 import type { Preferences } from './preferences';
 import { loadPreferences } from './preferencesApi';
 import type { ShoppingLine } from './recipes';
 
 // Catalog, pantry and preferences together, as the kitchen and recipe pages need them.
+const LIVE_TABLES = ['ingredients', 'pantry_items', 'preferences'];
+// Keep the old object when nothing changed, so a quiet refresh doesn't restart searches that depend on it.
+const same = <T,>(next: T) => (old: T | null) => (JSON.stringify(old) === JSON.stringify(next) ? (old as T) : next);
+
 export function useKitchenData(userId: string | undefined) {
   const [catalog, setCatalog] = useState<Ingredient[] | null>(null);
   const [pantry, setPantry] = useState<PantryItem[]>([]);
@@ -14,6 +19,7 @@ export function useKitchenData(userId: string | undefined) {
 
   // Signed out (once the session check has finished): the public catalog alone, so pages still render.
   const { loading } = useAuth();
+  const tick = useLiveTick(LIVE_TABLES);
   useEffect(() => {
     if (userId || loading) return;
     let live = true;
@@ -23,10 +29,11 @@ export function useKitchenData(userId: string | undefined) {
 
   useEffect(() => {
     if (!userId) return;
+    if (tick) resetCatalogCache();
     Promise.all([loadCatalog(), loadPantry(userId), loadPreferences(userId)])
-      .then(([c, p, pr]) => { setCatalog(c); setPantry(p); setPrefs(pr); })
-      .catch((e: Error) => { setCatalog([]); setError(e.message); });
-  }, [userId]);
+      .then(([c, p, pr]) => { setCatalog(same(c)); setPantry(same(p)); setPrefs(same(pr)); })
+      .catch((e: Error) => { if (!tick) { setCatalog([]); setError(e.message); } });
+  }, [userId, tick]);
 
   const byName = useMemo(() => new Map((catalog ?? []).map((i) => [i.name, i])), [catalog]);
   const pantryByName = useMemo(() => {

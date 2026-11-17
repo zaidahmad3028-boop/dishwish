@@ -1,9 +1,10 @@
 // Curated recipe recommendations (FastAPI suitability engine) and the cook's own activity rows.
+import { kcalForTier } from './preferences';
 import { supabase } from './supabase';
 import { effectiveAllergenTags, type Level, type Preferences, type TasteKey } from './preferences';
 import { API_URL } from './recipes';
 
-export type Diet = 'vegetarian' | 'gluten_free' | 'low_calorie' | 'high_protein' | 'vegan';
+export type Diet = 'vegetarian' | 'gluten_free' | 'low_calorie' | 'high_protein' | 'vegan' | 'low_carb' | 'keto';
 export const DIETS: { key: Diet; label: string }[] = [
   { key: 'vegetarian', label: 'Vegetarian' }, { key: 'low_calorie', label: 'Low Calorie' },
   { key: 'high_protein', label: 'High Protein' }, { key: 'gluten_free', label: 'Gluten Free' },
@@ -15,7 +16,13 @@ export const ALL_DIETS: { key: Diet; label: string }[] = [
   { key: 'high_protein', label: 'High Protein' }, { key: 'gluten_free', label: 'Gluten Free' },
 ];
 
-export type Components = Record<'coverage' | 'compatibility' | 'taste' | 'cooking', number | null>;
+// Saved on the cook's profile from Settings and My Profile.
+export const SETTINGS_DIETS: { key: Diet; label: string }[] = [
+  { key: 'vegetarian', label: 'Vegetarian' }, { key: 'vegan', label: 'Vegan' }, { key: 'low_calorie', label: 'Low Calorie' },
+  { key: 'high_protein', label: 'High Protein' }, { key: 'low_carb', label: 'Low Carb' }, { key: 'keto', label: 'Keto' }, { key: 'gluten_free', label: 'Gluten Free' },
+];
+
+export type Components = Record<'coverage' | 'similarity' | 'compatibility' | 'taste' | 'cooking', number | null>;
 export interface Macros { kcal: number; protein: number; carbs: number; fat: number }
 
 export interface CuratedMatch {
@@ -35,7 +42,7 @@ export interface CuratedMatch {
   penalty: number;
   used: string[];
   missing: string[];
-  taste: Record<TasteKey, number>;
+  taste: Record<TasteKey, number> & { savory?: number };
   diets: Diet[];
   nutrition_per_serving: Macros;
   explanation: string[];
@@ -43,14 +50,24 @@ export interface CuratedMatch {
 
 export interface Suggestion { name: string; category: string; support: number }
 
+export interface Personalization {
+  active: boolean; enabled: boolean; strength: number; events_used: number; confidence: number;
+  base_weights: Record<string, number>; weights: Record<string, number>;
+  changes: { component: string; delta: number; text: string }[];
+}
+export interface HistoryEvent { slug: string; kind: 'viewed' | 'saved' | 'cooked'; ingredients: string[] }
+
 export interface RecommendationResult {
+  personalization?: Personalization;
   recipes: CuratedMatch[];
   suggestions: Suggestion[];
-  excluded: { allergy: number; diet: number; no_overlap: number };
+  excluded: { allergy: number; diet: number; calories?: number; no_overlap: number };
   settings: { weights: Record<string, number>; missing_penalty: number; missing_tolerance: number; min_score: number };
   data_source: 'database' | 'bundled';
   notes: string[];
 }
+
+export interface Substitute { name: string; category: string; score: number; have: boolean; reason: string; nutrition_similarity: number; taste_similarity: number; pairing: number }
 
 export interface CuratedDetail {
   slug: string;
@@ -62,8 +79,8 @@ export interface CuratedDetail {
   description: string;
   image_url: string | null;
   source: string;
-  taste: Record<TasteKey, number>;
-  ingredients: { name: string; grams: number; display: string; category: string; staple: boolean; have: boolean; allergens: string[] }[];
+  taste: Record<TasteKey, number> & { savory?: number };
+  ingredients: { name: string; grams: number; display: string; category: string; staple: boolean; have: boolean; allergens: string[]; substitutes?: Substitute[] }[];
   steps: string[];
   allergens: string[];
   diets: Diet[];
@@ -75,6 +92,7 @@ export interface Selection {
   tastes: Record<TasteKey, Level | null>;
   diets: Diet[];
   maxMinutes: number | null;
+  maxKcal?: number | null;
 }
 
 async function call<T>(path: string, init?: RequestInit, token?: string): Promise<T> {
@@ -92,26 +110,35 @@ async function call<T>(path: string, init?: RequestInit, token?: string): Promis
   return body as T;
 }
 
-export function recommendationRequest(selection: Selection, prefs: Preferences, pantry: string[]) {
+// The cook's daily calorie goal, split over three meals, caps the calories of one serving.
+export function mealCalorieCap(prefs: Pick<Preferences, 'calorieTier'>): number | undefined {
+  const day = kcalForTier(prefs.calorieTier);
+  return day ? Math.round(day / 3) : undefined;
+}
+
+export function recommendationRequest(selection: Selection, prefs: Preferences, pantry: string[], options: { savory?: boolean; history?: HistoryEvent[] } = {}) {
   return {
     ingredients: selection.ingredients,
-    tastes: selection.tastes,
+    tastes: options.savory ? { ...selection.tastes, savory: 'high' } : selection.tastes,
+    max_kcal: selection.maxKcal ?? mealCalorieCap(prefs),
     allergens: effectiveAllergenTags(prefs),
     blocked_words: prefs.customAllergens,
     diets: selection.diets,
     pantry,
     max_minutes: selection.maxMinutes ?? undefined,
     limit: 24,
+    ...(options.history?.length ? { history: options.history } : {}),
   };
 }
 
-export async function fetchCuratedRecommendations(token: string, selection: Selection, prefs: Preferences, pantry: string[]) {
-  return call<RecommendationResult>('/api/recommendations', { method: 'POST', body: JSON.stringify(recommendationRequest(selection, prefs, pantry)) }, token);
+export async function fetchCuratedRecommendations(token: string, selection: Selection, prefs: Preferences, pantry: string[], options: { savory?: boolean; history?: HistoryEvent[] } = {}) {
+  return call<RecommendationResult>('/api/recommendations', { method: 'POST', body: JSON.stringify(recommendationRequest(selection, prefs, pantry, options)) }, token);
 }
 
-export async function fetchCuratedDetail(slug: string, have: string[] = []): Promise<CuratedDetail> {
+export async function fetchCuratedDetail(slug: string, have: string[] = [], allergens: string[] = []): Promise<CuratedDetail> {
   const params = new URLSearchParams();
   have.slice(0, 300).forEach((h) => params.append('have', h));
+  allergens.slice(0, 19).forEach((a) => params.append('allergens', a));
   return call<CuratedDetail>(`/api/curated/${encodeURIComponent(slug)}${params.size ? `?${params}` : ''}`);
 }
 
@@ -208,4 +235,35 @@ export function compatibilityVerdict(avg: number | null): { label: string; tone:
   if (avg >= 0.75) return { label: 'Your selected ingredients pair well', tone: 'green' };
   if (avg >= 0.55) return { label: 'These ingredients can work together', tone: 'amber' };
   return { label: 'An unusual combination; results may be limited', tone: 'red' };
+}
+
+// Headline numbers from the offline evaluation of the recommender (public, cached on the API).
+export interface EvaluationSummary { hit5: number; mrr: number; recipes: number; trials: number; allergen_violations: number }
+export function fetchEvaluationSummary() {
+  return call<EvaluationSummary>('/api/evaluation/summary');
+}
+
+// The cook's own choices that personalise their ranking: recipes they viewed, saved or cooked, with the
+// ingredients they had selected at the time. Read under RLS (only their own rows).
+export async function personalHistory(userId: string): Promise<HistoryEvent[]> {
+  const events = await listEvents(userId, 80);
+  return events
+    .filter((e): e is RecipeEvent & { kind: HistoryEvent['kind']; recipe_slug: string } =>
+      (e.kind === 'viewed' || e.kind === 'saved' || e.kind === 'cooked') && /^[a-z0-9-]{1,80}$/.test(e.recipe_slug ?? '') && e.ingredients.length >= 2)
+    .slice(0, 60)
+    .map((e) => ({ slug: e.recipe_slug, kind: e.kind, ingredients: e.ingredients.slice(0, 20) }));
+}
+
+export function fetchPersonalization(token: string, history: HistoryEvent[]) {
+  return call<Personalization>('/api/personalization', { method: 'POST', body: JSON.stringify({ history }) }, token);
+}
+
+// Best replacements for one ingredient (recipe pages and the admin Substitute Finder).
+export function fetchSubstitutes(name: string, opts: { have?: string[]; context?: string[]; allergens?: string[]; limit?: number } = {}) {
+  const params = new URLSearchParams();
+  (opts.have ?? []).slice(0, 300).forEach((h) => params.append('have', h));
+  (opts.context ?? []).slice(0, 20).forEach((c) => params.append('context', c));
+  (opts.allergens ?? []).slice(0, 19).forEach((a) => params.append('allergens', a));
+  if (opts.limit) params.set('limit', String(opts.limit));
+  return call<{ ingredient: string; substitutes: Substitute[] }>(`/api/substitutes/${encodeURIComponent(name)}${params.size ? `?${params}` : ''}`);
 }
