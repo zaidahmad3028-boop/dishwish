@@ -14,6 +14,8 @@ A component with no input (e.g. no taste chosen) is left out and the remaining w
 renormalised, so a missing input never fabricates a score. The weights are engineering
 defaults, not validated against user outcomes.
 """
+from __future__ import annotations
+
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
 from itertools import combinations
