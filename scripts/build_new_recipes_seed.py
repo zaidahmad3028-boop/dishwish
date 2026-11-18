@@ -19,7 +19,8 @@ from engine.suitability import bundled_recipes, cooccurrence_edges  # noqa: E402
 
 def build() -> str:
     catalog = {i.name: i for i in load_ingredients()}
-    new_slugs = {r[0] for r in MORE_RECIPES}
+    # The final-phase recipes, plus two earlier ones that were never loaded into the live database.
+    new_slugs = {r[0] for r in MORE_RECIPES} | {"chicken-jalfrezi", "chicken-achari"}
     recipes = [r for r in bundled_recipes() if r.slug in new_slugs]
     payload = []
     for r in recipes:
@@ -79,3 +80,66 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+# ---- Small parts for pasting into the SQL Editor (each runs on its own; same insert-only rules) ----
+def build_parts(size: int = 12) -> list[str]:
+    catalog = {i.name: i for i in load_ingredients()}
+    new_slugs = {r[0] for r in MORE_RECIPES} | {"chicken-jalfrezi", "chicken-achari"}
+    recipes = [r for r in bundled_recipes() if r.slug in new_slugs]
+    parts, chunk = [], []
+    for r in recipes:
+        chunk.append({"slug": r.slug, "name": r.name, "description": r.description, "category": r.category,
+                      "cuisine": r.cuisine, "minutes": r.minutes, "servings": r.servings, "taste": dict(r.taste),
+                      "lines": [[l.name, l.grams, l.display] for l in r.lines], "steps": list(r.steps)})
+        if len(chunk) == size:
+            parts.append(chunk); chunk = []
+    if chunk:
+        parts.append(chunk)
+    sqls = []
+    for i, chunk in enumerate(parts, 1):
+        data = json.dumps(chunk, ensure_ascii=False, separators=(",", ":")).replace("'", "''")
+        sqls.append(f"""-- Recipes part {i}/{len(parts)}: insert-only.
+do $seed$
+declare d jsonb := '{data}'::jsonb; r jsonb; rid bigint; i int; missing text;
+begin
+select string_agg(distinct l->>0, ', ') into missing from jsonb_array_elements(d) r2, jsonb_array_elements(r2->'lines') l where not exists (select 1 from public.ingredients x where x.name = l->>0);
+if missing is not null then raise exception 'Unknown ingredients: %', missing; end if;
+for r in select * from jsonb_array_elements(d) loop
+insert into public.curated_recipes(slug, name, description, category, cuisine, minutes, servings, taste, status, source) values (r->>'slug', r->>'name', r->>'description', r->>'category', r->>'cuisine', (r->>'minutes')::int, (r->>'servings')::int, r->'taste', 'published', 'curated') on conflict (slug) do nothing returning id into rid;
+continue when rid is null;
+for i in 0 .. jsonb_array_length(r->'lines') - 1 loop
+insert into public.recipe_ingredients(recipe_id, ingredient_id, position, grams, display) select rid, x.id, i + 1, (r->'lines'->i->>1)::numeric, r->'lines'->i->>2 from public.ingredients x where x.name = r->'lines'->i->>0;
+end loop;
+for i in 0 .. jsonb_array_length(r->'steps') - 1 loop
+insert into public.recipe_steps(recipe_id, position, body) values (rid, i + 1, r->'steps'->>i);
+end loop;
+end loop;
+end $seed$;
+select count(*) as published_recipes from public.curated_recipes where status = 'published';""")
+    old = [r for r in bundled_recipes() if r.slug not in new_slugs]
+    old_pairs = set(cooccurrence_edges(old, catalog))
+    counts: dict = {}
+    from itertools import combinations
+    from engine.suitability import is_staple
+    for r in bundled_recipes():
+        core = sorted({l.name for l in r.lines if not is_staple(catalog[l.name])})
+        for pair in combinations(core, 2):
+            counts[frozenset(pair)] = counts.get(frozenset(pair), 0) + 1
+    edges = [[*sorted(p), n] for p, n in sorted(counts.items(), key=lambda kv: sorted(kv[0])) if p not in old_pairs]
+    data = json.dumps(edges, ensure_ascii=False, separators=(",", ":")).replace("'", "''")
+    sqls.append(f"""-- Compatibility edges for the new recipes: insert-only, same formula as the original seed.
+insert into public.ingredient_compatibility(ingredient_a, ingredient_b, weight, relation_type, evidence)
+select least(a.id, b.id), greatest(a.id, b.id), round(0.5 + 0.5 * least(1, (e->>2)::numeric / 3), 3), 'co-occurrence',
+'used together in ' || (e->>2) || ' curated recipe' || case when (e->>2)::int > 1 then 's' else '' end
+from jsonb_array_elements('{data}'::jsonb) e join public.ingredients a on a.name = e->>0 join public.ingredients b on b.name = e->>1
+on conflict do nothing;
+select count(*) as edges from public.ingredient_compatibility;""")
+    return sqls
+
+
+if __name__ == "__main__" and len(sys.argv) > 1 and sys.argv[1] == "--parts":
+    for n, sql in enumerate(build_parts(), 1):
+        out = ROOT / f"supabase/seed/recipes_0002_more.part{n}.sql"
+        out.write_text(sql, encoding="utf-8")
+        print(out.name, len(sql.encode()))
