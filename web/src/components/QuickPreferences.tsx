@@ -7,7 +7,7 @@ import { defaultExtraPrefs, loadExtraPrefs, saveExtraPrefs, type ExtraPrefs } fr
 import { SETTINGS_DIETS, type Diet } from '../lib/curatedApi';
 import { ALLERGEN_CHIPS, CALORIE_TIERS, LEVELS, type AllergenTag, type CalorieTier, type Level, type Preferences, type TasteKey } from '../lib/preferences';
 import { savePreferences } from '../lib/preferencesApi';
-import { useSelection } from '../lib/selection';
+import { DEFAULT_TASTES, useSelection } from '../lib/selection';
 
 export const LEVEL_LABEL: Record<Level, string> = { low: 'Low', medium: 'Moderate', high: 'High' };
 const FLAVOURS: { key: TasteKey; label: string; icon: LucideIcon; tint: string; ring: string }[] = [
@@ -68,10 +68,9 @@ export function QuickPreferences({ userId, prefs }: { userId?: string; prefs: Pr
     setOpen(null);
     void persist({ tastes: { ...selection.tastes, [key]: level } });
   };
-  const clearTastes = () => {
-    const none = { sweet: null, salty: null, sour: null, spicy: null };
-    setTastes(none);
-    void persist({ tastes: none });
+  const resetTastes = () => {
+    setTastes({ ...DEFAULT_TASTES });
+    void persist({ tastes: { ...DEFAULT_TASTES } });
   };
   const flipDiet = async (d: Diet) => {
     toggleDiet(d);
@@ -91,13 +90,13 @@ export function QuickPreferences({ userId, prefs }: { userId?: string; prefs: Pr
     void persist({ calorieTier: next });
   };
 
-  const anyTaste = Object.values(selection.tastes).some((v) => v !== null);
+  const changed = (Object.keys(DEFAULT_TASTES) as TasteKey[]).some((k) => selection.tastes[k] !== DEFAULT_TASTES[k]);
   return (
     <div ref={ref} className="space-y-3">
       <div>
         <div className="flex items-center justify-between">
           <p className="flex items-center gap-2 font-medium lg:text-[1.02rem]"><Flame size={19} className="fill-ember text-crimson" aria-hidden="true" />Taste Preferences</p>
-          {anyTaste && <button type="button" className="text-[0.8rem] font-semibold text-crimson underline" onClick={clearTastes}>Clear all</button>}
+          {changed && <button type="button" className="text-[0.8rem] font-semibold text-crimson underline" onClick={resetTastes}>Reset to Moderate</button>}
         </div>
         <ul className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
           {FLAVOURS.map((f) => {
@@ -109,8 +108,8 @@ export function QuickPreferences({ userId, prefs }: { userId?: string; prefs: Pr
                   className={`flex h-[3.1rem] w-full items-center gap-2 rounded-2xl border bg-white px-2.5 text-left shadow-sm transition hover:-translate-y-0.5 ${level ? `border-transparent ring-2 ${f.ring}` : 'border-rose-100'}`}>
                   <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-full text-white ${f.tint}`}><Icon size={15} aria-hidden="true" /></span>
                   <span className="min-w-0 flex-1 leading-tight">
-                    <span className="block text-[0.95rem] font-semibold">{f.label}</span>
-                    <span className={`block text-[0.74rem] ${level ? 'font-semibold text-crimson' : 'text-stone-500'}`}>{level ? LEVEL_LABEL[level] : 'Not set'}</span>
+                    <span className="block text-[1rem] font-semibold">{f.label}</span>
+                    <span className={`block text-[0.86rem] ${level ? 'font-bold text-crimson-deep' : 'text-stone-600'}`}>{level ? LEVEL_LABEL[level] : 'Not set'}</span>
                   </span>
                   <ChevronDown size={15} className="shrink-0 text-stone-400" aria-hidden="true" />
                 </button>
@@ -138,14 +137,14 @@ export function QuickPreferences({ userId, prefs }: { userId?: string; prefs: Pr
           <div className="mt-1 flex flex-wrap gap-1">
             {SETTINGS_DIETS.map((d) => (
               <button key={d.key} type="button" aria-pressed={selection.diets.includes(d.key)} onClick={() => flipDiet(d.key)}
-                className={`rounded-full border px-2 py-0.5 text-[0.76rem] font-medium transition ${selection.diets.includes(d.key) ? 'border-green-600 bg-green-600 text-white' : 'border-stone-200 bg-white hover:border-green-400'}`}>{d.label}</button>
+                className={`rounded-full border px-2.5 py-1 text-[0.82rem] font-medium transition ${selection.diets.includes(d.key) ? 'border-green-600 bg-green-600 text-white' : 'border-stone-200 bg-white hover:border-green-400'}`}>{d.label}</button>
             ))}
           </div>
         </div>
         <div className="relative">
           <p className="flex items-center gap-1.5 text-[0.9rem] font-medium"><ShieldAlert size={16} className="text-crimson" aria-hidden="true" />Allergens</p>
           <button type="button" aria-haspopup="true" aria-expanded={open === 'allergens'} onClick={() => setOpen(open === 'allergens' ? null : 'allergens')}
-            className="mt-1 flex h-[1.9rem] w-full items-center justify-between gap-2 rounded-full border border-stone-200 bg-white px-3 text-[0.8rem] ">
+            className="mt-1 flex h-[2.2rem] w-full items-center justify-between gap-2 rounded-full border border-stone-200 bg-white px-3 text-[0.88rem] ">
             {allergens.length ? `${allergens.length} avoided` : 'None'}<ChevronDown size={14} aria-hidden="true" />
           </button>
           {open === 'allergens' && (
@@ -161,7 +160,7 @@ export function QuickPreferences({ userId, prefs }: { userId?: string; prefs: Pr
         <label className="block">
           <span className="flex items-center gap-1.5 text-[0.9rem] font-medium"><Target size={16} className="text-ember" aria-hidden="true" />Calorie goal</span>
           <select value={tier ?? ''} onChange={(e) => chooseTier(e.target.value)} aria-label="Daily calorie goal"
-            className="mt-1 h-[1.9rem] w-full rounded-full border border-stone-200 bg-white px-2.5 text-[0.8rem]">
+            className="mt-1 h-[2.2rem] w-full rounded-full border border-stone-200 bg-white px-2.5 text-[0.88rem]">
             <option value="">No goal</option>
             {CALORIE_TIERS.map((t) => <option key={t.tier} value={t.tier}>{t.kcal} kcal / day</option>)}
           </select>

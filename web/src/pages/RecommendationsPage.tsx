@@ -8,6 +8,7 @@ import { IngredientBadge, RecipeCardImage } from '../components/DishArt';
 import { recipeImage } from '../lib/images';
 import { Bar, Card, Donut, EmptyState, ErrorNote, Modal, PageHeader, Spinner } from '../components/ui';
 import { checkCompatibility, DIETS, fetchEvaluationSummary, personalHistory, type HistoryEvent, type EvaluationSummary, fetchCompatibility, fetchCuratedRecommendations, isCuratedSnapshot, recordEvent, saveCurated, setFavorite, type CuratedMatch, type Macros, type RecommendationResult } from '../lib/curatedApi';
+import { mealCalorieCap } from '../lib/curatedApi';
 import { allergenLabel, effectiveAllergenTags, type Level, type TasteKey } from '../lib/preferences';
 import { listSavedRecipes } from '../lib/recipesApi';
 import { useSelection } from '../lib/selection';
@@ -24,6 +25,8 @@ import { PersonalWeights } from '../components/PersonalWeights';
 const COMPONENT_LABEL: Record<string, string> = { coverage: 'Ingredient coverage', similarity: 'TF-IDF similarity', compatibility: 'Graph compatibility', taste: 'Taste match', cooking: 'Cooking time' };
 const short = (name: string) => name.replace(/\s*\(.*\)$/, '').replace(/^Chicken Breast$/, 'Chicken');
 const PAGE_SIZE = 6;
+// Up to this many missing main ingredients still counts as cookable now (the engine's missing tolerance).
+const READY_MISSING = 3;
 const SELECT = 'select h-10 min-w-[8.5rem] flex-1 !border-rose-200 !bg-[#fffaf7] !pl-3 !pr-1 !text-[0.95rem] tracking-tight xl:min-w-0';
 
 export function tasteWord(taste: Record<TasteKey, number>): string {
@@ -73,10 +76,13 @@ function RecipeCard({ r, selected, firstRow, onSave, saved, favorite, onFavorite
           <span className="inline-flex items-center gap-1"><Users size={17} className="text-crimson" aria-hidden="true" />{r.servings} servings</span>
           <span className="inline-flex items-center gap-1"><Flame size={17} className="fill-ember text-crimson" aria-hidden="true" />{tasteWord(r.taste)}</span>
         </p>
-        <p className="mt-1.5 line-clamp-2 text-[0.92rem] leading-[1.3] tracking-tight text-stone-800">{r.description}</p>
+        <p className={`mt-1.5 truncate rounded-lg px-2 py-0.5 text-[0.86rem] font-medium ${r.missing.length === 0 ? 'bg-green-50 text-green-800' : r.missing.length <= READY_MISSING ? 'bg-amber-50 text-amber-900' : 'bg-rose-50 text-rose-800'}`}
+          title={r.missing.length ? `Missing: ${r.missing.join(', ')}` : undefined}>
+          {r.missing.length === 0 ? '✓ You have all the main ingredients' : `${r.missing.length} missing: ${r.missing.map(short).join(', ')}`}</p>
+        <p className="mt-1.5 line-clamp-2 text-[0.95rem] leading-[1.3] tracking-tight text-stone-800">{r.description}</p>
         <div className="mt-auto flex items-center justify-between gap-1 pt-2.5">
-          <Link to={`/recipe/${r.slug}`} state={{ match: r }} className="btn-sm btn-red !gap-1 !px-3 !py-2 !text-[0.82rem]">View Recipe<ArrowRight size={15} /></Link>
-          <button type="button" className="btn-sm btn-outline !gap-1 !border-rose-200 !px-2.5 !py-2 !text-[0.82rem]" onClick={onSave} disabled={saved !== 'idle'}>
+          <Link to={`/recipe/${r.slug}`} state={{ match: r }} className="btn-sm btn-red !gap-1 !px-3 !py-2 !text-[0.88rem]">View Recipe<ArrowRight size={15} /></Link>
+          <button type="button" className="btn-sm btn-outline !gap-1 !border-rose-200 !px-2.5 !py-2 !text-[0.88rem]" onClick={onSave} disabled={saved !== 'idle'}>
             {saved === 'saved' || saved === 'exists' ? <BookmarkCheck size={16} className="text-crimson" /> : <Bookmark size={16} className="text-crimson" />}
             {saved === 'saved' ? 'Saved' : saved === 'exists' ? 'Already saved' : 'Add to My Recipes'}
           </button>
@@ -149,6 +155,7 @@ export function RecommendationsPage() {
   const [maxTime, setMaxTime] = useState(0);
   const [sort, setSort] = useState<'match' | 'time' | 'name'>('match');
   const [visible, setVisible] = useState(PAGE_SIZE);
+  const [moreVisible, setMoreVisible] = useState(3);
   const [saved, setSaved] = useState<Record<string, 'saving' | 'saved' | 'exists'>>({});
   const [myRecipes, setMyRecipes] = useState<Record<string, { id: string; favorite: boolean }>>({});
   const [graph, setGraph] = useState<{ center: string; edges: { name: string; weight: number; evidence: string }[] } | null>(null);
@@ -241,7 +248,10 @@ export function RecommendationsPage() {
     return [...rows].sort((a, b) => sort === 'time' ? a.minutes - b.minutes : sort === 'name' ? a.name.localeCompare(b.name) : b.score - a.score);
   }, [result, cuisine, category, maxTime, sort]);
 
-  useEffect(() => { setVisible(PAGE_SIZE); }, [requestKey, cuisine, category, maxTime, sort]);
+  useEffect(() => { setVisible(PAGE_SIZE); setMoreVisible(3); }, [requestKey, cuisine, category, maxTime, sort]);
+  // Cookable now first; recipes that need a bigger shop go in their own section.
+  const ready = shown.filter((r) => r.missing.length <= READY_MISSING);
+  const needsMore = shown.filter((r) => r.missing.length > READY_MISSING);
 
   const save = async (r: CuratedMatch) => {
     if (!userId) return;
@@ -275,7 +285,7 @@ export function RecommendationsPage() {
     } catch (e) { setError((e as Error).message); }
   };
 
-  const top = shown[0] ?? result?.recipes[0];
+  const top = ready[0] ?? shown[0] ?? result?.recipes[0];
   const tasteChosen = (Object.entries(selection.tastes) as [TasteKey, Level | null][]).filter(([, v]) => v)
     .map(([k, v]) => `${TASTE_LABEL[k]}: ${LEVEL_LABEL[v as Level]}`).join(', ') || 'No preference';
   const allergyText = prefs ? [...effectiveAllergenTags(prefs).map(allergenLabel), ...prefs.customAllergens].join(', ') : '';
@@ -348,17 +358,40 @@ export function RecommendationsPage() {
                 Try adding a main ingredient (chicken, daal, potato) or removing a filter.
               </EmptyState>
             ) : (
-              <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                {shown.slice(0, visible).map((r, i) => (
-                  <RecipeCard key={r.slug} r={r} selected={r === top} firstRow={i < 3} saved={saved[r.slug] ?? (myRecipes[r.slug] ? 'exists' : 'idle')} onSave={() => save(r)}
-                    favorite={myRecipes[r.slug]?.favorite ?? false} onFavorite={() => toggleFavorite(r)} />
-                ))}
-              </ul>
-            )}
-            {shown.length > visible && (
-              <div className="mt-3 text-center">
-                <button type="button" className="btn-ghost" onClick={() => setVisible((v) => v + PAGE_SIZE)}>Load More ({shown.length - visible} more)</button>
-              </div>
+              <>
+                <p className="-mt-1 mb-3 text-[0.88rem] text-stone-600">Match % combines how many of the dish's main ingredients you have, how well your ingredients pair in the compatibility graph, and your taste. Allergens are removed before ranking. <button type="button" className="font-semibold text-crimson underline" onClick={() => setWhyOpen(true)}>See the breakdown</button></p>
+                {result && (result.excluded.allergy + result.excluded.diet + (result.excluded.calories ?? 0)) > 0 && (
+                  <p className="-mt-1 mb-3 rounded-xl bg-amber-50 px-3 py-2 text-[0.88rem] text-amber-900">
+                    Hidden by your settings: {[result.excluded.allergy && `${result.excluded.allergy} contain your allergens`, result.excluded.diet && `${result.excluded.diet} don't fit your diet`, result.excluded.calories && `${result.excluded.calories} are over ${prefs && mealCalorieCap(prefs) ? `${mealCalorieCap(prefs)} kcal per serving (one meal = a third of your daily goal)` : 'your calorie goal'}`].filter(Boolean).join(', ')} (each recipe counted once). <Link to="/kitchen" className="font-semibold underline">Change in Kitchen</Link>
+                  </p>
+                )}
+                {ready.length > 0 && (
+                  <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3" aria-label="Cook now">
+                    {ready.slice(0, visible).map((r, i) => (
+                      <RecipeCard key={r.slug} r={r} selected={r === top} firstRow={i < 3} saved={saved[r.slug] ?? (myRecipes[r.slug] ? 'exists' : 'idle')} onSave={() => save(r)}
+                        favorite={myRecipes[r.slug]?.favorite ?? false} onFavorite={() => toggleFavorite(r)} />
+                    ))}
+                  </ul>
+                )}
+                {ready.length > visible && (
+                  <div className="mt-3 text-center"><button type="button" className="btn-ghost" onClick={() => setVisible((v) => v + PAGE_SIZE)}>Load More ({ready.length - visible} more)</button></div>
+                )}
+                {needsMore.length > 0 && (
+                  <section className="mt-5" aria-label="Needs additional ingredients">
+                    <h3 className="mb-1 flex items-center gap-2 font-display text-[1.2rem] font-bold">Needs additional ingredients <span className="rounded-full bg-rose-50 px-2 py-0.5 font-sans text-[0.8rem] font-semibold text-rose-800">{needsMore.length}</span></h3>
+                    <p className="mb-3 text-[0.88rem] text-stone-600">These use your ingredients but need more than {READY_MISSING} more main ingredients from the shop.</p>
+                    <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                      {needsMore.slice(0, moreVisible).map((r) => (
+                        <RecipeCard key={r.slug} r={r} selected={r === top} firstRow={false} saved={saved[r.slug] ?? (myRecipes[r.slug] ? 'exists' : 'idle')} onSave={() => save(r)}
+                          favorite={myRecipes[r.slug]?.favorite ?? false} onFavorite={() => toggleFavorite(r)} />
+                      ))}
+                    </ul>
+                    {needsMore.length > moreVisible && (
+                      <div className="mt-3 text-center"><button type="button" className="btn-ghost" onClick={() => setMoreVisible((v) => v + PAGE_SIZE)}>Show more ({needsMore.length - moreVisible} more)</button></div>
+                    )}
+                  </section>
+                )}
+              </>
             )}
             <Link to="/generate" className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-crimson"><Wand2 size={16} aria-hidden="true" />Generate a new recipe<ChevronRight size={15} aria-hidden="true" /></Link>
           </Card>

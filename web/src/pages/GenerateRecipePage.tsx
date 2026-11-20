@@ -8,7 +8,7 @@ import { IngredientBadge, RecipeCardImage } from '../components/DishArt';
 import { LEVEL_LABEL } from '../components/QuickPreferences';
 import { Card, Donut, ErrorNote, PageHeader, Spinner } from '../components/ui';
 import { ingredientConflicts, TASTE_LABEL, type Conflict } from '../lib/conflicts';
-import { fetchCuratedRecommendations, SETTINGS_DIETS, type CuratedMatch } from '../lib/curatedApi';
+import { fetchCuratedRecommendations, listCuratedRecipes, SETTINGS_DIETS, type CuratedMatch, type CuratedSummary } from '../lib/curatedApi';
 import { recipeImage } from '../lib/images';
 import { formatGrams } from '../lib/pantryApi';
 import { allergenLabel, CALORIE_TIERS, effectiveAllergenTags, type Level, type TasteKey } from '../lib/preferences';
@@ -66,6 +66,22 @@ export function tastePercentages(taste: Recipe['taste']) {
   return TASTES.map((t) => ({ key: t.key, label: TASTE_LABEL[t.key], percent: Math.round(Math.min(10, Math.max(0, taste?.[t.key] ?? 0)) * 10) }));
 }
 
+// A related dish whose photo may stand in for the generated one: it must have a photo and share a real word with the
+// generated title, including its dish type (e.g. "Chicken Breast Karahi" -> "Chicken Karahi", never "Chicken Kofta Curry").
+// More shared words win. Otherwise none.
+const GENERIC = new Set(['breast', 'leg', 'piece', 'boneless', 'with', 'and', 'the', 'masala', 'style']);
+export function similarPhoto<T extends { name: string; slug: string; image_url?: string | null }>(title: string, related: T[]): T | undefined {
+  const words = (t: string) => new Set(t.toLowerCase().replace(/\(.*?\)/g, '').split(/[^a-z]+/).filter((w) => w.length > 2 && !GENERIC.has(w)));
+  const mine = words(title);
+  // The dish type is the last word of a generated title (Karahi, Salan, Pulao, Tadka...): it must match too.
+  const kind = [...mine].pop();
+  const scored = related.filter((r) => recipeImage(r.slug, r.image_url))
+    .map((r) => { const theirs = words(r.name); return { r, n: [...theirs].filter((w) => mine.has(w)).length, kind: kind !== undefined && theirs.has(kind) }; })
+    .filter((x) => x.kind);
+  scored.sort((a, b) => b.n - a.n);
+  return scored[0]?.r;
+}
+
 export function GenerateRecipePage() {
   const { session } = useAuth();
   const userId = session?.user.id;
@@ -79,7 +95,10 @@ export function GenerateRecipePage() {
   const [alert, setAlert] = useState<Conflict[]>([]);
   const [related, setRelated] = useState<CuratedMatch[]>([]);
   const [note, setNote] = useState('');
+  const [catalogRecipes, setCatalogRecipes] = useState<CuratedSummary[]>([]);
   const recipe = recipes[active] ?? null;
+  // All published recipes, only to find a photo of the same kind of dish (filters don't apply to a picture).
+  useEffect(() => { listCuratedRecipes().then(setCatalogRecipes).catch(() => setCatalogRecipes([])); }, []);
   const actions = useRecipeActions(userId, recipe, addBought);
 
   const chosen = selection.ingredients.slice(0, 12);
@@ -124,7 +143,7 @@ export function GenerateRecipePage() {
   const setTastes = TASTES.filter((t) => selection.tastes[t.key]);
   const goal = CALORIE_TIERS.find((t) => t.tier === prefs?.calorieTier);
   // A generated dish has no photo of its own. Show the closest ready-made dish's photo only when it has one, and say so.
-  const photoOf = related.find((r) => recipeImage(r.slug, r.image_url));
+  const photoOf = recipe ? similarPhoto(recipe.title, [...related, ...catalogRecipes]) : undefined;
   const time = recipe ? timeSplit(recipe) : null;
 
   return (
@@ -154,7 +173,7 @@ export function GenerateRecipePage() {
               : <span className="rounded-full bg-stone-100 px-2 py-0.5 text-stone-600">Any taste</span>}
             {diets.map((d) => <span key={d} className="rounded-full bg-green-50 px-2 py-0.5 font-medium text-green-800">{SETTINGS_DIETS.find((x) => x.key === d)?.label ?? d}</span>)}
             {allergyChips.length > 0 && <span className="rounded-full bg-rose-100 px-2 py-0.5 font-medium text-rose-800">Avoid: {allergyChips.slice(0, 3).join(', ')}{allergyChips.length > 3 ? ` +${allergyChips.length - 3}` : ''}</span>}
-            {goal && <span className="rounded-full bg-amber-50 px-2 py-0.5 font-medium text-amber-800">{goal.kcal} kcal/day</span>}
+            {goal && <span className="rounded-full bg-amber-50 px-2 py-0.5 font-medium text-amber-800">Daily goal: {goal.kcal} kcal</span>}
           </p>
         </div>
         <div className="flex flex-col items-stretch gap-1">
@@ -190,10 +209,10 @@ export function GenerateRecipePage() {
       {recipe && !busy && time && (
         <div className="print-area mt-3 space-y-4">
           {/* The recipe itself, near the top. */}
-          <section className="card grid gap-5 p-4 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]" aria-label="Generated recipe">
+          <section className="card grid items-center gap-5 p-4 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]" aria-label="Generated recipe">
             <figure className="min-w-0">
-              <RecipeCardImage category="Main Course" imageUrl={photoOf ? recipeImage(photoOf.slug, photoOf.image_url) : null} name={recipe.title} rounded="rounded-2xl" />
-              <figcaption className="mt-1 text-[0.75rem] text-stone-500">{photoOf ? <>Photo: a similar ready-made dish, <Link to={`/recipe/${photoOf.slug}`} className="underline">{photoOf.name}</Link>. Your dish is generated, so it has no photo of its own.</> : 'Generated dish: no photo of its own yet.'}</figcaption>
+              <RecipeCardImage category="Main Course" imageUrl={photoOf ? recipeImage(photoOf.slug, photoOf.image_url) : null} name={recipe.title} rounded="rounded-2xl" frame="aspect-[4/3] max-h-[19rem]" />
+              <figcaption className="mt-1.5 text-[0.85rem] text-stone-600">{photoOf ? <>Photo: a similar ready-made dish, <Link to={`/recipe/${photoOf.slug}`} className="underline">{photoOf.name}</Link>. Your dish is generated, so it has no photo of its own.</> : 'Generated dish: no photo of its own yet.'}</figcaption>
             </figure>
             <div className="min-w-0">
               <div className="flex flex-wrap items-center justify-between gap-2">
@@ -212,9 +231,9 @@ export function GenerateRecipePage() {
                     <strong className="mt-0.5 block text-[1.05rem]">{s.value}</strong><span className="text-[0.75rem] text-stone-500">{s.label}</span></li>
                 ))}
               </ul>
-              <ul className="mt-3 flex flex-wrap gap-1.5 text-[0.82rem]">
+              <ul className="mt-3 flex flex-wrap gap-1.5 text-[0.9rem]">
                 <li className="badge bg-white shadow-sm"><Clock size={14} aria-hidden="true" />{time.total} min total</li>
-                <li className="badge badge-amber"><Flame size={14} aria-hidden="true" />≈ {Math.round(recipe.nutrition.per_serving.kcal)} kcal / serving</li>
+                <li className="badge badge-amber"><Flame size={14} aria-hidden="true" />≈ {Math.round(recipe.nutrition.per_serving.kcal)} kcal per serving{goal ? ` · ${Math.round((recipe.nutrition.per_serving.kcal / goal.kcal) * 100)}% of your ${goal.kcal} kcal day` : ''}</li>
                 {recipe.nutrition.per_serving.protein >= 25 && <li className="badge badge-green">High Protein</li>}
                 {recipe.match && <li className="badge badge-green">{recipe.match.percent}% match to your taste</li>}
               </ul>
@@ -233,27 +252,27 @@ export function GenerateRecipePage() {
           </section>
 
           <div className="grid gap-4 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-            <Card title="Ingredients" icon={ChefHat} action={<span className="text-[0.85rem] font-semibold text-crimson">{Math.round(recipe.nutrition.total.kcal).toLocaleString()} kcal total</span>}>
-              <table className="data-table">
-                <thead><tr><th>Ingredient</th><th>Quantity</th><th className="text-right">Calories</th></tr></thead>
+            <Card title="Ingredients" icon={ChefHat} action={<span className="text-right text-[0.85rem] font-semibold text-crimson">{Math.round(recipe.nutrition.total.kcal).toLocaleString()} kcal whole dish<span className="block text-[0.75rem] font-normal text-stone-500">{recipe.servings} servings × {Math.round(recipe.nutrition.per_serving.kcal)} kcal</span></span>}>
+              <table className="data-table text-[0.98rem]">
+                <thead><tr><th>Ingredient</th><th className="text-right">Quantity</th><th className="text-right">Calories</th></tr></thead>
                 <tbody>
                   {recipe.ingredients.map((i) => (
-                    <tr key={i.name}><td><span className="flex items-center gap-2"><IngredientBadge name={i.name} category={i.category} size={24} />{i.name}</span></td>
-                      <td>{formatGrams(i.grams)}</td><td className="text-right">{i.kcal !== undefined ? `${Math.round(i.kcal)} kcal` : '—'}</td></tr>
+                    <tr key={i.name}><td><span className="flex items-center gap-2 font-medium"><IngredientBadge name={i.name} category={i.category} size={28} />{i.name}</span></td>
+                      <td className="text-right tabular-nums">{formatGrams(i.grams)}</td><td className="text-right tabular-nums">{i.kcal !== undefined ? `${Math.round(i.kcal)} kcal` : '—'}</td></tr>
                   ))}
                 </tbody>
               </table>
               <p className="mt-2 text-[0.75rem] text-stone-500">Calories = grams × the catalog's kcal per 100 g. Estimates, not medical advice.</p>
             </Card>
             <Card title="Cooking Steps" icon={Flame}>
-              <ol className="space-y-2">
+              <ol className="space-y-3">
                 {recipe.steps.map((s, i) => {
                   const d = stepDuration(s);
                   return (
-                    <li key={i} className="flex gap-3 rounded-2xl bg-white/85 p-2.5 shadow-sm">
-                      <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-crimson text-[0.85rem] font-bold text-white">{i + 1}</span>
-                      <p className="flex-1 text-[0.92rem] leading-snug">{s}</p>
-                      {d && <span className="h-fit shrink-0 whitespace-nowrap rounded-full bg-orange-50 px-2 py-0.5 text-[0.75rem] font-semibold text-orange-800"><Clock size={11} className="mr-0.5 inline" aria-hidden="true" />{fmtRange(d)}</span>}
+                    <li key={i} className="flex gap-3 rounded-2xl bg-white/85 p-3 shadow-sm">
+                      <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-crimson text-[0.95rem] font-bold text-white">{i + 1}</span>
+                      <p className="flex-1 text-[1.02rem] leading-relaxed">{s}</p>
+                      {d && <span className="h-fit shrink-0 whitespace-nowrap rounded-full bg-orange-50 px-2.5 py-1 text-[0.9rem] font-semibold text-orange-800"><Clock size={13} className="mr-0.5 inline" aria-hidden="true" />{fmtRange(d)}</span>}
                     </li>
                   );
                 })}
@@ -304,7 +323,7 @@ export function GenerateRecipePage() {
               <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 {related.map((r) => (
                   <li key={r.slug} className="overflow-hidden rounded-2xl bg-white/85 shadow-sm"><Link to={`/recipe/${r.slug}`} state={{ match: r }} className="block">
-                    <RecipeCardImage category={r.category} imageUrl={recipeImage(r.slug, r.image_url)} name={r.name} />
+                    <RecipeCardImage category={r.category} imageUrl={recipeImage(r.slug, r.image_url)} name={r.name} frame="aspect-[16/9]" />
                     <span className="block px-2.5 pt-1.5 text-[0.92rem] font-semibold leading-tight">{r.name}</span>
                     <span className="block px-2.5 pb-2 text-[0.8rem] text-green-700">{r.match_percent}% match · {r.minutes} min</span></Link></li>
                 ))}

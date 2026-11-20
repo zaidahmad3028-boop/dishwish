@@ -1,7 +1,7 @@
 {
  "recipes/chicken-achari": {
   "name": "Chicken Achari",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:Chicken Achari.jpg",
@@ -17,11 +17,12 @@
     "license": "CC BY-SA 4.0",
     "size": "2322x2322"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/chicken-jalfrezi": {
   "name": "Chicken Jalfrezi",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:Jalfrezi Curry For Dinner.jpg",
@@ -51,11 +52,12 @@
     "license": "CC BY 2.0",
     "size": "1280x960"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/butter-chicken": {
   "name": "Butter Chicken",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:Butter Chicken & Butter Naan - Home - Chandigarh - India - 0006.jpg",
@@ -99,11 +101,12 @@
     "license": "CC BY-SA 4.0",
     "size": "4000x2252"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/chicken-kofta-curry": {
   "name": "Chicken Kofta Curry",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:Koofteh tabrizi.jpg",
@@ -133,11 +136,12 @@
     "license": "CC0",
     "size": "1125x1488"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/chicken-white-karahi": {
   "name": "White Chicken Karahi",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:Chicken White Karahi.JPG",
@@ -167,11 +171,12 @@
     "license": "CC BY-SA 3.0",
     "size": "3008x2000"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/chicken-malai-boti": {
   "name": "Chicken Malai Boti",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:Chicken Malai Boti.JPG",
@@ -201,11 +206,12 @@
     "license": "CC BY-SA 4.0",
     "size": "5310x4479"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/chicken-haleem": {
   "name": "Chicken Haleem",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:Pakistani Haleem served with garnish.jpg",
@@ -235,11 +241,12 @@
     "license": "CC BY-SA 4.0",
     "size": "2256x1496"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/mutton-qorma": {
   "name": "Mutton Qorma",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:Mutton Khorma - Daig Style.jpg",
@@ -255,11 +262,12 @@
     "license": "CC0",
     "size": "2816x2112"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/chicken-steam-roast": {
   "name": "Chicken Steam Roast",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:Sunday roast lamb Cock Inn Henham Essex England 01.jpg",
@@ -303,16 +311,18 @@
     "license": "CC BY-SA 4.0",
     "size": "811x1141"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/raan-roast": {
   "name": "Mutton Raan Roast",
   "chosen": null,
-  "candidates": []
+  "candidates": [],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/beef-seekh-kabab": {
   "name": "Beef Seekh Kabab",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:Pakistani gobi aloo, seekh kebab, and beef karahi.jpg",
@@ -356,11 +366,12 @@
     "license": "CC BY-SA 2.0",
     "size": "5184x3456"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/bhuna-gosht": {
   "name": "Beef Bhuna Gosht",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:Kala bhuna 1.jpg",
@@ -369,11 +380,12 @@
     "license": "CC BY-SA 4.0",
     "size": "6000x4000"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/mutton-pulao": {
   "name": "Mutton Pulao",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:Mutton pulao.jpg",
@@ -417,16 +429,18 @@
     "license": "CC BY-SA 4.0",
     "size": "3000x2717"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/fish-tikka": {
   "name": "Surmai Fish Tikka",
   "chosen": null,
-  "candidates": []
+  "candidates": [],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/rohu-fish-curry": {
   "name": "Rohu Fish Curry",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:Rohu fish curry ('Rui maach' in Bengali).JPG",
@@ -470,11 +484,12 @@
     "license": "CC BY 2.0",
     "size": "1280x960"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/mutton-paya": {
   "name": "Mutton Paya",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:Paya Curry.JPG",
@@ -518,11 +533,12 @@
     "license": "CC BY 2.0",
     "size": "2816x2112"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/anda-curry": {
   "name": "Anda Curry",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:Spicy Anda Curry.jpg",
@@ -566,11 +582,12 @@
     "license": "CC BY-SA 4.0",
     "size": "2448x3264"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/palak-paneer": {
   "name": "Palak Paneer",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:Panir Paneer Indian cheese fresh.jpg",
@@ -614,11 +631,12 @@
     "license": "CC BY-SA 3.0",
     "size": "1600x1200"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/matar-paneer": {
   "name": "Matar Paneer",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:Matar paneer dish.jpg",
@@ -662,11 +680,12 @@
     "license": "CC BY-SA 4.0",
     "size": "2884x2638"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/aloo-matar": {
   "name": "Aloo Matar",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:Aloo Gobi Matar (49653225183).jpg",
@@ -710,11 +729,12 @@
     "license": "CC0",
     "size": "2781x2781"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/mix-sabzi": {
   "name": "Mix Sabzi",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:Dal Puri.JPG",
@@ -751,16 +771,18 @@
     "license": "CC BY-SA 4.0",
     "size": "1944x1944"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/karela-qeema": {
   "name": "Karela Qeema",
   "chosen": null,
-  "candidates": []
+  "candidates": [],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/aloo-methi": {
   "name": "Aloo Methi",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:Aloo Methi Bhaji.jpg",
@@ -804,11 +826,12 @@
     "license": "CC BY-SA 4.0",
     "size": "3008x4016"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/tinda-masala": {
   "name": "Tinda Masala",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:Tinda Masala.JPG",
@@ -817,11 +840,12 @@
     "license": "CC BY-SA 4.0",
     "size": "5184x3456"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/kaddu-ki-sabzi": {
   "name": "Khatta Meetha Kaddu",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:Kheer.jpg",
@@ -830,11 +854,12 @@
     "license": "CC BY-SA 2.0",
     "size": "3008x2000"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/band-gobhi": {
   "name": "Band Gobhi Matar",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:ঐতিহ্যবাহী সর্ষে ইলিশ.jpg",
@@ -843,11 +868,12 @@
     "license": "CC BY-SA 4.0",
     "size": "1710x2048"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/lauki-chana-dal": {
   "name": "Lauki Chana Dal",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:Lauki Chana Dal Recipe From North Indian Cuisine By Sonia Goyal.jpg",
@@ -877,11 +903,12 @@
     "license": "CC BY-SA 3.0",
     "size": "800x600"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/arvi-masala": {
   "name": "Arvi Masala",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:Arbi Gosht.jpg",
@@ -925,11 +952,12 @@
     "license": "CC BY-SA 4.0",
     "size": "1088x1136"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/moong-daal": {
   "name": "Moong Daal",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:Moong daal ka halwa the super king of sweets.JPG",
@@ -973,11 +1001,12 @@
     "license": "CC BY-SA 4.0",
     "size": "5184x3456"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/chana-daal": {
   "name": "Chana Daal Tadka",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:3 types of lentil.png",
@@ -1000,11 +1029,12 @@
     "license": "CC BY-SA 4.0",
     "size": "960x1280"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/lobia-masala": {
   "name": "Lobia Masala",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:Lobia Masala.jpg",
@@ -1027,11 +1057,12 @@
     "license": "CC BY-SA 4.0",
     "size": "5592x4016"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/kala-chana": {
   "name": "Kala Chana Masala",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:Chana masala.jpg",
@@ -1075,11 +1106,12 @@
     "license": "CC BY-SA 4.0",
     "size": "4608x3456"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/khichdi": {
   "name": "Moong Dal Khichdi",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:MoongDal Khichdi.jpg",
@@ -1102,11 +1134,12 @@
     "license": "CC BY-SA 4.0",
     "size": "2048x1148"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/matar-pulao": {
   "name": "Matar Pulao",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:Matar Pulao - Mohali 2016-08-06 8222.JPG",
@@ -1150,11 +1183,12 @@
     "license": "CC BY-SA 4.0",
     "size": "1440x1150"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/prawn-biryani": {
   "name": "Prawn Biryani",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:\"Hyderabadi Dum Biryani\".jpg",
@@ -1198,11 +1232,12 @@
     "license": "CC BY-SA 4.0",
     "size": "2560x1440"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/dahi-bhalla": {
   "name": "Dahi Bhalla",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:Curd in a traditional Manipuri earthen pot.JPG",
@@ -1246,11 +1281,12 @@
     "license": "CC BY-SA 4.0",
     "size": "3072x4060"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/aloo-tikki": {
   "name": "Aloo Tikki",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:Aloo Tikki served with chutneys.jpg",
@@ -1294,11 +1330,12 @@
     "license": "CC BY-SA 4.0",
     "size": "3072x2304"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/chana-chaat": {
   "name": "Chana Chaat",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:Dahi puri, Doi phuchka.jpg",
@@ -1342,11 +1379,12 @@
     "license": "CC BY-SA 4.0",
     "size": "2448x3264"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/chicken-paratha-roll": {
   "name": "Chicken Paratha Roll",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:Triangle paratha (cropped).JPG",
@@ -1376,11 +1414,12 @@
     "license": "CC BY-SA 4.0",
     "size": "5611x3864"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/suji-halwa": {
   "name": "Suji Halwa",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:Dry Fruit Suji Halwa.JPG",
@@ -1424,11 +1463,12 @@
     "license": "CC BY-SA 4.0",
     "size": "2592x1456"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/zarda": {
   "name": "Zarda",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:Coloured Zarda Chawal.JPG",
@@ -1472,11 +1512,12 @@
     "license": "CC BY-SA 4.0",
     "size": "3912x2218"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/firni": {
   "name": "Firni",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:Firni Or Phirni.jpg",
@@ -1520,11 +1561,12 @@
     "license": "CC BY-SA 4.0",
     "size": "1113x676"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/shahi-tukray": {
   "name": "Shahi Tukray",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:Shahi Tukray (Shahi Tukda).JPG",
@@ -1554,11 +1596,12 @@
     "license": "CC BY-SA 4.0",
     "size": "3000x4000"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/gulab-jamun": {
   "name": "Gulab Jamun",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:Gulab Jamun-3052.jpg",
@@ -1602,11 +1645,12 @@
     "license": "CC BY-SA 4.0",
     "size": "3077x3215"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/anda-paratha": {
   "name": "Anda Paratha",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:Triangle paratha (cropped).JPG",
@@ -1636,11 +1680,12 @@
     "license": "CC BY 3.0",
     "size": "6016x4000"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/dalia": {
   "name": "Meetha Dalia",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:A photo of Upma.jpg",
@@ -1656,11 +1701,12 @@
     "license": "CC BY-SA 4.0",
     "size": "1079x980"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  },
  "recipes/aloo-bhujia": {
   "name": "Aloo Bhujia",
-  "chosen": 1,
+  "chosen": null,
   "candidates": [
    {
     "title": "File:Dum Aloo with spicy bhujia.jpg",
@@ -1704,6 +1750,7 @@
     "license": "CC BY-SA 4.0",
     "size": "2448x3264"
    }
-  ]
+  ],
+  "note": "replaced by an AI-generated photo (ChatGPT) in the project's dish-photo style"
  }
 }

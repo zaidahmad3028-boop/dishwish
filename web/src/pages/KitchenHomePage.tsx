@@ -108,7 +108,7 @@ export function KitchenHomePage() {
     <div className="kitchen-page">
       <PageHeader title="Your" accent="Kitchen" subtitle="Turn your ingredients into amazing recipes." />
       {error && <ErrorNote>{error}</ErrorNote>}
-      {prefs && !prefs.onboarded && (
+      {prefs && !prefs.onboarded && !Object.values(prefs.tastes).some(Boolean) && prefs.allergens.length === 0 && !prefs.calorieTier && (
         <p className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
           Tell us your tastes and allergies so recommendations fit you. <Link to="/onboarding" className="font-bold underline">Finish setting up</Link>
         </p>
@@ -180,7 +180,7 @@ export function KitchenHomePage() {
       <div className="mt-4 grid gap-[1.1rem] xl:grid-cols-[minmax(0,42fr)_minmax(0,58fr)]">
         <Card title="Quick Recipe Generator" icon={Zap} iconClass="fill-ember text-ember" className="!p-[1.05rem]">
           <QuickPreferences userId={userId} prefs={prefs} />
-          <button type="button" className="btn-primary mt-1 h-[3.2rem] w-full lg:text-[1.15rem]" onClick={generate}>
+          <button type="button" className="btn-primary mt-3 h-[3.2rem] w-full lg:text-[1.15rem]" onClick={generate}>
             <Sparkles size={24} className="fill-white" aria-hidden="true" />Generate Recipes Now<ArrowRight size={24} aria-hidden="true" />
           </button>
         </Card>

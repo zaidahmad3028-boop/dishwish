@@ -12,8 +12,9 @@ import {
 } from '../lib/accountApi';
 import { SETTINGS_DIETS, type Diet } from '../lib/curatedApi';
 import { imageUrl } from '../lib/images';
-import { ALLERGEN_CHIPS, CALORIE_TIERS, LEVELS, SPICE_CHOICES, TASTES, allergenLabel, parseCustomAllergens, resetPreferences, toggleSpice, toggleTaste, type AllergenTag, type Preferences, type TasteKey } from '../lib/preferences';
+import { ALLERGEN_CHIPS, CALORIE_TIERS, LEVELS, TASTES, allergenLabel, parseCustomAllergens, resetPreferences, type AllergenTag, type Preferences, type TasteKey } from '../lib/preferences';
 import { loadPreferences, savePreferences } from '../lib/preferencesApi';
+import { LEVEL_LABEL } from '../components/QuickPreferences';
 import { useLiveTick } from '../lib/useLiveTick';
 
 type Tab = 'profile' | 'diet' | 'notifications' | 'security' | 'appearance' | 'feedback' | 'data';
@@ -29,7 +30,8 @@ const NOTIFY_ROWS: { key: 'recipe_ideas' | 'reminders' | 'tips'; label: string; 
   { key: 'reminders', label: 'Meal plan and cooking reminders', icon: CalendarDays },
   { key: 'tips', label: 'Updates, new features and tips', icon: Megaphone },
 ];
-const TASTE_TILES: { key: TasteKey; label: string; image: string }[] = [
+const FLAVOUR_ROWS: { key: TasteKey; label: string; image: string }[] = [
+  { key: 'spicy', label: 'Spicy', image: 'spicy' },
   { key: 'salty', label: 'Salty', image: 'salty' }, { key: 'sweet', label: 'Sweet', image: 'sweet' }, { key: 'sour', label: 'Sour', image: 'sour' },
 ];
 
@@ -278,12 +280,26 @@ export function SettingsPage() {
           </Card>
           <Card title="Taste Preferences" icon={Flame} iconClass="fill-crimson text-crimson" action={<button type="button" className="inline-flex items-center gap-1.5 whitespace-nowrap text-[0.86rem] font-medium text-crimson-deep hover:underline" onClick={() => setIntensity(true)}><SlidersHorizontal size={15} aria-hidden="true" />Intensity</button>}>
             <p className="settings-sub">Set your favorite taste profile for better recipe recommendations.</p>
-            <ul className="-mx-[0.25rem] mt-[1.4rem] grid grid-cols-3 gap-[1rem] pr-[0.6rem]">
-              {SPICE_CHOICES.map((c) => <TasteTile key={c.level} label={c.label} image={c.image} checked={prefs.tastes.spicy === c.level} large onToggle={() => changePrefs({ ...prefs, tastes: toggleSpice(prefs.tastes, c.level) })} />)}
+            {/* Same model as the Kitchen: each flavour Low / Moderate / High, or not set. */}
+            <ul className="mt-[1rem] space-y-[0.55rem]">
+              {FLAVOUR_ROWS.map((f) => (
+                <li key={f.key} className="flex items-center gap-3 rounded-[1.1rem] border border-white/90 bg-white/70 px-3 py-2 shadow-sm">
+                  <img src={imageUrl(`settings/taste-${f.image}.webp`)} alt="" aria-hidden="true" className="h-[2rem] w-[2rem] shrink-0 object-contain" />
+                  <span className="w-[3.6rem] shrink-0 text-[1rem] font-semibold">{f.label}</span>
+                  <span role="radiogroup" aria-label={`${f.label} intensity`} className="ml-auto grid flex-1 grid-cols-4 gap-1 rounded-full bg-stone-100 p-1">
+                    {[...LEVELS, null].map((l) => {
+                      const on = prefs.tastes[f.key] === l;
+                      return (
+                        <button key={l ?? 'none'} type="button" role="radio" aria-checked={on} onClick={() => changePrefs({ ...prefs, tastes: { ...prefs.tastes, [f.key]: l } })}
+                          className={`rounded-full py-1 text-[0.84rem] font-medium ${on ? 'bg-gradient-to-r from-crimson to-ember text-white shadow' : 'text-stone-700 hover:bg-white'}`}>{l ? LEVEL_LABEL[l] : 'Not set'}</button>
+                      );
+                    })}
+                  </span>
+                </li>
+              ))}
             </ul>
-            <ul className="-mx-[0.25rem] mt-[0.6rem] grid grid-cols-2 gap-[0.85rem] pb-[0.65rem] sm:grid-cols-[1.05fr_1fr_1fr_1fr]">
+            <ul className="mt-[0.6rem] grid grid-cols-2 pb-[0.4rem]">
               <TasteTile label="Savory (Umami)" image="savory" checked={savory} title="Saved to your account. Recommendations don’t use savory yet." onToggle={toggleSavory} />
-              {TASTE_TILES.map((t) => <TasteTile key={t.key} label={t.label} image={t.image} checked={prefs.tastes[t.key] !== null} onToggle={() => changePrefs({ ...prefs, tastes: toggleTaste(prefs.tastes, t.key) })} />)}
             </ul>
           </Card>
         </div>

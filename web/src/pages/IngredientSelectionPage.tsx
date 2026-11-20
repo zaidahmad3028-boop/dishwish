@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AlertTriangle, ArrowRight, Candy, Check, ChevronDown, Citrus, CircleCheck, Droplet, Flame, Gauge, LayoutGrid, Leaf, List, Network, Plus, ShieldCheck, ShoppingBasket, SlidersHorizontal, Sparkles, Star, X, type LucideIcon } from 'lucide-react';
 import { useAuth } from '../auth/AuthProvider';
+import { LEVEL_LABEL } from '../components/QuickPreferences';
 import { CategoryIcon, IngredientBadge, IngredientHero } from '../components/DishArt';
 import { ConflictAlert } from '../components/ConflictAlert';
 import { Card, ChefHatMark, ErrorNote, PageHeader, SearchBox, Spinner } from '../components/ui';
@@ -59,14 +60,14 @@ function TasteChip({ taste, level, onSet }: { taste: TasteKey; level: Level | nu
     <div className="relative" onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setOpen(false); }}>
       <button type="button" aria-expanded={open} aria-haspopup="listbox" onClick={() => setOpen((o) => !o)}
         className={`flex h-[2.6rem] items-center gap-2 rounded-full border px-3.5 text-[0.95rem] font-medium tracking-tight shadow-sm ${level ? 'border-rose-200 bg-rose-50' : 'border-white bg-white/80'}`}>
-        <Icon size={20} className={cls} aria-hidden="true" />{TASTE_LABEL[taste]}: {level ? level[0].toUpperCase() + level.slice(1) : 'Any'}<ChevronDown size={16} aria-hidden="true" />
+        <Icon size={20} className={cls} aria-hidden="true" />{TASTE_LABEL[taste]}: {level ? LEVEL_LABEL[level] : 'Not set'}<ChevronDown size={16} aria-hidden="true" />
       </button>
       {open && (
         <ul role="listbox" aria-label={`${TASTE_LABEL[taste]} level`} className="absolute left-0 top-full z-30 mt-1 w-36 rounded-2xl border border-rose-100 bg-white p-1 shadow-xl">
-          {[null, ...LEVELS].map((l) => (
+          {[...LEVELS, null].map((l) => (
             <li key={l ?? 'any'} role="option" aria-selected={level === l}>
               <button type="button" className={`w-full rounded-xl px-3 py-1.5 text-left text-[0.92rem] capitalize hover:bg-rose-50 ${level === l ? 'font-semibold text-crimson' : ''}`}
-                onClick={() => { onSet(l); setOpen(false); }}>{l ?? 'Any'}</button>
+                onClick={() => { onSet(l); setOpen(false); }}>{l ? LEVEL_LABEL[l] : 'Not set'}</button>
             </li>
           ))}
         </ul>
@@ -190,6 +191,25 @@ export function IngredientSelectionPage() {
               </span>
             </div>
             {message && <p role="status" className="mt-3 text-sm font-semibold text-rose-700">{message}</p>}
+            {/* Graph suggestions sit right under the search, where the cook is choosing. */}
+            <div className="mt-3 rounded-2xl border border-amber-200/70 bg-gradient-to-r from-amber-50 to-rose-50 px-3.5 py-3" aria-label="Suggested additions">
+              <p className="flex flex-wrap items-baseline gap-x-2 font-display text-[1.15rem] font-bold"><Star size={19} className="self-center fill-gold text-gold" aria-hidden="true" />Suggested Additions
+                <span className="font-sans text-[0.85rem] font-normal text-stone-600">connected to your selection in the compatibility graph (higher = stronger link)</span></p>
+              {!report || report.suggestions.length === 0 ? (
+                <p className="mt-1 text-[0.9rem] text-stone-500">{selection.ingredients.length ? 'No graph suggestions for this selection.' : 'Select an ingredient to see what pairs well with it.'}</p>
+              ) : (
+                <ul className="mt-2 flex flex-wrap gap-2">
+                  {report.suggestions.map((s) => (
+                    <li key={s.name}>
+                      <button type="button" className="pill h-11 !gap-2 !px-3.5 !text-[1rem] font-medium" onClick={() => toggle(s.name, null)} aria-label={`Add ${s.name}`}>
+                        <IngredientBadge name={s.name} category={s.category} size={28} />{s.name}
+                        <span className="rounded-full bg-green-50 px-1.5 text-[0.78rem] font-semibold text-green-800">{Math.round(s.support * 100)}%</span><Plus size={16} className="text-crimson" />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
             <ul className={`mt-4 grid gap-2.5 ${view === 'grid' ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5' : 'grid-cols-1'}`}>
               {filtered.slice(0, limit).map((item) => {
                 const picked = selection.ingredients.includes(item.name);
@@ -235,23 +255,6 @@ export function IngredientSelectionPage() {
 
             </section>
 
-          <Card title="Suggested Additions (Optional)" icon={Star} iconClass="fill-gold text-gold" className="xl:col-span-2 xl:col-start-1 xl:row-start-2">
-              <p className="-mt-2 mb-3 text-sm text-stone-600">These ingredients are connected to your selection in the compatibility graph.</p>
-              {!report || report.suggestions.length === 0 ? (
-                <p className="text-sm text-stone-500">{selection.ingredients.length ? 'No graph suggestions for this selection.' : 'Select an ingredient to see suggestions.'}</p>
-              ) : (
-                <ul className="flex flex-wrap gap-2">
-                  {report.suggestions.map((s) => (
-                    <li key={s.name}>
-                      <button type="button" className="pill" onClick={() => toggle(s.name, null)} aria-label={`Add ${s.name}`}>
-                        <IngredientBadge name={s.name} category={s.category} size={22} />{s.name}
-                        <span className="text-xs text-stone-500">{s.support.toFixed(2)}</span><Plus size={14} className="text-crimson" />
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </Card>
 
           <div className="flex flex-col gap-4 xl:row-span-2 xl:col-start-3 xl:row-start-1 [&_h2]:!text-[1.35rem] [&_h2]:whitespace-nowrap">
             <Card title="Selection Summary" icon={ShoppingBasket}

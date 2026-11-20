@@ -6,13 +6,16 @@ import type { Level, TasteKey } from './preferences';
 
 export const MAX_SELECTED = 20;
 const KEY = 'dishwish:selection';
-const empty = (): Selection => ({ ingredients: [], tastes: { sweet: null, salty: null, sour: null, spicy: null }, diets: [], maxMinutes: null });
+// Every flavour starts at Moderate; the cook can raise, lower or unset each one.
+export const DEFAULT_TASTES: Selection['tastes'] = { sweet: 'medium', salty: 'medium', sour: 'medium', spicy: 'medium' };
+const empty = (): Selection => ({ ingredients: [], tastes: { ...DEFAULT_TASTES }, diets: [], maxMinutes: null });
 
 function read(): Selection {
   try {
     const raw = JSON.parse(sessionStorage.getItem(KEY) ?? 'null') as Partial<Selection> | null;
     if (!raw || !Array.isArray(raw.ingredients)) return empty();
-    return { ...empty(), ...raw, ingredients: raw.ingredients.filter((x) => typeof x === 'string').slice(0, MAX_SELECTED) };
+    const tastes = raw.tastes && Object.values(raw.tastes).some((v) => v !== null) ? raw.tastes : { ...DEFAULT_TASTES };
+    return { ...empty(), ...raw, tastes, ingredients: raw.ingredients.filter((x) => typeof x === 'string').slice(0, MAX_SELECTED) };
   } catch {
     return empty();
   }
@@ -88,10 +91,11 @@ export function togglePreset(tastes: Selection['tastes'], preset: (typeof TASTE_
 // Start each session from the cook's saved tastes until they pick their own for this search.
 export function useSeedTastes(saved: Selection['tastes'] | undefined) {
   const { selection, setTastes } = useSelection();
-  const untouched = Object.values(selection.tastes).every((v) => v === null);
+  const untouched = (Object.keys(DEFAULT_TASTES) as TasteKey[]).every((k) => selection.tastes[k] === DEFAULT_TASTES[k] || selection.tastes[k] === null);
   const hasSaved = saved && Object.values(saved).some((v) => v !== null);
   useEffect(() => {
-    if (untouched && hasSaved) setTastes(saved);
+    // Saved levels win; a flavour the cook never set stays at the Moderate default.
+    if (untouched && hasSaved && saved) setTastes({ sweet: saved.sweet ?? 'medium', salty: saved.salty ?? 'medium', sour: saved.sour ?? 'medium', spicy: saved.spicy ?? 'medium' });
     // Only when saved preferences first arrive.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasSaved]);

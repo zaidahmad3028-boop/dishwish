@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -45,8 +45,9 @@ describe('routing', () => {
     expect(screen.getByRole('link', { name: /Smart Matching/ })).toHaveAttribute('href', '/select');
     expect(within(sidebar).queryByRole('link', { name: 'Users' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /sign up|create account/i })).not.toBeInTheDocument();
-    // Mocked preferences are not onboarded yet, so the kitchen offers to finish setup.
-    expect(await screen.findByRole('link', { name: 'Finish setting up' })).toHaveAttribute('href', '/onboarding');
+    // Not onboarded, but allergies and a calorie goal are already saved, so the kitchen doesn't nag about setup.
+    expect(await screen.findByText('Quick Recipe Generator')).toBeInTheDocument();
+    await waitFor(() => expect(screen.queryByRole('link', { name: 'Finish setting up' })).toBeNull());
   });
 
   it('navigates between sections and shows saved preferences on the profile', async () => {

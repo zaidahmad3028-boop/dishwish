@@ -52,8 +52,8 @@ describe('core journey', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Add Tomato' }));
     expect(await screen.findByText(/pair well/i)).toBeInTheDocument();
     // Tastes are set in the Quick Preferences bar: click a taste, then pick its level.
-    await userEvent.click(screen.getByRole('button', { name: /Spicy: Any/ }));
-    await userEvent.click(within(screen.getByRole('listbox', { name: 'Spicy level' })).getByRole('button', { name: 'high' }));
+    await userEvent.click(screen.getByRole('button', { name: /Spicy: Moderate/ }));
+    await userEvent.click(within(screen.getByRole('listbox', { name: 'Spicy level' })).getByRole('button', { name: 'High' }));
     await userEvent.click(continueBtn);
 
     expect(await screen.findByRole('heading', { name: 'Chicken Karahi' })).toBeInTheDocument();

@@ -147,7 +147,7 @@ export function MyRecipesPage() {
 
   const suggestionGrid = suggestions.length > 0 && (
                   <>
-                    <p className="mb-2 mt-4 font-display text-[1.2rem] font-bold">Recipes to try</p>
+                    <p className="mb-2 mt-6 flex items-center gap-2 border-t border-rose-100 pt-4 font-display text-[1.2rem] font-bold text-stone-700">Recipes to try <span className="font-sans text-[0.85rem] font-normal text-stone-500">suggestions from the catalog, not saved yet</span></p>
                     <ul className={GRID} aria-label="Recipes to try">
                       {suggestions.map((r) => (
                         <li key={r.slug} className="card flex flex-col overflow-hidden p-0">
@@ -207,6 +207,8 @@ export function MyRecipesPage() {
               </>
             ) : (
               <>
+                <p className="mb-2 flex items-center gap-2 font-display text-[1.25rem] font-bold">{tab === 'favorites' ? 'Your favourites' : 'Your saved recipes'}
+                  <span className="rounded-full bg-crimson px-2 py-0.5 font-sans text-[0.8rem] font-semibold text-white">{savedShown.length}</span></p>
                 <ul className={GRID} aria-label="Saved dishes">
                   {savedShown.map((r) => <SavedCard key={r.id} r={r} onDelete={() => remove(r)} onFavorite={() => toggleFavorite(r)} />)}
                 </ul>

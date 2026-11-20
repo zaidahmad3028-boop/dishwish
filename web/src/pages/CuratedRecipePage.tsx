@@ -199,6 +199,7 @@ export function CuratedRecipePage() {
 
           <div className="grid gap-3 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1fr)]">
             <Card title={<>Ingredients <span className="font-sans text-base font-normal">({recipe.servings} Servings)</span></>} icon={ShoppingBasket}>
+              <p className="-mt-1 mb-1 flex flex-wrap gap-x-3 text-[0.78rem] text-stone-600"><span><Check size={12} className="mr-0.5 inline rounded bg-green-600 text-white" aria-hidden="true" />you have it</span><span>☐ to buy or a pantry staple</span><span><ArrowLeftRight size={11} className="mr-0.5 inline text-crimson" aria-hidden="true" />swap = optional substitute</span></p>
               <ul className="divide-y divide-stone-100">
                 {recipe.ingredients.map((i) => (
                   <li key={i.name} className="flex items-center gap-2.5 py-0.5 text-[0.92rem]">
@@ -240,13 +241,13 @@ export function CuratedRecipePage() {
                 {recipe.steps.map((step, i) => (
                   <li key={i} className="relative">
                     {i < recipe.steps.length - 1 && <span className="absolute left-[1.05rem] top-9 bottom-0 w-0.5 bg-rose-200" aria-hidden="true" />}
-                    <label className={`relative flex cursor-pointer items-start gap-3 rounded-2xl p-1.5 transition ${done[i] ? 'bg-green-50' : 'hover:bg-white/70'}`}>
+                    <label className={`relative flex cursor-pointer items-start gap-3 rounded-2xl p-2 transition ${done[i] ? 'bg-green-50' : 'hover:bg-white/70'}`}>
                       <input type="checkbox" className="sr-only" checked={done[i] ?? false}
                         onChange={() => setDone((d) => d.map((v, j) => (j === i ? !v : v)))} />
                       <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-full text-sm font-bold text-white ${done[i] ? 'bg-green-600' : 'bg-crimson'}`} aria-hidden="true">
                         {done[i] ? '✓' : i + 1}
                       </span>
-                      <span className={`text-[0.92rem] leading-snug ${done[i] ? 'text-stone-500 line-through' : ''}`}><span className="sr-only">Step {i + 1}: </span>{step}</span>
+                      <span className={`text-[1rem] leading-relaxed ${done[i] ? 'text-stone-500 line-through' : ''}`}><span className="sr-only">Step {i + 1}: </span>{step}</span>
                     </label>
                   </li>
                 ))}
@@ -283,8 +284,11 @@ export function CuratedRecipePage() {
               <ul className="space-y-1 text-[0.92rem]">{match.explanation.map((e) => <li key={e} className="flex gap-2"><CheckCircle2 size={17} className="mt-0.5 shrink-0 text-green-600" />{e}</li>)}</ul>
             </Card>
           )}
-          <Card title="Allergens & Safety" icon={AlertTriangle}>
-            <p className="text-[0.92rem]">{recipe.allergens.length ? <>Contains: <strong>{recipe.allergens.map(allergenLabel).join(', ')}</strong></> : 'No tagged allergens in this recipe’s ingredients.'}</p>
+          <Card title="Allergens & Safety" icon={AlertTriangle} className={conflicts.length ? '!bg-rose-50 ring-2 ring-rose-300' : ''}>
+            {conflicts.length > 0 && <p className="mb-2 rounded-xl bg-rose-600 px-3 py-2 text-[0.92rem] font-semibold text-white">Contains your allergen{conflicts.length > 1 ? 's' : ''}: {conflicts.map(allergenLabel).join(', ')}. Not recommended for you.</p>}
+            {recipe.allergens.length ? (
+              <ul className="flex flex-wrap gap-1.5">{recipe.allergens.map((a) => <li key={a} className={`rounded-full px-2.5 py-0.5 text-[0.85rem] font-medium ${conflicts.includes(a) ? 'bg-rose-200 text-rose-900' : 'bg-amber-50 text-amber-900'}`}>{allergenLabel(a)}</li>)}</ul>
+            ) : <p className="text-[0.92rem]">No tagged allergens in this recipe’s ingredients.</p>}
             <p className="mt-1 text-[0.72rem] text-stone-500"><Apple size={12} className="mr-1 inline" aria-hidden="true" />Tags come from our catalog and can’t rule out cross-contact or brand differences, so always check labels.</p>
           </Card>
         </aside>

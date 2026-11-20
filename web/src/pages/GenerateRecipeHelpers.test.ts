@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { stepDuration, tastePercentages, timeSplit } from './GenerateRecipePage';
+import { similarPhoto, stepDuration, tastePercentages, timeSplit } from './GenerateRecipePage';
 
 describe('generated recipe helpers', () => {
   it('reads the time a step states, and nothing when it gives none', () => {
@@ -20,5 +20,12 @@ describe('generated recipe helpers', () => {
     const p = tastePercentages({ sweet: 1.2, salty: 6, sour: 0, spicy: 10 });
     expect(p.map((t) => t.percent)).toEqual([12, 60, 0, 100]);
     expect(tastePercentages(undefined).every((t) => t.percent === 0)).toBe(true);
+  });
+
+  it('only borrows a photo from a dish that shares a real word with the generated name', () => {
+    const related = [{ name: 'Matar Paneer', slug: 'matar-paneer' }, { name: 'Chicken Handi', slug: 'chicken-handi' }, { name: 'Chicken Karahi', slug: 'chicken-karahi' }];
+    expect(similarPhoto('Chicken Breast Karahi', related)?.slug).toBe('chicken-karahi');
+    expect(similarPhoto('Bhindi Pakoray', related)).toBeUndefined();
+    expect(similarPhoto('Chicken Breast Karahi', related.slice(0, 2))).toBeUndefined();
   });
 });

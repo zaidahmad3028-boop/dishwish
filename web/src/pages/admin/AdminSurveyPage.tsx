@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ClipboardList, Download, Gauge, MessageSquare, Star, Users } from 'lucide-react';
-import { Bar, Card, EmptyState, ErrorNote, PageHeader, Spinner, StatCard, downloadFile, formatDate, toCsv } from '../../components/ui';
+import { Bar, Card, ErrorNote, PageHeader, Spinner, StatCard, downloadFile, formatDate, toCsv } from '../../components/ui';
 import { listFeedback } from '../../lib/adminApi';
 import { FEATURES, SURVEY_SUBJECT, SUS_ITEMS, decodeSurvey, summarize, type SurveySummary } from '../../lib/survey';
 import { useLiveTick } from '../../lib/useLiveTick';
@@ -19,6 +19,8 @@ async function loadResponses(): Promise<Row[]> {
 }
 
 export function AdminSurveyPage() {
+  const [copied, setCopied] = useState(false);
+  const copyLink = () => { navigator.clipboard?.writeText(`${window.location.origin}/survey`).then(() => setCopied(true)).catch(() => setCopied(false)); };
   const [rows, setRows] = useState<Row[] | null>(null);
   const [summary, setSummary] = useState<SurveySummary | null>(null);
   const [error, setError] = useState('');
@@ -45,9 +47,27 @@ export function AdminSurveyPage() {
       {error && <ErrorNote onRetry={load}>{error}</ErrorNote>}
       {!rows && !error && <Spinner />}
       {rows && !summary && (
-        <Card><EmptyState icon={ClipboardList} title="No survey responses yet">
-          Ask testers to open <b>Profile → Rate Dish-Wish</b> (or /survey). Results appear here live.
-        </EmptyState></Card>
+        <section className="card grid gap-5 p-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]" aria-label="No survey responses yet">
+          <div>
+            <span className="grid h-14 w-14 place-items-center rounded-2xl bg-rose-50 text-crimson"><ClipboardList size={30} aria-hidden="true" /></span>
+            <h2 className="mt-3 font-display text-[1.6rem] font-bold">No survey responses yet</h2>
+            <p className="mt-1 text-[0.98rem] text-stone-700">Real testers fill in a 2-minute survey: the 10 standard System Usability Scale (SUS) questions plus a 1–5 rating for each main feature. Nothing is simulated: this page only shows answers real users submit.</p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <a href="/survey" target="_blank" rel="noreferrer" className="btn-primary">Open the survey</a>
+              <button type="button" className="btn-ghost" onClick={copyLink}>{copied ? 'Link copied' : 'Copy survey link'}</button>
+            </div>
+            <p className="mt-2 text-[0.85rem] text-stone-500">Testers can also open it from <b>Profile → Rate Dish-Wish</b>. Results appear here live.</p>
+          </div>
+          <div className="rounded-2xl bg-white/70 p-4 shadow-sm">
+            <p className="font-display text-[1.15rem] font-bold">What you will see here</p>
+            <ul className="mt-2 space-y-2 text-[0.94rem]">
+              {[['Responses', 'how many testers answered'], ['Average SUS score', '0–100; 68 is the usual average, 80+ is excellent'], ['Score per tester', 'with a grade (A–F)'], ['Feature ratings', 'Recommendations, Recipe generation, Safety'], ['Comments', 'free-text notes, exportable as CSV']].map(([k, v]) => (
+                <li key={k} className="flex gap-2"><span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-crimson" aria-hidden="true" /><span><b>{k}</b> — {v}</span></li>
+              ))}
+            </ul>
+            <p className="mt-3 rounded-xl bg-amber-50 px-3 py-2 text-[0.85rem] text-amber-900">Aim for at least 5 testers: SUS results become meaningful from about 5 responses.</p>
+          </div>
+        </section>
       )}
       {summary && (
         <>

@@ -57,11 +57,12 @@ describe('SettingsPage', () => {
     expect(await screen.findByRole('dialog', { name: 'Edit Profile' })).toBeInTheDocument();
   });
 
-  it('treats Mild, Medium and Spicy as one saved spice level', async () => {
+  it('sets each flavour to Low, Moderate, High or Not set, like the Kitchen', async () => {
     renderAt();
-    expect(await screen.findByRole('checkbox', { name: 'Spicy' })).toBeChecked();
-    await userEvent.click(screen.getByRole('checkbox', { name: 'Mild' }));
-    expect(screen.getByRole('checkbox', { name: 'Spicy' })).not.toBeChecked();
+    const spicy = await screen.findByRole('radiogroup', { name: 'Spicy intensity' });
+    expect(within(spicy).getByRole('radio', { name: 'High' })).toBeChecked();
+    await userEvent.click(within(spicy).getByRole('radio', { name: 'Low' }));
+    expect(within(spicy).getByRole('radio', { name: 'Low' })).toBeChecked();
     await waitFor(() => expect(savedPrefs()?.tastes.spicy).toBe('low'));
     expect(savedPrefs()?.tastes.sweet).toBe('low'); // an existing strength is left alone
   });
