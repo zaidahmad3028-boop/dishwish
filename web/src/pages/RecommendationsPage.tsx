@@ -8,9 +8,11 @@ import { IngredientBadge, RecipeCardImage } from '../components/DishArt';
 import { recipeImage } from '../lib/images';
 import { Bar, Card, Donut, EmptyState, ErrorNote, Modal, PageHeader, Spinner } from '../components/ui';
 import { checkCompatibility, DIETS, fetchEvaluationSummary, personalHistory, type HistoryEvent, type EvaluationSummary, fetchCompatibility, fetchCuratedRecommendations, isCuratedSnapshot, recordEvent, saveCurated, setFavorite, type CuratedMatch, type Macros, type RecommendationResult } from '../lib/curatedApi';
-import { allergenLabel, effectiveAllergenTags, type TasteKey } from '../lib/preferences';
+import { allergenLabel, effectiveAllergenTags, type Level, type TasteKey } from '../lib/preferences';
 import { listSavedRecipes } from '../lib/recipesApi';
-import { presetActive, TASTE_PRESETS, useSelection } from '../lib/selection';
+import { useSelection } from '../lib/selection';
+import { LEVEL_LABEL } from '../components/QuickPreferences';
+import { TASTE_LABEL } from '../lib/conflicts';
 import { isIngredientBlocked, type Preferences } from '../lib/preferences';
 import { savoryFromUser } from '../lib/accountApi';
 import { useKitchenData } from '../lib/useKitchenData';
@@ -274,8 +276,8 @@ export function RecommendationsPage() {
   };
 
   const top = shown[0] ?? result?.recipes[0];
-  const tasteChosen = TASTE_PRESETS.filter((p) => presetActive(selection.tastes, p)).map((p) => p.label).join(', ')
-    || Object.entries(selection.tastes).filter(([, v]) => v).map(([k, v]) => `${k} ${v}`).join(', ') || 'No preference';
+  const tasteChosen = (Object.entries(selection.tastes) as [TasteKey, Level | null][]).filter(([, v]) => v)
+    .map(([k, v]) => `${TASTE_LABEL[k]}: ${LEVEL_LABEL[v as Level]}`).join(', ') || 'No preference';
   const allergyText = prefs ? [...effectiveAllergenTags(prefs).map(allergenLabel), ...prefs.customAllergens].join(', ') : '';
   const dietText = selection.diets.map((d) => DIETS.find((x) => x.key === d)?.label).join(', ');
   const cuisines = ['All', ...new Set((result?.recipes ?? []).map((r) => r.cuisine))];
@@ -358,7 +360,7 @@ export function RecommendationsPage() {
                 <button type="button" className="btn-ghost" onClick={() => setVisible((v) => v + PAGE_SIZE)}>Load More ({shown.length - visible} more)</button>
               </div>
             )}
-            <Link to="/create" className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-crimson"><Wand2 size={16} aria-hidden="true" />Generate a new recipe<ChevronRight size={15} aria-hidden="true" /></Link>
+            <Link to="/generate" className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-crimson"><Wand2 size={16} aria-hidden="true" />Generate a new recipe<ChevronRight size={15} aria-hidden="true" /></Link>
           </Card>
         </div>
 

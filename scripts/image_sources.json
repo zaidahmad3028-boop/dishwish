@@ -1,1 +1,1709 @@
-{}
+{
+ "recipes/chicken-achari": {
+  "name": "Chicken Achari",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Chicken Achari.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chicken_Achari.jpg",
+    "author": "Asif Saleh",
+    "license": "CC BY-SA 4.0",
+    "size": "2048x1536"
+   },
+   {
+    "title": "File:Achari Chicken.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Achari_Chicken.jpg",
+    "author": "Monali.mishra",
+    "license": "CC BY-SA 4.0",
+    "size": "2322x2322"
+   }
+  ]
+ },
+ "recipes/chicken-jalfrezi": {
+  "name": "Chicken Jalfrezi",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Jalfrezi Curry For Dinner.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Jalfrezi_Curry_For_Dinner.jpg",
+    "author": "Tony Alter",
+    "license": "CC BY 2.0",
+    "size": "3264x2448"
+   },
+   {
+    "title": "File:Chicken tikka masala (cropped).jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chicken_tikka_masala_(cropped).jpg",
+    "author": "Michael Hays",
+    "license": "CC BY 2.0",
+    "size": "2592x2684"
+   },
+   {
+    "title": "File:The great British takeaway.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:The_great_British_takeaway.jpg",
+    "author": "Mikey",
+    "license": "CC BY 2.0",
+    "size": "2048x1536"
+   },
+   {
+    "title": "File:Spatchcocking.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Spatchcocking.jpg",
+    "author": "Foodista",
+    "license": "CC BY 2.0",
+    "size": "1280x960"
+   }
+  ]
+ },
+ "recipes/butter-chicken": {
+  "name": "Butter Chicken",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Butter Chicken & Butter Naan - Home - Chandigarh - India - 0006.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Butter_Chicken_%26_Butter_Naan_-_Home_-_Chandigarh_-_India_-_0006.jpg",
+    "author": "Yuvraj Singh 97",
+    "license": "CC BY-SA 4.0",
+    "size": "3472x4624"
+   },
+   {
+    "title": "File:Butter Chicken with Jeera Rice, Air Arabia, 2025 (02).jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Butter_Chicken_with_Jeera_Rice,_Air_Arabia,_2025_(02).jpg",
+    "author": "Bahnfrend",
+    "license": "CC BY-SA 4.0",
+    "size": "3776x2520"
+   },
+   {
+    "title": "File:Butter Chicken, rice, pita, cookie, and glass of water.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Butter_Chicken,_rice,_pita,_cookie,_and_glass_of_water.jpg",
+    "author": "TechnoKittyCat",
+    "license": "CC0",
+    "size": "4000x3000"
+   },
+   {
+    "title": "File:Butter chicken rice bowl - chaiiwala 2024-02-10.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Butter_chicken_rice_bowl_-_chaiiwala_2024-02-10.jpg",
+    "author": "Andy Li",
+    "license": "CC0",
+    "size": "4032x3024"
+   },
+   {
+    "title": "File:Honey Butter chicken from Korean Fried Chicken (2026-04-25).jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Honey_Butter_chicken_from_Korean_Fried_Chicken_(2026-04-25).jpg",
+    "author": "Wide Awake!",
+    "license": "CC BY 4.0",
+    "size": "4160x3120"
+   },
+   {
+    "title": "File:Butter naan and butter chicken.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Butter_naan_and_butter_chicken.jpg",
+    "author": "Radhika41",
+    "license": "CC BY-SA 4.0",
+    "size": "4000x2252"
+   }
+  ]
+ },
+ "recipes/chicken-kofta-curry": {
+  "name": "Chicken Kofta Curry",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Koofteh tabrizi.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Koofteh_tabrizi.jpg",
+    "author": "Fabienkhan",
+    "license": "CC BY-SA 2.5",
+    "size": "2272x1704"
+   },
+   {
+    "title": "File:Chicken tikka masala (cropped).jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chicken_tikka_masala_(cropped).jpg",
+    "author": "Michael Hays",
+    "license": "CC BY 2.0",
+    "size": "2592x2684"
+   },
+   {
+    "title": "File:Butter Chicken & Butter Naan - Home - Chandigarh - India - 0006.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Butter_Chicken_%26_Butter_Naan_-_Home_-_Chandigarh_-_India_-_0006.jpg",
+    "author": "Yuvraj Singh 97",
+    "license": "CC BY-SA 4.0",
+    "size": "3472x4624"
+   },
+   {
+    "title": "File:Plate with Various Curries.png",
+    "page": "https://commons.wikimedia.org/wiki/File:Plate_with_Various_Curries.png",
+    "author": "Miscellaneous contributor",
+    "license": "CC0",
+    "size": "1125x1488"
+   }
+  ]
+ },
+ "recipes/chicken-white-karahi": {
+  "name": "White Chicken Karahi",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Chicken White Karahi.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Chicken_White_Karahi.JPG",
+    "author": "Miansari66",
+    "license": "CC0",
+    "size": "2816x2112"
+   },
+   {
+    "title": "File:Crispy Chicken Strips - FotoosVanRobin.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Crispy_Chicken_Strips_-_FotoosVanRobin.jpg",
+    "author": "FotoosVanRobin from Netherlands",
+    "license": "CC BY-SA 2.0",
+    "size": "950x597"
+   },
+   {
+    "title": "File:Chicken tikka masala (cropped).jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chicken_tikka_masala_(cropped).jpg",
+    "author": "Michael Hays",
+    "license": "CC BY 2.0",
+    "size": "2592x2684"
+   },
+   {
+    "title": "File:Kung-pao-shanghai.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Kung-pao-shanghai.jpg",
+    "author": "Steven G. Johnson",
+    "license": "CC BY-SA 3.0",
+    "size": "3008x2000"
+   }
+  ]
+ },
+ "recipes/chicken-malai-boti": {
+  "name": "Chicken Malai Boti",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Chicken Malai Boti.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Chicken_Malai_Boti.JPG",
+    "author": "Miansari66",
+    "license": "CC0",
+    "size": "4896x3672"
+   },
+   {
+    "title": "File:Malai Boti.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Malai_Boti.JPG",
+    "author": "Miansari66",
+    "license": "CC0",
+    "size": "4896x3672"
+   },
+   {
+    "title": "File:Vegetarian Andhra Meal.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Vegetarian_Andhra_Meal.jpg",
+    "author": "PriyaBooks",
+    "license": "CC BY 2.0",
+    "size": "2560x1920"
+   },
+   {
+    "title": "File:Bengali dialects.png",
+    "page": "https://commons.wikimedia.org/wiki/File:Bengali_dialects.png",
+    "author": "Jacklincoln47",
+    "license": "CC BY-SA 4.0",
+    "size": "5310x4479"
+   }
+  ]
+ },
+ "recipes/chicken-haleem": {
+  "name": "Chicken Haleem",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Pakistani Haleem served with garnish.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Pakistani_Haleem_served_with_garnish.jpg",
+    "author": "Halt123halt",
+    "license": "CC BY-SA 3.0",
+    "size": "4368x2912"
+   },
+   {
+    "title": "File:Chicken Halim Hyderabad 06.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chicken_Halim_Hyderabad_06.jpg",
+    "author": "Tarunsamanta",
+    "license": "CC BY-SA 4.0",
+    "size": "4000x3000"
+   },
+   {
+    "title": "File:Chicken tikka masala (cropped).jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chicken_tikka_masala_(cropped).jpg",
+    "author": "Michael Hays",
+    "license": "CC BY 2.0",
+    "size": "2592x2684"
+   },
+   {
+    "title": "File:Hallem.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Hallem.jpg",
+    "author": "Gmk1289",
+    "license": "CC BY-SA 4.0",
+    "size": "2256x1496"
+   }
+  ]
+ },
+ "recipes/mutton-qorma": {
+  "name": "Mutton Qorma",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Mutton Khorma - Daig Style.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Mutton_Khorma_-_Daig_Style.jpg",
+    "author": "Jayanthkumar101",
+    "license": "CC BY-SA 4.0",
+    "size": "1686x1686"
+   },
+   {
+    "title": "File:Chicken Korma.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Chicken_Korma.JPG",
+    "author": "Miansari66",
+    "license": "CC0",
+    "size": "2816x2112"
+   }
+  ]
+ },
+ "recipes/chicken-steam-roast": {
+  "name": "Chicken Steam Roast",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Sunday roast lamb Cock Inn Henham Essex England 01.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Sunday_roast_lamb_Cock_Inn_Henham_Essex_England_01.jpg",
+    "author": "Acabashi",
+    "license": "CC BY-SA 4.0",
+    "size": "4045x4045"
+   },
+   {
+    "title": "File:Liat Portal for Foodie Disorder - Roasted chicken with cauliflower broccoli potatoes rice and salad.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Liat_Portal_for_Foodie_Disorder_-_Roasted_chicken_with_cauliflower_broccoli_potatoes_rice_and_salad.jpg",
+    "author": "HaJunkiyada",
+    "license": "CC BY-SA 4.0",
+    "size": "3024x4032"
+   },
+   {
+    "title": "File:Liat Portal for Foodie Disorder - Homemade Healthy Chicken Lunch.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Liat_Portal_for_Foodie_Disorder_-_Homemade_Healthy_Chicken_Lunch.jpg",
+    "author": "HaJunkiyada",
+    "license": "CC BY-SA 4.0",
+    "size": "3024x4032"
+   },
+   {
+    "title": "File:Liat Portal for Foodie Disorder - Grilled chicken with rice, potatoes and vegetables.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Liat_Portal_for_Foodie_Disorder_-_Grilled_chicken_with_rice,_potatoes_and_vegetables.jpg",
+    "author": "HaJunkiyada",
+    "license": "CC BY-SA 4.0",
+    "size": "3024x4032"
+   },
+   {
+    "title": "File:Seme da Adde with Kori Gassi and Kori Ajadina.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Seme_da_Adde_with_Kori_Gassi_and_Kori_Ajadina.jpg",
+    "author": "Sannidhishetty",
+    "license": "CC BY-SA 4.0",
+    "size": "1848x2288"
+   },
+   {
+    "title": "File:Malabar Feast Platter 2026.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Malabar_Feast_Platter_2026.jpg",
+    "author": "Sannidhishetty",
+    "license": "CC BY-SA 4.0",
+    "size": "811x1141"
+   }
+  ]
+ },
+ "recipes/raan-roast": {
+  "name": "Mutton Raan Roast",
+  "chosen": null,
+  "candidates": []
+ },
+ "recipes/beef-seekh-kabab": {
+  "name": "Beef Seekh Kabab",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Pakistani gobi aloo, seekh kebab, and beef karahi.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Pakistani_gobi_aloo,_seekh_kebab,_and_beef_karahi.jpg",
+    "author": "Jess Lander from Culver City, CA, USA",
+    "license": "CC BY 2.0",
+    "size": "3872x2592"
+   },
+   {
+    "title": "File:Pakistani Food Beef Kabobs.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Pakistani_Food_Beef_Kabobs.jpg",
+    "author": "Jess Lander from Culver City, CA, USA",
+    "license": "CC BY 2.0",
+    "size": "3872x2592"
+   },
+   {
+    "title": "File:Suta Kabab Phears Lane.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Suta_Kabab_Phears_Lane.jpg",
+    "author": "Rangan Datta Wiki",
+    "license": "CC BY-SA 4.0",
+    "size": "864x576"
+   },
+   {
+    "title": "File:Beef shik kabar with onion & roti.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Beef_shik_kabar_with_onion_%26_roti.jpg",
+    "author": "Sm faysal",
+    "license": "CC BY-SA 4.0",
+    "size": "2987x3051"
+   },
+   {
+    "title": "File:Kabab koobideh bbq persian food.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Kabab_koobideh_bbq_persian_food.jpg",
+    "author": "Amin",
+    "license": "CC BY-SA 4.0",
+    "size": "3024x3674"
+   },
+   {
+    "title": "File:Lula kebab 2.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Lula_kebab_2.jpg",
+    "author": "Lesya Dolyk",
+    "license": "CC BY-SA 2.0",
+    "size": "5184x3456"
+   }
+  ]
+ },
+ "recipes/bhuna-gosht": {
+  "name": "Beef Bhuna Gosht",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Kala bhuna 1.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Kala_bhuna_1.jpg",
+    "author": "Dolon Prova",
+    "license": "CC BY-SA 4.0",
+    "size": "6000x4000"
+   }
+  ]
+ },
+ "recipes/mutton-pulao": {
+  "name": "Mutton Pulao",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Mutton pulao.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Mutton_pulao.jpg",
+    "author": "赤猫法師",
+    "license": "CC BY-SA 4.0",
+    "size": "3455x2304"
+   },
+   {
+    "title": "File:Bengali Peas Pulao with Mutton Masala - Traditional Bengali Style.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Bengali_Peas_Pulao_with_Mutton_Masala_-_Traditional_Bengali_Style.jpg",
+    "author": "Rajdeep Das",
+    "license": "CC BY-SA 4.0",
+    "size": "6143x4069"
+   },
+   {
+    "title": "File:Indian Mushroom & Mutton Pulao.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Indian_Mushroom_%26_Mutton_Pulao.jpg",
+    "author": "Prashant Sahu",
+    "license": "CC BY-SA 4.0",
+    "size": "2550x1700"
+   },
+   {
+    "title": "File:Chennuru Mutton Pulao.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chennuru_Mutton_Pulao.jpg",
+    "author": "Nitinsrinivas22",
+    "license": "CC BY-SA 4.0",
+    "size": "4032x3024"
+   },
+   {
+    "title": "File:Chennuru Mutton Pulao , a special Rayalaseema dish.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chennuru_Mutton_Pulao_,_a_special_Rayalaseema_dish.jpg",
+    "author": "Nitinsrinivas22",
+    "license": "CC BY-SA 4.0",
+    "size": "4032x3024"
+   },
+   {
+    "title": "File:Parsi Mutton Berry Pulao.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Parsi_Mutton_Berry_Pulao.jpg",
+    "author": "Sumit Surai",
+    "license": "CC BY-SA 4.0",
+    "size": "3000x2717"
+   }
+  ]
+ },
+ "recipes/fish-tikka": {
+  "name": "Surmai Fish Tikka",
+  "chosen": null,
+  "candidates": []
+ },
+ "recipes/rohu-fish-curry": {
+  "name": "Rohu Fish Curry",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Rohu fish curry ('Rui maach' in Bengali).JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Rohu_fish_curry_(%27Rui_maach%27_in_Bengali).JPG",
+    "author": "senguptahirok",
+    "license": "CC BY-SA 4.0",
+    "size": "4928x3264"
+   },
+   {
+    "title": "File:Rohu fish curry.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Rohu_fish_curry.jpg",
+    "author": "Dolon Prova",
+    "license": "CC BY-SA 4.0",
+    "size": "3648x3344"
+   },
+   {
+    "title": "File:SPRING ONION ROHU FISH CURRY.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:SPRING_ONION_ROHU_FISH_CURRY.JPG",
+    "author": "Duttaanu",
+    "license": "CC BY-SA 4.0",
+    "size": "1113x1073"
+   },
+   {
+    "title": "File:Bengali fish curry.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Bengali_fish_curry.jpg",
+    "author": "Rohitkhan5",
+    "license": "CC BY-SA 4.0",
+    "size": "4000x3000"
+   },
+   {
+    "title": "File:Tamarind Fish Curry - Kolkata - West Bengal - Pic09.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Tamarind_Fish_Curry_-_Kolkata_-_West_Bengal_-_Pic09.jpg",
+    "author": "Pmani1",
+    "license": "CC BY-SA 4.0",
+    "size": "4608x3456"
+   },
+   {
+    "title": "File:Fish roe curry.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Fish_roe_curry.jpg",
+    "author": "madhukar pai",
+    "license": "CC BY 2.0",
+    "size": "1280x960"
+   }
+  ]
+ },
+ "recipes/mutton-paya": {
+  "name": "Mutton Paya",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Paya Curry.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Paya_Curry.JPG",
+    "author": "Miansari66",
+    "license": "Public domain",
+    "size": "2816x2112"
+   },
+   {
+    "title": "File:Mutton Paya with tandori roti at India Hotel, Khidirpur, Kolkata.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Mutton_Paya_with_tandori_roti_at_India_Hotel,_Khidirpur,_Kolkata.jpg",
+    "author": "Rangan Datta Wiki",
+    "license": "CC BY-SA 4.0",
+    "size": "4349x2881"
+   },
+   {
+    "title": "File:Mutton Paya 2023.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Mutton_Paya_2023.jpg",
+    "author": "Vis M",
+    "license": "CC BY-SA 4.0",
+    "size": "6936x9248"
+   },
+   {
+    "title": "File:Inner Mongolia braised mutton trotters.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Inner_Mongolia_braised_mutton_trotters.jpg",
+    "author": "Fumikas Sagisavas",
+    "license": "CC0",
+    "size": "3000x3000"
+   },
+   {
+    "title": "File:Cow hoof.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Cow_hoof.JPG",
+    "author": "Omiro",
+    "license": "CC BY-SA 4.0",
+    "size": "4000x3000"
+   },
+   {
+    "title": "File:Curry Goat and Rice.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Curry_Goat_and_Rice.jpg",
+    "author": "Leon Brocard from London, UK",
+    "license": "CC BY 2.0",
+    "size": "2816x2112"
+   }
+  ]
+ },
+ "recipes/anda-curry": {
+  "name": "Anda Curry",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Spicy Anda Curry.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Spicy_Anda_Curry.jpg",
+    "author": "https://onlybestrecipes.com/egg-curry-recipeegg-curry-recipe/",
+    "license": "CC BY-SA 4.0",
+    "size": "3600x2400"
+   },
+   {
+    "title": "File:Egg Curry (Anda Curry).JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Egg_Curry_(Anda_Curry).JPG",
+    "author": "Mdsmds0",
+    "license": "CC BY-SA 4.0",
+    "size": "4896x3672"
+   },
+   {
+    "title": "File:Anda curry( egg curry).JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Anda_curry(_egg_curry).JPG",
+    "author": "Sbchavan",
+    "license": "CC BY-SA 4.0",
+    "size": "4608x3456"
+   },
+   {
+    "title": "File:Aaloo Anda Curry (Potato with Eggs).JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Aaloo_Anda_Curry_(Potato_with_Eggs).JPG",
+    "author": "Miansari66",
+    "license": "CC0",
+    "size": "2816x2112"
+   },
+   {
+    "title": "File:Egg (Anda) Curry.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Egg_(Anda)_Curry.JPG",
+    "author": "Abhijit Patil",
+    "license": "CC BY-SA 4.0",
+    "size": "2448x2448"
+   },
+   {
+    "title": "File:Egg drop curry - my home Bangalore - Karnataka -pic 11.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Egg_drop_curry_-_my_home_Bangalore_-_Karnataka_-pic_11.jpg",
+    "author": "Shruthi Gaurav Alva",
+    "license": "CC BY-SA 4.0",
+    "size": "2448x3264"
+   }
+  ]
+ },
+ "recipes/palak-paneer": {
+  "name": "Palak Paneer",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Panir Paneer Indian cheese fresh.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Panir_Paneer_Indian_cheese_fresh.jpg",
+    "author": "Sonja Pauen - Stanhopea",
+    "license": "CC BY 2.0 de",
+    "size": "2004x1503"
+   },
+   {
+    "title": "File:Palakpaneer Rayagada Odisha 0009.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Palakpaneer_Rayagada_Odisha_0009.jpg",
+    "author": "Lopanayak",
+    "license": "CC BY-SA 4.0",
+    "size": "3500x3022"
+   },
+   {
+    "title": "File:Palak Paneer curry on plate.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Palak_Paneer_curry_on_plate.jpg",
+    "author": "Daniel Zemans",
+    "license": "CC BY 2.0",
+    "size": "3648x2736"
+   },
+   {
+    "title": "File:Gobi manchurian and palak paneer.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Gobi_manchurian_and_palak_paneer.jpg",
+    "author": "Vis M",
+    "license": "CC BY-SA 4.0",
+    "size": "4624x3468"
+   },
+   {
+    "title": "File:Yummy Palak Paneer.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Yummy_Palak_Paneer.jpg",
+    "author": "Akash128",
+    "license": "CC BY-SA 4.0",
+    "size": "2552x2028"
+   },
+   {
+    "title": "File:Shahi paneer and palak paneer.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Shahi_paneer_and_palak_paneer.JPG",
+    "author": "Sagiv",
+    "license": "CC BY-SA 3.0",
+    "size": "1600x1200"
+   }
+  ]
+ },
+ "recipes/matar-paneer": {
+  "name": "Matar Paneer",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Matar paneer dish.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Matar_paneer_dish.jpg",
+    "author": "CNEcija12345",
+    "license": "CC BY-SA 4.0",
+    "size": "2840x2542"
+   },
+   {
+    "title": "File:Matar Paneer 3.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Matar_Paneer_3.jpg",
+    "author": "Libreravi",
+    "license": "CC BY-SA 4.0",
+    "size": "3156x2234"
+   },
+   {
+    "title": "File:Matar Paneer with Butter Naan.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Matar_Paneer_with_Butter_Naan.jpg",
+    "author": "Ravi Dwivedi",
+    "license": "CC BY-SA 4.0",
+    "size": "4000x3000"
+   },
+   {
+    "title": "File:Matar paneer and pulav.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Matar_paneer_and_pulav.jpg",
+    "author": "Lovebeats11",
+    "license": "CC BY-SA 4.0",
+    "size": "2560x1920"
+   },
+   {
+    "title": "File:Matar Paneer 2.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Matar_Paneer_2.jpg",
+    "author": "Libreravi",
+    "license": "CC BY-SA 4.0",
+    "size": "2189x1685"
+   },
+   {
+    "title": "File:Matar paneer vegetarian North Indian dish.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Matar_paneer_vegetarian_North_Indian_dish.jpg",
+    "author": "Donvikro",
+    "license": "CC BY-SA 4.0",
+    "size": "2884x2638"
+   }
+  ]
+ },
+ "recipes/aloo-matar": {
+  "name": "Aloo Matar",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Aloo Gobi Matar (49653225183).jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Aloo_Gobi_Matar_(49653225183).jpg",
+    "author": "やましこ",
+    "license": "CC BY-SA 2.0",
+    "size": "8212x5475"
+   },
+   {
+    "title": "File:Aloo Matar.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Aloo_Matar.JPG",
+    "author": "Zeel Patel",
+    "license": "CC BY-SA 4.0",
+    "size": "4608x3456"
+   },
+   {
+    "title": "File:Chutney with Aloo Matar and Chapatis (31728007018).jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chutney_with_Aloo_Matar_and_Chapatis_(31728007018).jpg",
+    "author": "Mike Prince from Bangalore, India",
+    "license": "CC BY 2.0",
+    "size": "2048x1640"
+   },
+   {
+    "title": "File:Aloo matar.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Aloo_matar.jpg",
+    "author": "Neha Sonal",
+    "license": "CC BY-SA 4.0",
+    "size": "1280x960"
+   },
+   {
+    "title": "File:Aloo matar with samosa and green chili pickle - Massachusetts.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Aloo_matar_with_samosa_and_green_chili_pickle_-_Massachusetts.jpg",
+    "author": "Daderot",
+    "license": "CC0",
+    "size": "2782x2782"
+   },
+   {
+    "title": "File:Aloo matar with samosa and sticky rice - Massachusetts.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Aloo_matar_with_samosa_and_sticky_rice_-_Massachusetts.jpg",
+    "author": "Daderot",
+    "license": "CC0",
+    "size": "2781x2781"
+   }
+  ]
+ },
+ "recipes/mix-sabzi": {
+  "name": "Mix Sabzi",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Dal Puri.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Dal_Puri.JPG",
+    "author": "Vsigamany",
+    "license": "CC BY-SA 4.0",
+    "size": "3888x2592"
+   },
+   {
+    "title": "File:2020-05-08 19 34 28 Chapati being made in a pan in the Franklin Farm section of Oak Hill, Fairfax County, Virginia.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:2020-05-08_19_34_28_Chapati_being_made_in_a_pan_in_the_Franklin_Farm_section_of_Oak_Hill,_Fairfax_County,_Virginia.jpg",
+    "author": "Famartin",
+    "license": "CC BY-SA 4.0",
+    "size": "4032x3024"
+   },
+   {
+    "title": "File:Chapati palak paneer and brinjal semi gravy homemade by Sujatha aunty karnataka.jpg 02.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chapati_palak_paneer_and_brinjal_semi_gravy_homemade_by_Sujatha_aunty_karnataka.jpg_02.jpg",
+    "author": "Draupadigamy9305",
+    "license": "CC BY-SA 4.0",
+    "size": "4160x3120"
+   },
+   {
+    "title": "File:My Veg thali.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:My_Veg_thali.jpg",
+    "author": "Foody1989",
+    "license": "CC BY-SA 4.0",
+    "size": "2047x1671"
+   },
+   {
+    "title": "File:Bhindi Masala.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Bhindi_Masala.jpg",
+    "author": "Monali.mishra",
+    "license": "CC BY-SA 4.0",
+    "size": "1944x1944"
+   }
+  ]
+ },
+ "recipes/karela-qeema": {
+  "name": "Karela Qeema",
+  "chosen": null,
+  "candidates": []
+ },
+ "recipes/aloo-methi": {
+  "name": "Aloo Methi",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Aloo Methi Bhaji.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Aloo_Methi_Bhaji.jpg",
+    "author": "Fatimahope",
+    "license": "CC BY-SA 4.0",
+    "size": "3264x2448"
+   },
+   {
+    "title": "File:Aloo Methi (Aaloo Methi).JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Aloo_Methi_(Aaloo_Methi).JPG",
+    "author": "Miansari66",
+    "license": "CC0",
+    "size": "2816x2112"
+   },
+   {
+    "title": "File:Methi (fenugreek) parathas.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Methi_(fenugreek)_parathas.jpg",
+    "author": "Rupamdas75",
+    "license": "CC BY-SA 4.0",
+    "size": "1200x800"
+   },
+   {
+    "title": "File:Methi Bhaji (Fenugreek leaves with potato) (1303338041).jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Methi_Bhaji_(Fenugreek_leaves_with_potato)_(1303338041).jpg",
+    "author": "rovingI",
+    "license": "CC BY 2.0",
+    "size": "963x960"
+   },
+   {
+    "title": "File:Methi Paratha with Aalu Matar Sabji - Home Made - Howrah - West Bengal - 005.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Methi_Paratha_with_Aalu_Matar_Sabji_-_Home_Made_-_Howrah_-_West_Bengal_-_005.jpg",
+    "author": "Debasree1983",
+    "license": "CC BY-SA 4.0",
+    "size": "960x1280"
+   },
+   {
+    "title": "File:Dal bhaji.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Dal_bhaji.jpg",
+    "author": "03Ani03",
+    "license": "CC BY-SA 4.0",
+    "size": "3008x4016"
+   }
+  ]
+ },
+ "recipes/tinda-masala": {
+  "name": "Tinda Masala",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Tinda Masala.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Tinda_Masala.JPG",
+    "author": "Ravi Talwar",
+    "license": "CC BY-SA 4.0",
+    "size": "5184x3456"
+   }
+  ]
+ },
+ "recipes/kaddu-ki-sabzi": {
+  "name": "Khatta Meetha Kaddu",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Kheer.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Kheer.jpg",
+    "author": "stu spivack",
+    "license": "CC BY-SA 2.0",
+    "size": "3008x2000"
+   }
+  ]
+ },
+ "recipes/band-gobhi": {
+  "name": "Band Gobhi Matar",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:ঐতিহ্যবাহী সর্ষে ইলিশ.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:%E0%A6%90%E0%A6%A4%E0%A6%BF%E0%A6%B9%E0%A7%8D%E0%A6%AF%E0%A6%AC%E0%A6%BE%E0%A6%B9%E0%A7%80_%E0%A6%B8%E0%A6%B0%E0%A7%8D%E0%A6%B7%E0%A7%87_%E0%A6%87%E0%A6%B2%E0%A6%BF%E0%A6%B6.jpg",
+    "author": "রিজওয়ান আহমেদ",
+    "license": "CC BY-SA 4.0",
+    "size": "1710x2048"
+   }
+  ]
+ },
+ "recipes/lauki-chana-dal": {
+  "name": "Lauki Chana Dal",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Lauki Chana Dal Recipe From North Indian Cuisine By Sonia Goyal.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Lauki_Chana_Dal_Recipe_From_North_Indian_Cuisine_By_Sonia_Goyal.jpg",
+    "author": "Sonia Goyal Jaipur",
+    "license": "CC BY-SA 2.0",
+    "size": "1024x768"
+   },
+   {
+    "title": "File:Lauki and Chana Dal Curry.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Lauki_and_Chana_Dal_Curry.jpg",
+    "author": "Neha Sonal",
+    "license": "CC BY-SA 4.0",
+    "size": "1280x720"
+   },
+   {
+    "title": "File:Atta-05.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Atta-05.jpg",
+    "author": "Nga Ahorangi",
+    "license": "CC BY-SA 4.0",
+    "size": "3126x2770"
+   },
+   {
+    "title": "File:Courge encore verte.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Courge_encore_verte.jpg",
+    "author": "撮影者はカールおじさんです。",
+    "license": "CC BY-SA 3.0",
+    "size": "800x600"
+   }
+  ]
+ },
+ "recipes/arvi-masala": {
+  "name": "Arvi Masala",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Arbi Gosht.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Arbi_Gosht.jpg",
+    "author": "BlueCentaurian",
+    "license": "CC BY-SA 4.0",
+    "size": "2724x2043"
+   },
+   {
+    "title": "File:Songe-Réunion.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Songe-R%C3%A9union.JPG",
+    "author": "No machine-readable author provided. Thierry Caro assumed (based on copyright claims).",
+    "license": "CC BY-SA 2.5",
+    "size": "2592x1944"
+   },
+   {
+    "title": "File:Wotti with kesa curry and mushroom fry . 03.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Wotti_with_kesa_curry_and_mushroom_fry_._03.jpg",
+    "author": "Chargedparticlesrish",
+    "license": "CC BY-SA 4.0",
+    "size": "2592x1944"
+   },
+   {
+    "title": "File:Wotti with kesa curry and mushroom fry . 02.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Wotti_with_kesa_curry_and_mushroom_fry_._02.jpg",
+    "author": "Chargedparticlesrish",
+    "license": "CC BY-SA 4.0",
+    "size": "2592x1944"
+   },
+   {
+    "title": "File:HelsinkiStationEntranceAndClockTower.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:HelsinkiStationEntranceAndClockTower.jpg",
+    "author": "SebastianJFromTheBurg",
+    "license": "CC BY-SA 4.0",
+    "size": "2736x3648"
+   },
+   {
+    "title": "File:Kangri dinner for my ever hungry stomach !.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Kangri_dinner_for_my_ever_hungry_stomach_!.jpg",
+    "author": "GauriHazel123",
+    "license": "CC BY-SA 4.0",
+    "size": "1088x1136"
+   }
+  ]
+ },
+ "recipes/moong-daal": {
+  "name": "Moong Daal",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Moong daal ka halwa the super king of sweets.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Moong_daal_ka_halwa_the_super_king_of_sweets.JPG",
+    "author": "PJ.wikilovesfood",
+    "license": "CC BY-SA 4.0",
+    "size": "5184x3456"
+   },
+   {
+    "title": "File:Moong Daal Barfi.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Moong_Daal_Barfi.jpg",
+    "author": "Sourav Das",
+    "license": "CC BY-SA 4.0",
+    "size": "5248x2919"
+   },
+   {
+    "title": "File:Moong Ki Dal.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Moong_Ki_Dal.JPG",
+    "author": "Miansari66",
+    "license": "CC0",
+    "size": "2816x2112"
+   },
+   {
+    "title": "File:Daal Moradabadi.png",
+    "page": "https://commons.wikimedia.org/wiki/File:Daal_Moradabadi.png",
+    "author": "networkhop",
+    "license": "CC BY-SA 4.0",
+    "size": "1042x589"
+   },
+   {
+    "title": "File:Mung beans (Vigna radiata).jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Mung_beans_(Vigna_radiata).jpg",
+    "author": "Ivar Leidus",
+    "license": "CC BY-SA 4.0",
+    "size": "6000x4000"
+   },
+   {
+    "title": "File:Kachori Ludhiana.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Kachori_Ludhiana.JPG",
+    "author": "Ankur Partap Singh",
+    "license": "CC BY-SA 4.0",
+    "size": "5184x3456"
+   }
+  ]
+ },
+ "recipes/chana-daal": {
+  "name": "Chana Daal Tadka",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:3 types of lentil.png",
+    "page": "https://commons.wikimedia.org/wiki/File:3_types_of_lentil.png",
+    "author": "User:Justinc",
+    "license": "CC BY-SA 2.5",
+    "size": "3488x2000"
+   },
+   {
+    "title": "File:DalBati.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:DalBati.jpg",
+    "author": "Niranjan.gohane",
+    "license": "CC BY-SA 4.0",
+    "size": "1024x768"
+   },
+   {
+    "title": "File:Traditional Sunday Lunch.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Traditional_Sunday_Lunch.jpg",
+    "author": "Gandhi Mudit",
+    "license": "CC BY-SA 4.0",
+    "size": "960x1280"
+   }
+  ]
+ },
+ "recipes/lobia-masala": {
+  "name": "Lobia Masala",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Lobia Masala.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Lobia_Masala.jpg",
+    "author": "Divya Kudua",
+    "license": "CC BY 2.0",
+    "size": "2292x2894"
+   },
+   {
+    "title": "File:Rajma Masala (32081557778).jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Rajma_Masala_(32081557778).jpg",
+    "author": "Gaurav Nemade",
+    "license": "CC BY-SA 2.0",
+    "size": "1395x933"
+   },
+   {
+    "title": "File:Black-eyed peas close up.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Black-eyed_peas_close_up.jpg",
+    "author": "Jud McCranie",
+    "license": "CC BY-SA 4.0",
+    "size": "5592x4016"
+   }
+  ]
+ },
+ "recipes/kala-chana": {
+  "name": "Kala Chana Masala",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Chana masala.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chana_masala.jpg",
+    "author": "Simon Law (sfllaw) from Montréal, QC, Canada",
+    "license": "CC BY-SA 2.0",
+    "size": "3072x2304"
+   },
+   {
+    "title": "File:DRY KALA CHANA MASALA.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:DRY_KALA_CHANA_MASALA.jpg",
+    "author": "Nikitamusaddi",
+    "license": "CC BY-SA 4.0",
+    "size": "2448x3264"
+   },
+   {
+    "title": "File:Chana-masala 2.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chana-masala_2.jpg",
+    "author": "Yugaljoshi",
+    "license": "CC BY-SA 4.0",
+    "size": "4608x3456"
+   },
+   {
+    "title": "File:Chana-masala 1.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chana-masala_1.jpg",
+    "author": "Yugaljoshi",
+    "license": "CC BY-SA 4.0",
+    "size": "4608x3456"
+   },
+   {
+    "title": "File:Chana-masala 3.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chana-masala_3.jpg",
+    "author": "Yugaljoshi",
+    "license": "CC BY-SA 4.0",
+    "size": "4608x3456"
+   },
+   {
+    "title": "File:Chana-masala.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chana-masala.jpg",
+    "author": "Yugaljoshi",
+    "license": "CC BY-SA 4.0",
+    "size": "4608x3456"
+   }
+  ]
+ },
+ "recipes/khichdi": {
+  "name": "Moong Dal Khichdi",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:MoongDal Khichdi.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:MoongDal_Khichdi.jpg",
+    "author": "Mrudit161187",
+    "license": "CC BY-SA 4.0",
+    "size": "1280x960"
+   },
+   {
+    "title": "File:Sindhi Sai Bhaji.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Sindhi_Sai_Bhaji.JPG",
+    "author": "Miansari66",
+    "license": "Public domain",
+    "size": "2816x2112"
+   },
+   {
+    "title": "File:Gujrati Thali.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Gujrati_Thali.jpg",
+    "author": "Bheem3",
+    "license": "CC BY-SA 4.0",
+    "size": "2048x1148"
+   }
+  ]
+ },
+ "recipes/matar-pulao": {
+  "name": "Matar Pulao",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Matar Pulao - Mohali 2016-08-06 8222.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Matar_Pulao_-_Mohali_2016-08-06_8222.JPG",
+    "author": "Biswarup Ganguly",
+    "license": "CC BY 3.0",
+    "size": "6016x4000"
+   },
+   {
+    "title": "File:Matar Pulao - Mohali 2016-08-06 8230.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Matar_Pulao_-_Mohali_2016-08-06_8230.JPG",
+    "author": "Biswarup Ganguly",
+    "license": "CC BY 3.0",
+    "size": "6016x4000"
+   },
+   {
+    "title": "File:Matar Pulao - Mohali 2016-08-06 8221.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Matar_Pulao_-_Mohali_2016-08-06_8221.JPG",
+    "author": "Biswarup Ganguly",
+    "license": "CC BY 3.0",
+    "size": "5730x3809"
+   },
+   {
+    "title": "File:Matar Pulao, boondi raita, dry roasted-papad.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Matar_Pulao,_boondi_raita,_dry_roasted-papad.JPG",
+    "author": "Hartej.hundal",
+    "license": "CC BY-SA 4.0",
+    "size": "3072x2304"
+   },
+   {
+    "title": "File:Pulao.png",
+    "page": "https://commons.wikimedia.org/wiki/File:Pulao.png",
+    "author": "Meghana Mohanty",
+    "license": "CC BY-SA 4.0",
+    "size": "2364x1773"
+   },
+   {
+    "title": "File:Soya Curry with Matar rice and Gulab Jamun.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Soya_Curry_with_Matar_rice_and_Gulab_Jamun.jpg",
+    "author": "Nilofar Kalam",
+    "license": "CC BY-SA 4.0",
+    "size": "1440x1150"
+   }
+  ]
+ },
+ "recipes/prawn-biryani": {
+  "name": "Prawn Biryani",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:\"Hyderabadi Dum Biryani\".jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:%22Hyderabadi_Dum_Biryani%22.jpg",
+    "author": "Mahi Tatavarty",
+    "license": "CC BY-SA 4.0",
+    "size": "4032x2592"
+   },
+   {
+    "title": "File:Prawn Biryani.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Prawn_Biryani.jpg",
+    "author": "Number55",
+    "license": "CC BY-SA 3.0",
+    "size": "3648x2736"
+   },
+   {
+    "title": "File:Prawn Biryani, Hyderabad.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Prawn_Biryani,_Hyderabad.jpg",
+    "author": "Abhinaba Basu",
+    "license": "CC BY 2.0",
+    "size": "1021x681"
+   },
+   {
+    "title": "File:Prawn Biryani by Sukla Dhar.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Prawn_Biryani_by_Sukla_Dhar.jpg",
+    "author": "Sukla Dhar",
+    "license": "CC BY-SA 4.0",
+    "size": "3120x4160"
+   },
+   {
+    "title": "File:Prawns Biryani.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Prawns_Biryani.jpg",
+    "author": "Meghanavarma123",
+    "license": "CC BY-SA 4.0",
+    "size": "3264x1836"
+   },
+   {
+    "title": "File:Combo lunch plate mix with Biriyani, prawn & paneer.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Combo_lunch_plate_mix_with_Biriyani,_prawn_%26_paneer.jpg",
+    "author": "Camellia singha roy",
+    "license": "CC BY-SA 4.0",
+    "size": "2560x1440"
+   }
+  ]
+ },
+ "recipes/dahi-bhalla": {
+  "name": "Dahi Bhalla",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Curd in a traditional Manipuri earthen pot.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Curd_in_a_traditional_Manipuri_earthen_pot.JPG",
+    "author": "Goumisao",
+    "license": "CC BY-SA 4.0",
+    "size": "2256x1504"
+   },
+   {
+    "title": "File:Dahi Vada or Dahi Bhalla.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Dahi_Vada_or_Dahi_Bhalla.JPG",
+    "author": "Aarti tripathi pandey",
+    "license": "CC BY-SA 4.0",
+    "size": "5184x3888"
+   },
+   {
+    "title": "File:Dahi Bhalla.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Dahi_Bhalla.jpg",
+    "author": "Pullak Parag Khetan",
+    "license": "CC BY-SA 4.0",
+    "size": "2592x1944"
+   },
+   {
+    "title": "File:Dahi bhalla.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Dahi_bhalla.JPG",
+    "author": "Akankshyap18",
+    "license": "CC BY-SA 4.0",
+    "size": "4282x2382"
+   },
+   {
+    "title": "File:Dahi Vada (Dahi Bhalla).jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Dahi_Vada_(Dahi_Bhalla).jpg",
+    "author": "BhargavVora",
+    "license": "CC BY-SA 4.0",
+    "size": "2176x2176"
+   },
+   {
+    "title": "File:Dahi bhalla chat.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Dahi_bhalla_chat.jpg",
+    "author": "Raseswari",
+    "license": "CC BY-SA 4.0",
+    "size": "3072x4060"
+   }
+  ]
+ },
+ "recipes/aloo-tikki": {
+  "name": "Aloo Tikki",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Aloo Tikki served with chutneys.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Aloo_Tikki_served_with_chutneys.jpg",
+    "author": "Raveesh Vyas from [Ahmedabad, Noida], India",
+    "license": "CC BY-SA 2.0",
+    "size": "1600x1200"
+   },
+   {
+    "title": "File:Aloo Tikki 2.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Aloo_Tikki_2.jpg",
+    "author": "Ravi Dwivedi",
+    "license": "CC BY-SA 4.0",
+    "size": "4000x2415"
+   },
+   {
+    "title": "File:Aloo Tikki - Homemade - Assam - DSC 002.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Aloo_Tikki_-_Homemade_-_Assam_-_DSC_002.jpg",
+    "author": "Gitika Gayan",
+    "license": "CC BY-SA 4.0",
+    "size": "4640x3472"
+   },
+   {
+    "title": "File:Aloo Tikki in between bun.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Aloo_Tikki_in_between_bun.jpg",
+    "author": "Ravi Dwivedi",
+    "license": "CC BY-SA 4.0",
+    "size": "4000x3000"
+   },
+   {
+    "title": "File:Aloo tikki detail.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Aloo_tikki_detail.JPG",
+    "author": "Number55",
+    "license": "CC BY-SA 3.0",
+    "size": "3648x2736"
+   },
+   {
+    "title": "File:Aloo Tikki Chaat.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Aloo_Tikki_Chaat.JPG",
+    "author": "Nanditamomai",
+    "license": "CC BY-SA 4.0",
+    "size": "3072x2304"
+   }
+  ]
+ },
+ "recipes/chana-chaat": {
+  "name": "Chana Chaat",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Dahi puri, Doi phuchka.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Dahi_puri,_Doi_phuchka.jpg",
+    "author": "Rupamdas75",
+    "license": "CC BY-SA 4.0",
+    "size": "1800x1200"
+   },
+   {
+    "title": "File:Aloo Chana Chaat.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Aloo_Chana_Chaat.jpg",
+    "author": "Vis M",
+    "license": "CC BY-SA 4.0",
+    "size": "9248x6936"
+   },
+   {
+    "title": "File:Punjabi Chana Chaat.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Punjabi_Chana_Chaat.JPG",
+    "author": "Miansari66",
+    "license": "CC0",
+    "size": "4896x3672"
+   },
+   {
+    "title": "File:Chana chaat, Bengaluru (2026).jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chana_chaat,_Bengaluru_(2026).jpg",
+    "author": "Gpkp",
+    "license": "CC BY-SA 4.0",
+    "size": "3844x3000"
+   },
+   {
+    "title": "File:Kashmiri chana chaat.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Kashmiri_chana_chaat.jpg",
+    "author": "The social view",
+    "license": "CC BY-SA 4.0",
+    "size": "3072x4096"
+   },
+   {
+    "title": "File:Spicy Chana Dal Chaat - Western India.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Spicy_Chana_Dal_Chaat_-_Western_India.jpg",
+    "author": "Mon!l1991",
+    "license": "CC BY-SA 4.0",
+    "size": "2448x3264"
+   }
+  ]
+ },
+ "recipes/chicken-paratha-roll": {
+  "name": "Chicken Paratha Roll",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Triangle paratha (cropped).JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Triangle_paratha_(cropped).JPG",
+    "author": "Nithyasrm",
+    "license": "CC BY-SA 4.0",
+    "size": "2848x2846"
+   },
+   {
+    "title": "File:Mughlai Kheema Paratha.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Mughlai_Kheema_Paratha.JPG",
+    "author": "Vsigamany",
+    "license": "CC BY-SA 4.0",
+    "size": "3888x2592"
+   },
+   {
+    "title": "File:Kebab roll - chaiiwala 2024-02-10.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Kebab_roll_-_chaiiwala_2024-02-10.jpg",
+    "author": "Andy Li",
+    "license": "CC0",
+    "size": "4032x3024"
+   },
+   {
+    "title": "File:Kolkata Rolls.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Kolkata_Rolls.jpg",
+    "author": "Satyajit Dhawale (Satyajit888)",
+    "license": "CC BY-SA 4.0",
+    "size": "5611x3864"
+   }
+  ]
+ },
+ "recipes/suji-halwa": {
+  "name": "Suji Halwa",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Dry Fruit Suji Halwa.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Dry_Fruit_Suji_Halwa.JPG",
+    "author": "Er.vishalmehta83",
+    "license": "CC BY-SA 4.0",
+    "size": "5184x3456"
+   },
+   {
+    "title": "File:Suji ka Halwa.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Suji_ka_Halwa.JPG",
+    "author": "Zee Patel",
+    "license": "CC BY-SA 4.0",
+    "size": "4608x3456"
+   },
+   {
+    "title": "File:Suji Halwa.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Suji_Halwa.JPG",
+    "author": "Dharitis",
+    "license": "CC BY-SA 4.0",
+    "size": "4608x3456"
+   },
+   {
+    "title": "File:Suji Atta Mix Halwa.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Suji_Atta_Mix_Halwa.JPG",
+    "author": "Sonali Nath",
+    "license": "CC BY-SA 4.0",
+    "size": "4320x3240"
+   },
+   {
+    "title": "File:Suji Ka Khushk Halwa.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Suji_Ka_Khushk_Halwa.JPG",
+    "author": "Miansari66",
+    "license": "CC0",
+    "size": "2816x2112"
+   },
+   {
+    "title": "File:Suji ka Halwa made with desi ghee.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Suji_ka_Halwa_made_with_desi_ghee.jpg",
+    "author": "Amit1112",
+    "license": "CC BY-SA 4.0",
+    "size": "2592x1456"
+   }
+  ]
+ },
+ "recipes/zarda": {
+  "name": "Zarda",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Coloured Zarda Chawal.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Coloured_Zarda_Chawal.JPG",
+    "author": "Miansari66",
+    "license": "CC0",
+    "size": "4896x3672"
+   },
+   {
+    "title": "File:Zarda Chawal.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Zarda_Chawal.JPG",
+    "author": "Miansari66",
+    "license": "Public domain",
+    "size": "2816x2112"
+   },
+   {
+    "title": "File:Afghani Zarda Pulao.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Afghani_Zarda_Pulao.JPG",
+    "author": "Miansari66",
+    "license": "CC0",
+    "size": "2816x2112"
+   },
+   {
+    "title": "File:Shahi Zarda.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Shahi_Zarda.JPG",
+    "author": "Miansari66",
+    "license": "Public domain",
+    "size": "2816x2112"
+   },
+   {
+    "title": "File:Ashrafi.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Ashrafi.JPG",
+    "author": "Miansari66",
+    "license": "Public domain",
+    "size": "2816x2112"
+   },
+   {
+    "title": "File:জর্দা পোলাও.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:%E0%A6%9C%E0%A6%B0%E0%A7%8D%E0%A6%A6%E0%A6%BE_%E0%A6%AA%E0%A7%8B%E0%A6%B2%E0%A6%BE%E0%A6%93.jpg",
+    "author": "Amana Hossain",
+    "license": "CC BY-SA 4.0",
+    "size": "3912x2218"
+   }
+  ]
+ },
+ "recipes/firni": {
+  "name": "Firni",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Firni Or Phirni.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Firni_Or_Phirni.jpg",
+    "author": "Sumit Surai",
+    "license": "CC BY-SA 4.0",
+    "size": "2712x1744"
+   },
+   {
+    "title": "File:FOOD Firni.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:FOOD_Firni.jpg",
+    "author": "Grueslayer",
+    "license": "CC BY-SA 4.0",
+    "size": "3968x2976"
+   },
+   {
+    "title": "File:Firni with laddu and sharbat.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Firni_with_laddu_and_sharbat.jpg",
+    "author": "Asif Saleh",
+    "license": "CC BY-SA 4.0",
+    "size": "3264x2448"
+   },
+   {
+    "title": "File:Food-Firni.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Food-Firni.jpg",
+    "author": "Sumit Surai",
+    "license": "CC BY-SA 3.0",
+    "size": "3264x1836"
+   },
+   {
+    "title": "File:PARATHA WITH HARIYAALI MURG, SHORBA AND FIRNI.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:PARATHA_WITH_HARIYAALI_MURG,_SHORBA_AND_FIRNI.jpg",
+    "author": "Guddu1996",
+    "license": "CC BY-SA 4.0",
+    "size": "1113x676"
+   },
+   {
+    "title": "File:PARATHA WITH HARIYAALI MURGH, SHORBA AND FIRNI - MADE AT HOME - KOLKATA , WEST BENGAL , IMG005.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:PARATHA_WITH_HARIYAALI_MURGH,_SHORBA_AND_FIRNI_-_MADE_AT_HOME_-_KOLKATA_,_WEST_BENGAL_,_IMG005.jpg",
+    "author": "Guddu1996",
+    "license": "CC BY-SA 4.0",
+    "size": "1113x676"
+   }
+  ]
+ },
+ "recipes/shahi-tukray": {
+  "name": "Shahi Tukray",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Shahi Tukray (Shahi Tukda).JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Shahi_Tukray_(Shahi_Tukda).JPG",
+    "author": "Miansari66",
+    "license": "CC0",
+    "size": "2816x2112"
+   },
+   {
+    "title": "File:Shahi Tukray (Shahi Tukda)..JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Shahi_Tukray_(Shahi_Tukda)..JPG",
+    "author": "Miansari66",
+    "license": "CC0",
+    "size": "2816x2112"
+   },
+   {
+    "title": "File:Fried Bread Pieces For Shahi Tukray (Shahi Tukda).JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Fried_Bread_Pieces_For_Shahi_Tukray_(Shahi_Tukda).JPG",
+    "author": "Miansari66",
+    "license": "CC0",
+    "size": "2816x2112"
+   },
+   {
+    "title": "File:Double ka meetha with a big spoon.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Double_ka_meetha_with_a_big_spoon.jpg",
+    "author": "Muzammil",
+    "license": "CC BY-SA 4.0",
+    "size": "3000x4000"
+   }
+  ]
+ },
+ "recipes/gulab-jamun": {
+  "name": "Gulab Jamun",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Gulab Jamun-3052.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Gulab_Jamun-3052.jpg",
+    "author": "UlrikeZimmermann",
+    "license": "CC BY-SA 4.0",
+    "size": "6048x4032"
+   },
+   {
+    "title": "File:Gulab jamun in Rajshahi, Bangladesh.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Gulab_jamun_in_Rajshahi,_Bangladesh.jpg",
+    "author": "Kryesmin",
+    "license": "CC0",
+    "size": "4000x3000"
+   },
+   {
+    "title": "File:Gulab Jamun with Ice Cream - Worthing Indian Cafe & Bar 2026-04-27.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Gulab_Jamun_with_Ice_Cream_-_Worthing_Indian_Cafe_%26_Bar_2026-04-27.jpg",
+    "author": "Andy Li",
+    "license": "CC0",
+    "size": "8160x6144"
+   },
+   {
+    "title": "File:Gulab jamun, Hassan, Karnataka (2026) 02.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Gulab_jamun,_Hassan,_Karnataka_(2026)_02.jpg",
+    "author": "Gpkp",
+    "license": "CC BY-SA 4.0",
+    "size": "4060x3072"
+   },
+   {
+    "title": "File:Canned Gulab Jamun.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Canned_Gulab_Jamun.jpg",
+    "author": "Sudora",
+    "license": "CC0",
+    "size": "1600x1203"
+   },
+   {
+    "title": "File:Gulab Jamun as a Diwali Sweet.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Gulab_Jamun_as_a_Diwali_Sweet.jpg",
+    "author": "Yakshitha",
+    "license": "CC BY-SA 4.0",
+    "size": "3077x3215"
+   }
+  ]
+ },
+ "recipes/anda-paratha": {
+  "name": "Anda Paratha",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Triangle paratha (cropped).JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Triangle_paratha_(cropped).JPG",
+    "author": "Nithyasrm",
+    "license": "CC BY-SA 4.0",
+    "size": "2848x2846"
+   },
+   {
+    "title": "File:Spicy Anda Curry.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Spicy_Anda_Curry.jpg",
+    "author": "https://onlybestrecipes.com/egg-curry-recipeegg-curry-recipe/",
+    "license": "CC BY-SA 4.0",
+    "size": "3600x2400"
+   },
+   {
+    "title": "File:Spicy egg bhurji @ the eggfactory.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Spicy_egg_bhurji_@_the_eggfactory.jpg",
+    "author": "Praveen from Bangalore, India",
+    "license": "CC BY 2.0",
+    "size": "3405x2270"
+   },
+   {
+    "title": "File:Pranjal Dhaba - National Highway 76 - Shivrajpur - Shankargarh - Allahabad 2014-07-04 5674.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Pranjal_Dhaba_-_National_Highway_76_-_Shivrajpur_-_Shankargarh_-_Allahabad_2014-07-04_5674.JPG",
+    "author": "Biswarup Ganguly",
+    "license": "CC BY 3.0",
+    "size": "6016x4000"
+   }
+  ]
+ },
+ "recipes/dalia": {
+  "name": "Meetha Dalia",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:A photo of Upma.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:A_photo_of_Upma.jpg",
+    "author": "Thamizhpparithi Maari",
+    "license": "CC BY-SA 4.0",
+    "size": "4208x2368"
+   },
+   {
+    "title": "File:Moong dal ka halwa.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Moong_dal_ka_halwa.jpg",
+    "author": "Akkuu gpt",
+    "license": "CC BY-SA 4.0",
+    "size": "1079x980"
+   }
+  ]
+ },
+ "recipes/aloo-bhujia": {
+  "name": "Aloo Bhujia",
+  "chosen": 1,
+  "candidates": [
+   {
+    "title": "File:Dum Aloo with spicy bhujia.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Dum_Aloo_with_spicy_bhujia.jpg",
+    "author": "Pullak Parag Khetan",
+    "license": "CC BY-SA 4.0",
+    "size": "2592x1944"
+   },
+   {
+    "title": "File:Aloo Mattar.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Aloo_Mattar.jpg",
+    "author": "Quadell",
+    "license": "CC BY-SA 3.0",
+    "size": "1681x1276"
+   },
+   {
+    "title": "File:Aloo Ghobi.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Aloo_Ghobi.jpg",
+    "author": "Sapanabehl",
+    "license": "CC BY-SA 4.0",
+    "size": "1410x1080"
+   },
+   {
+    "title": "File:Alloo-Papadi chaat.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Alloo-Papadi_chaat.jpg",
+    "author": "Chiring chandan",
+    "license": "CC BY-SA 4.0",
+    "size": "4000x3000"
+   },
+   {
+    "title": "File:Dahibaraaloodum Rayagada Odisha 0915.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Dahibaraaloodum_Rayagada_Odisha_0915.jpg",
+    "author": "Lopanayak",
+    "license": "CC BY-SA 4.0",
+    "size": "2495x1930"
+   },
+   {
+    "title": "File:Pooha with some veggies.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Pooha_with_some_veggies.jpg",
+    "author": "Shanks 04",
+    "license": "CC BY-SA 4.0",
+    "size": "2448x3264"
+   }
+  ]
+ }
+}

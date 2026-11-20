@@ -108,6 +108,10 @@ function ItemMenu({ name, onUpdate, onRemove }: { name: string; onUpdate: () => 
   );
 }
 
+const STARTER_NAMES = ['Chicken Breast', 'Onion', 'Tomato', 'Potato', 'Garlic', 'Ginger', 'Green Chilli', 'Basmati Rice',
+  'Masoor Dal', 'Yogurt (Dahi)', 'Eggs', 'Cooking Oil'];
+const STARTER_GRAMS = 500;
+
 export function PantryPage() {
   const { session } = useAuth();
   const userId = session?.user.id;
@@ -187,6 +191,13 @@ export function PantryPage() {
     await setPantryItem(userId, item.id, value);
     setPantry((p) => [...p.filter((x) => x.ingredientId !== item.id), { ingredientId: item.id, quantityG: value }]);
   });
+
+  const quickAdd = (item: Ingredient) => run(async () => {
+    await setPantryItem(userId, item.id, STARTER_GRAMS);
+    setPantry((p) => [...p.filter((x) => x.ingredientId !== item.id), { ingredientId: item.id, quantityG: STARTER_GRAMS }]);
+  });
+  // Common Pakistani kitchen staples from the real catalog (skipping anything the cook's allergies block).
+  const starters = STARTER_NAMES.flatMap((n) => { const i = (catalog ?? []).find((c) => c.name === n); return i && !blocked(i) && !inPantry.has(i.id) ? [i] : []; });
 
   const saveUpdate = async (e: FormEvent) => {
     e.preventDefault();
@@ -293,7 +304,18 @@ export function PantryPage() {
             {shown.length === 0 && pantry.length > 0 ? (
               <p className="py-6 text-center text-sm text-stone-500">No pantry items match this filter.</p>
             ) : shown.length === 0 ? (
-              <p className="rounded-[24px] border border-dashed border-stone-300 p-6 text-center text-stone-500">Your pantry is empty. Choose “Add Ingredient” to start.</p>
+              <div>
+                <p className="rounded-2xl bg-rose-50/70 px-4 py-2.5 text-[0.92rem] text-stone-700"><strong>Your pantry is empty.</strong> Tap a kitchen staple below to add it (you can change the amount later), or use “Add Ingredient” for anything else.</p>
+                <ul className="mt-3 grid grid-cols-2 gap-2.5 sm:grid-cols-3 xl:grid-cols-6" aria-label="Kitchen staples to add">
+                  {starters.map((item) => (
+                    <li key={item.id} className="flex flex-col items-center rounded-2xl border border-white/90 bg-white/80 px-2 pb-2 pt-1.5 text-center shadow-[0_6px_14px_-10px_rgb(159_18_57/0.5)]">
+                      <span className="relative block h-[4.6rem] w-[5.4rem]"><IngredientHero name={item.name} category={item.category} /></span>
+                      <p className="w-full truncate text-[0.92rem] font-semibold leading-tight" title={item.name}>{short(item.name)}</p>
+                      <button type="button" className="btn-sm btn-outline mt-1.5 w-full justify-center" onClick={() => quickAdd(item)}><Plus size={14} aria-hidden="true" />Add {formatGrams(STARTER_GRAMS)}</button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             ) : view === 'grid' ? (
               <ul className="grid grid-cols-2 gap-x-3 gap-y-2.5 sm:grid-cols-3 xl:grid-cols-5">
                 {shown.map(({ item, grams: g }) => {

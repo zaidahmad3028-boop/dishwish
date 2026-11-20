@@ -6,7 +6,7 @@ import { useAuth } from '../auth/AuthProvider';
 import { RecipeCardImage } from '../components/DishArt';
 import { recipeImage } from '../lib/images';
 import { Card, Donut, EmptyState, ErrorNote, PageHeader, SearchBox, Spinner, StatCard, formatDate } from '../components/ui';
-import { deleteEvent, isCuratedSnapshot, listCuratedRecipes, listEvents, setFavorite, type CuratedSummary, type EventKind, type RecipeEvent } from '../lib/curatedApi';
+import { deleteEvent, isCuratedSnapshot, listCuratedRecipes, listEvents, saveCurated, setFavorite, type CuratedSummary, type EventKind, type RecipeEvent } from '../lib/curatedApi';
 import { deleteSavedRecipe, isGenerated, listSavedRecipes, type SavedRecipe } from '../lib/recipesApi';
 
 type Tab = 'saved' | 'favorites' | 'generated' | 'cooked' | 'viewed' | 'browse';
@@ -89,6 +89,7 @@ export function MyRecipesPage() {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('All');
   const [error, setError] = useState('');
+  const [adding, setAdding] = useState<string | null>(null);
   const tick = useLiveTick(['saved_recipes', 'recipe_events', 'curated_recipes']);
 
   useEffect(() => {
@@ -114,6 +115,11 @@ export function MyRecipesPage() {
       setSaved((s) => (s ?? []).map((x) => (x.id === r.id ? { ...x, favorite: !r.favorite } : x)));
     } catch (e) { setError((e as Error).message); }
   };
+  const addSuggestion = async (r: CuratedSummary) => {
+    if (!userId) return;
+    setAdding(r.slug); setError('');
+    try { await saveCurated(userId, r); setSaved(await listSavedRecipes(userId)); } catch (e) { setError((e as Error).message); } finally { setAdding(null); }
+  };
   const removeEvent = async (e: RecipeEvent) => {
     if (!userId) return;
     try { await deleteEvent(userId, e.id); setEvents((list) => (list ?? []).filter((x) => x.id !== e.id)); } catch (err) { setError((err as Error).message); }
@@ -124,6 +130,11 @@ export function MyRecipesPage() {
   const historyShown = (events ?? []).filter((e) => e.kind === tab && (!q || e.recipe_name.toLowerCase().includes(q)));
   const browseShown = (catalog ?? []).filter((r) => (category === 'All' || r.category === category) && (!q || r.name.toLowerCase().includes(q)));
   const savedCount = saved?.length ?? 0;
+  // Real published recipes with photos, not yet saved: shown under an empty Saved list so the page is useful from day one.
+  const suggestions = useMemo(() => {
+    const have = new Set((saved ?? []).flatMap((r) => (isCuratedSnapshot(r.recipe) ? [r.recipe.slug] : [])));
+    return (catalog ?? []).filter((r) => !have.has(r.slug) && recipeImage(r.slug, r.image_url)).slice(0, 8);
+  }, [catalog, saved]);
   const total = savedCount + count('generated');
   const tabCount = (k: Tab) => k === 'saved' ? savedCount : k === 'favorites' ? favorites.length : k === 'browse' ? catalog?.length ?? 0 : count(k);
   const share = (n: number) => (total ? `${Math.round((n / total) * 100)}%` : '0%');
@@ -133,6 +144,27 @@ export function MyRecipesPage() {
   // Three biggest recipe groups, each opening "Browse All" on that category.
   const groups = [...new Set((catalog ?? []).map((r) => r.category))]
     .map((c) => ({ name: c, items: (catalog ?? []).filter((r) => r.category === c) })).sort((a, b) => b.items.length - a.items.length).slice(0, 3);
+
+  const suggestionGrid = suggestions.length > 0 && (
+                  <>
+                    <p className="mb-2 mt-4 font-display text-[1.2rem] font-bold">Recipes to try</p>
+                    <ul className={GRID} aria-label="Recipes to try">
+                      {suggestions.map((r) => (
+                        <li key={r.slug} className="card flex flex-col overflow-hidden p-0">
+                          <RecipeCardImage category={r.category} imageUrl={recipeImage(r.slug, r.image_url)} name={r.name} />
+                          <div className="flex flex-1 flex-col p-3">
+                            <p className="truncate font-display text-[1.1rem] font-bold" title={r.name}>{r.name}</p>
+                            <CardMeta minutes={r.minutes} servings={r.servings} />
+                            <div className="mt-auto flex items-center justify-between gap-2 pt-2">
+                              <Link to={`/recipe/${r.slug}`} className="btn-sm btn-red">View<ArrowRight size={14} /></Link>
+                              <button type="button" className="btn-sm btn-outline" disabled={!userId || adding === r.slug} onClick={() => addSuggestion(r)}><Bookmark size={14} aria-hidden="true" />{adding === r.slug ? 'Saving…' : 'Save'}</button>
+                            </div>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                  );
 
   return (
     <div className="tight-page">
@@ -144,7 +176,7 @@ export function MyRecipesPage() {
             <StatCard icon={Zap} value={events ? count('generated') : '–'} label="Generated Recipes" tone="amber" />
             <StatCard icon={CookingPot} value={events ? count('cooked') : '–'} label="Cooked Recipes" tone="amber" />
             <StatCard icon={Heart} value={saved ? favorites.length : '–'} label="Favorites" />
-            <Link to="/select" className="btn-primary self-center whitespace-nowrap"><Plus size={18} />Generate New Recipe</Link>
+            <Link to="/generate" className="btn-primary self-center whitespace-nowrap"><Plus size={18} />Generate New Recipe</Link>
           </div>
           <div role="tablist" aria-label="Recipe lists" className="mt-3 flex flex-wrap gap-2">
             {TABS.map(({ key, label, icon: Icon }) => (
@@ -163,13 +195,23 @@ export function MyRecipesPage() {
           {error && <div className="mt-3"><ErrorNote>{error}</ErrorNote></div>}
           <div className="mt-3" role="tabpanel">
             {(tab === 'saved' || tab === 'favorites') && (saved === null ? <Spinner /> : savedShown.length === 0 ? (
-              <Card><EmptyState icon={Bookmark} title={tab === 'favorites' ? 'No favorites yet' : 'No saved recipes yet'}>
-                {tab === 'favorites' ? 'Tap the heart on a saved recipe.' : <><Link to="/select" className="font-semibold text-crimson underline">Find a recipe</Link> and press “Add to My Recipes”.</>}
-              </EmptyState></Card>
+              <>
+                <div className="card flex flex-wrap items-center gap-3 px-4 py-3">
+                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-rose-50 text-crimson"><Bookmark size={22} aria-hidden="true" /></span>
+                  <span className="min-w-0 flex-1"><strong className="block font-display text-[1.15rem]">{q ? 'No saved recipe matches your search' : tab === 'favorites' ? 'No favorites yet' : 'No saved recipes yet'}</strong>
+                    <span className="text-[0.9rem] text-stone-600">{tab === 'favorites' ? 'Tap the heart on a saved recipe to keep it here.' : 'Save any recipe below, or from your recommendations, and it appears here.'}</span></span>
+                  {count('generated') > 0 && <button type="button" className="btn-sm btn-outline" onClick={() => setParams({ tab: 'generated' })}><Zap size={14} aria-hidden="true" />See your {count('generated')} generated</button>}
+                  <Link to="/recommendations" className="btn-sm btn-red">Find recipes<ArrowRight size={14} /></Link>
+                </div>
+                {!q && suggestionGrid}
+              </>
             ) : (
-              <ul className={GRID} aria-label="Saved dishes">
-                {savedShown.map((r) => <SavedCard key={r.id} r={r} onDelete={() => remove(r)} onFavorite={() => toggleFavorite(r)} />)}
-              </ul>
+              <>
+                <ul className={GRID} aria-label="Saved dishes">
+                  {savedShown.map((r) => <SavedCard key={r.id} r={r} onDelete={() => remove(r)} onFavorite={() => toggleFavorite(r)} />)}
+                </ul>
+                {!q && tab === 'saved' && savedShown.length < 4 && suggestionGrid}
+              </>
             ))}
             {(tab === 'generated' || tab === 'cooked' || tab === 'viewed') && (events === null ? <Spinner /> : historyShown.length === 0 ? (
               <Card><EmptyState icon={ChefHat} title="Nothing here yet">Your {tab} recipes will appear here.</EmptyState></Card>

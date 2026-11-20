@@ -1,20 +1,21 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, ChevronDown, Clock, Flame, Heart, Leaf, Plus, Search, Sparkles, Trophy, Users, X, Zap } from 'lucide-react';
+import { ArrowRight, Clock, Heart, Plus, Search, Sparkles, Trophy, Users, X, Zap } from 'lucide-react';
 import { useAuth } from '../auth/AuthProvider';
 import { IngredientBadge, RecipeCardImage } from '../components/DishArt';
 import { Card, ChefHatMark, EmptyState, ErrorNote, PageHeader, Spinner, formatDate } from '../components/ui';
-import { DIETS, listCuratedRecipes, listEvents, saveCurated, trendingRecipes, type CuratedSummary, type RecipeEvent } from '../lib/curatedApi';
+import { listCuratedRecipes, listEvents, saveCurated, trendingRecipes, type CuratedSummary, type RecipeEvent } from '../lib/curatedApi';
 import { blockReason } from '../lib/preferences';
-import { presetActive, TASTE_PRESETS, togglePreset, useSeedTastes, useSelection } from '../lib/selection';
+import { useSeedTastes, useSelection } from '../lib/selection';
+import { QuickPreferences } from '../components/QuickPreferences';
 import { IMAGES, imageUrl, photosFirst, recipeImage } from '../lib/images';
 import { useLiveTick } from '../lib/useLiveTick';
 import { useKitchenData } from '../lib/useKitchenData';
 
 const QUICK_ADD = ['Chicken Breast', 'Tomato', 'Onion', 'Garlic'];
 const HERO_FADE = { maskImage: 'linear-gradient(to right, transparent, black 22%)', WebkitMaskImage: 'linear-gradient(to right, transparent, black 22%)' };
-const FEATURE = 'card flex items-center gap-[1.05rem] px-[1.2rem] py-4 transition hover:-translate-y-0.5 hover:shadow-lg lg:min-h-[6.55rem]';
-const FEATURE_TITLE = 'block whitespace-nowrap font-display text-[1.42rem] font-bold leading-tight tracking-tight';
+const FEATURE = 'card flex items-center gap-[1.05rem] px-[1.2rem] py-3 transition hover:-translate-y-0.5 hover:shadow-lg';
+const FEATURE_TITLE = 'block whitespace-nowrap font-display text-[1.22rem] font-bold leading-tight tracking-tight';
 const FEATURE_TEXT = 'mt-0.5 block whitespace-nowrap text-[0.92rem] tracking-tight text-stone-800';
 const shortName = (n: string) => n.replace(/\s*\(.*\)$/, '').replace(/^Chicken Breast$/, 'Chicken');
 // The design's own chip pictures. Other pages keep the regular catalog pictures.
@@ -53,7 +54,7 @@ export function KitchenHomePage() {
   const userId = session?.user.id;
   const navigate = useNavigate();
   const { catalog, prefs, error } = useKitchenData(userId);
-  const { selection, add, remove, setTastes, toggleDiet } = useSelection();
+  const { selection, add, remove } = useSelection();
   useSeedTastes(prefs?.tastes);
   const tick = useLiveTick(['curated_recipes', 'recipe_events']);
   const [query, setQuery] = useState('');
@@ -113,18 +114,18 @@ export function KitchenHomePage() {
         </p>
       )}
 
-      <section className="card relative p-6 sm:px-11 sm:pb-5 sm:pt-[1.55rem] lg:min-h-[18.1rem]" aria-labelledby="counter-heading">
+      <section className="card relative p-6 sm:px-10 sm:pb-4 sm:pt-5 lg:min-h-[14.5rem]" aria-labelledby="counter-heading">
         {/* Photo on its own clipped layer, so the search dropdown below can still overflow the card. */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[var(--radius-card)] bg-gradient-to-r from-[#fff7f2] via-[#fdebe4] to-[#f9dfd3]" aria-hidden="true">
           {/* Wider screens: the photo docked on the right at the design's scale, its left edge fading into the card colour. */}
-          <img src={imageUrl(IMAGES.kitchenHero)} alt="" className="absolute -top-[1.45rem] right-0 hidden w-[38rem] max-w-[46%] md:block" style={HERO_FADE} />
+          <img src={imageUrl(IMAGES.kitchenHero)} alt="" className="absolute -top-[3.2rem] right-0 hidden w-[34rem] max-w-[42%] md:block" style={HERO_FADE} />
           {/* Phones: too narrow for a side photo, so a faint full-card photo instead. */}
           <div className="absolute inset-0 bg-cover bg-center opacity-15 md:hidden" style={{ backgroundImage: `url(${imageUrl(IMAGES.kitchenHero)})` }} />
         </div>
         <div className="relative">
-        <h2 id="counter-heading" className="font-display text-3xl font-extrabold leading-none tracking-tight sm:text-4xl lg:text-[3.25rem]">What’s on Your <span className="text-crimson">Counter?</span></h2>
-        <p className="mt-[1.05rem] text-stone-900 lg:text-[1.42rem] lg:leading-tight">Add ingredients, choose your taste, and get personalized recipe recommendations.</p>
-        <div className="relative mt-[1.1rem] max-w-[50.3rem] lg:-ml-4">
+        <h2 id="counter-heading" className="font-display text-3xl font-extrabold leading-none tracking-tight sm:text-4xl lg:text-[2.85rem]">What’s on Your <span className="text-crimson">Counter?</span></h2>
+        <p className="mt-2 text-stone-900 lg:text-[1.2rem] lg:leading-tight">Add ingredients, choose your taste, and get personalized recipe recommendations.</p>
+        <div className="relative mt-3 max-w-[50.3rem] lg:-ml-4">
           <label className="flex items-center gap-4 rounded-full bg-white py-[0.42rem] pl-[0.95rem] pr-4 shadow-[0_4px_16px_-6px_rgb(190_70_50/0.25)] focus-within:ring-2 focus-within:ring-crimson/40">
             <span className="grid h-[3rem] w-[3.9rem] shrink-0 place-items-center rounded-full bg-[#e0162f] text-white"><Search size={26} aria-hidden="true" /></span>
             <span className="sr-only">Search ingredients</span>
@@ -149,7 +150,7 @@ export function KitchenHomePage() {
             </ul>
           )}
         </div>
-        <div className="mt-[1.2rem] flex flex-wrap items-center gap-3">
+        <div className="mt-3 flex flex-wrap items-center gap-3">
           <span className="font-medium lg:text-[1.2rem]">Quick Add:</span>
           {QUICK_ADD.filter((n) => catalog?.some((i) => i.name === n)).map((n) => {
             return (
@@ -176,46 +177,10 @@ export function KitchenHomePage() {
         </div>
       </section>
 
-      <div className="mt-[1.3rem] grid gap-[1.2rem] sm:grid-cols-2 xl:grid-cols-[1.02fr_1.015fr_1.005fr_1fr]">
-        <Link to="/recommendations" className={FEATURE}>
-          <ChefHatMark className="h-[3.4rem] w-[4rem] shrink-0" />
-          <span><span className={FEATURE_TITLE}>Find Recipes</span><span className={FEATURE_TEXT}>Cook with what you have.</span></span>
-        </Link>
-        <Link to="/select" className={FEATURE}>
-          <MatchingIcon />
-          <span><span className={FEATURE_TITLE}>Smart <span className="text-crimson-deep">Matching</span></span><span className={FEATURE_TEXT}>AI-powered ingredient pairing.</span></span>
-        </Link>
-        <Link to="/settings?tab=diet" className={FEATURE}>
-          <HealthyIcon />
-          <span><span className={FEATURE_TITLE}>Healthy &amp; Nutritious</span><span className={FEATURE_TEXT}>Calories, nutrition and diet info.</span></span>
-        </Link>
-        <Link to="/settings" className={FEATURE}>
-          <PersonalIcon />
-          <span><span className={FEATURE_TITLE}>Personalized for You</span><span className={FEATURE_TEXT}>Based on your taste &amp; preferences.</span></span>
-        </Link>
-      </div>
-
-      <div className="mt-[1.6rem] grid gap-[1.1rem] xl:grid-cols-[minmax(0,39.5fr)_minmax(0,60.5fr)]">
+      <div className="mt-4 grid gap-[1.1rem] xl:grid-cols-[minmax(0,42fr)_minmax(0,58fr)]">
         <Card title="Quick Recipe Generator" icon={Zap} iconClass="fill-ember text-ember" className="!p-[1.05rem]">
-          <div className="rounded-2xl bg-white/45 px-1 py-2">
-          <p className="flex items-center gap-2 font-medium lg:text-[1.08rem]"><Flame size={22} className="fill-ember text-crimson" aria-hidden="true" />Taste Preference</p>
-          <div className="mt-2.5 flex flex-wrap justify-between gap-1.5">
-            {TASTE_PRESETS.map((p) => (
-              <button key={p.label} type="button" className="pill h-[2.4rem] grow justify-center !text-[1.02rem]" aria-pressed={presetActive(selection.tastes, p)}
-                onClick={() => setTastes(togglePreset(selection.tastes, p))}>{p.label}</button>
-            ))}
-          </div>
-          </div>
-          <p className="mt-4 flex items-center gap-2 font-medium lg:text-[1.08rem]"><Leaf size={22} className="fill-green-600 text-green-700" aria-hidden="true" />Diet &amp; Allergies (Optional)</p>
-          <div className="mt-2.5 flex flex-wrap items-center justify-between gap-1 xl:flex-nowrap">
-            {DIETS.map((d) => (
-              <label key={d.key} className="pill cursor-pointer whitespace-nowrap !gap-1 !px-1.5 !py-1.5 !text-[0.78rem] tracking-tight">
-                <input type="checkbox" className="h-3.5 w-3.5 accent-crimson" checked={selection.diets.includes(d.key)} onChange={() => toggleDiet(d.key)} />{d.label}
-              </label>
-            ))}
-            <Link to="/settings?tab=diet" className="pill whitespace-nowrap !gap-0.5 !px-1.5 !py-1.5 !text-[0.78rem] tracking-tight">Allergies<ChevronDown size={15} aria-hidden="true" /></Link>
-          </div>
-          <button type="button" className="btn-primary mt-[1.6rem] h-[3.7rem] w-full lg:text-[1.25rem]" onClick={generate}>
+          <QuickPreferences userId={userId} prefs={prefs} />
+          <button type="button" className="btn-primary mt-1 h-[3.2rem] w-full lg:text-[1.15rem]" onClick={generate}>
             <Sparkles size={24} className="fill-white" aria-hidden="true" />Generate Recipes Now<ArrowRight size={24} aria-hidden="true" />
           </button>
         </Card>
@@ -253,7 +218,26 @@ export function KitchenHomePage() {
         </Card>
       </div>
 
-      <Card title="Recently Generated" icon={Clock} className="mt-6"
+      <div className="mt-4 grid gap-[1.2rem] sm:grid-cols-2 xl:grid-cols-[1.02fr_1.015fr_1.005fr_1fr]">
+        <Link to="/recommendations" className={FEATURE}>
+          <ChefHatMark className="h-[3.4rem] w-[4rem] shrink-0" />
+          <span><span className={FEATURE_TITLE}>Find Recipes</span><span className={FEATURE_TEXT}>Cook with what you have.</span></span>
+        </Link>
+        <Link to="/select" className={FEATURE}>
+          <MatchingIcon />
+          <span><span className={FEATURE_TITLE}>Smart <span className="text-crimson-deep">Matching</span></span><span className={FEATURE_TEXT}>AI-powered ingredient pairing.</span></span>
+        </Link>
+        <Link to="/settings?tab=diet" className={FEATURE}>
+          <HealthyIcon />
+          <span><span className={FEATURE_TITLE}>Healthy &amp; Nutritious</span><span className={FEATURE_TEXT}>Calories, nutrition and diet info.</span></span>
+        </Link>
+        <Link to="/settings" className={FEATURE}>
+          <PersonalIcon />
+          <span><span className={FEATURE_TITLE}>Personalized for You</span><span className={FEATURE_TEXT}>Based on your taste &amp; preferences.</span></span>
+        </Link>
+      </div>
+
+      <Card title="Recently Generated" icon={Clock} className="mt-4"
         action={<Link to="/recipes?tab=generated" className="btn-sm btn-outline">History<ArrowRight size={14} /></Link>}>
         {recent === null ? <Spinner /> : recent.length === 0 ? (
           <EmptyState title="Nothing generated yet">Pick two or more ingredients and press Generate.</EmptyState>

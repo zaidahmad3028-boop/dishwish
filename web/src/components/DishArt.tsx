@@ -2,7 +2,7 @@
 // photo); without one, or if it fails to load, a neutral Dish-Wish default (a covered plate) is shown,
 // so no other dish's photo is ever passed off as this one.
 import { useState, type CSSProperties, type ReactNode, type SyntheticEvent } from 'react';
-import { Apple, Bean, Beef, Carrot, Croissant, Droplet, Drumstick, Egg, Fish, Flame, Leaf, Milk, Nut, Soup, Wheat, type LucideIcon } from 'lucide-react';
+import { Apple, Bean, Beef, CakeSlice, Carrot, ChefHat, Cookie, Croissant, CupSoda, Droplet, Drumstick, Egg, Fish, Flame, Leaf, Milk, Nut, Soup, Wheat, type LucideIcon } from 'lucide-react';
 import { imageUrl as assetUrl, ingredientImage } from '../lib/images';
 
 export const DEFAULT_RECIPE_IMAGE = assetUrl('recipes/default.svg');
@@ -22,8 +22,37 @@ function showDefaultOnError(e: SyntheticEvent<HTMLImageElement>) {
   img.src = DEFAULT_RECIPE_IMAGE;
 }
 
+// Recipes without their own photo get a named, tinted tile (never another dish's picture).
+const DISH_ICON: Record<string, LucideIcon> = {
+  'Main Course': ChefHat, Vegetables: Carrot, Lentils: Bean, Rice: Wheat, Snacks: Cookie, Desserts: CakeSlice,
+  Breakfast: Egg, Soups: Soup, Salads: Leaf, Drinks: CupSoda,
+};
+const DISH_TINT: Record<string, string> = {
+  'Main Course': 'from-[#fde3d8] via-[#fbd0c0] to-[#f7b9a3] text-[#b4231b]', Vegetables: 'from-[#e3f4df] via-[#cfeac6] to-[#b7dea9] text-green-800',
+  Lentils: 'from-[#fdf0cf] via-[#fae1a6] to-[#f5cf7d] text-amber-800', Rice: 'from-[#fbf3df] via-[#f4e3bb] to-[#ecd29a] text-amber-900',
+  Snacks: 'from-[#fde8cf] via-[#fbd5a9] to-[#f6bd80] text-orange-800', Desserts: 'from-[#fde4ee] via-[#f9cddd] to-[#f3b2c8] text-rose-800',
+  Breakfast: 'from-[#fff3d6] via-[#ffe6ad] to-[#fdd681] text-amber-800',
+};
+
+function NoPhotoTile({ name, category, className }: { name: string; category: string; className: string }) {
+  const Icon = DISH_ICON[category] ?? ChefHat;
+  return (
+    <div role="img" aria-label={`${name} (${category}, no photo yet)`}
+      className={`relative grid place-items-center overflow-hidden bg-gradient-to-br ${DISH_TINT[category] ?? DISH_TINT['Main Course']} ${className}`}>
+      <span className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-white/30" aria-hidden="true" />
+      <span className="absolute -bottom-8 -left-4 h-28 w-28 rounded-full bg-white/25" aria-hidden="true" />
+      <span className="relative flex flex-col items-center gap-1.5 px-3 text-center">
+        <span className="grid h-12 w-12 place-items-center rounded-full bg-white/80 shadow-sm"><Icon size={26} aria-hidden="true" /></span>
+        <span className="font-display text-[1.05rem] font-bold leading-tight">{name}</span>
+        <span className="text-[0.72rem] font-medium uppercase tracking-wide opacity-75">Photo coming soon</span>
+      </span>
+    </div>
+  );
+}
+
 function RecipeImg({ src, name, category, className }: { src?: string | null; name: string; category: string; className: string }) {
-  return <img src={src || DEFAULT_RECIPE_IMAGE} alt={src ? name : `${name} (${category}, no photo yet)`} loading="lazy"
+  if (!src) return <NoPhotoTile name={name} category={category} className={className} />;
+  return <img src={src} alt={name} loading="lazy"
     onError={showDefaultOnError} className={`bg-stone-100 object-cover object-center ${className}`} />;
 }
 
@@ -44,7 +73,7 @@ export function RecipeCardImage({ category, imageUrl, name, rounded = 'rounded-t
   { category: string; imageUrl?: string | null; name: string; rounded?: string; frame?: string; zoomOut?: number; children?: ReactNode }) {
   return (
     <div className={`relative ${frame} w-full overflow-hidden ${rounded}`}>
-      {zoomOut ? (
+      {zoomOut && imageUrl ? (
         <>
           <img src={imageUrl || DEFAULT_RECIPE_IMAGE} alt="" aria-hidden="true" loading="lazy" onError={showDefaultOnError} className="absolute inset-0 h-full w-full scale-110 object-cover opacity-90 blur-md" />
           <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 [mask-image:linear-gradient(90deg,transparent,black_9%,black_91%,transparent)]" style={{ width: `${zoomOut}%` }}>

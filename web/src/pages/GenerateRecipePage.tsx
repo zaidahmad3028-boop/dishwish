@@ -1,16 +1,17 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, BookmarkCheck, Bookmark, Candy, Check, CheckCircle2, ChefHat, Citrus, Clock, Download, Droplet, Flame, Gauge, Heart, Leaf, Link2,
-  RefreshCw, ShieldCheck, Sparkles, Users, Wheat, X, type LucideIcon } from 'lucide-react';
+import { ArrowRight, BookmarkCheck, Bookmark, Candy, ChefHat, Citrus, Clock, Download, Droplet, Flame, Gauge, Heart, Leaf, Link2,
+  RefreshCw, ShieldCheck, Sparkles, Timer, Users, Wheat, type LucideIcon } from 'lucide-react';
 import { useAuth } from '../auth/AuthProvider';
 import { ConflictAlert } from '../components/ConflictAlert';
 import { IngredientBadge, RecipeCardImage } from '../components/DishArt';
+import { LEVEL_LABEL } from '../components/QuickPreferences';
 import { Card, Donut, ErrorNote, PageHeader, Spinner } from '../components/ui';
 import { ingredientConflicts, TASTE_LABEL, type Conflict } from '../lib/conflicts';
-import { fetchCuratedRecommendations, SETTINGS_DIETS, type CuratedMatch, type Diet } from '../lib/curatedApi';
+import { fetchCuratedRecommendations, SETTINGS_DIETS, type CuratedMatch } from '../lib/curatedApi';
 import { recipeImage } from '../lib/images';
 import { formatGrams } from '../lib/pantryApi';
-import { allergenLabel, effectiveAllergenTags, LEVELS, parseCustomAllergens, type Level, type Preferences, type TasteKey } from '../lib/preferences';
+import { allergenLabel, CALORIE_TIERS, effectiveAllergenTags, type Level, type TasteKey } from '../lib/preferences';
 import { generateRecipes, macroShares, type Recipe } from '../lib/recipes';
 import { useSelection } from '../lib/selection';
 import { useKitchenData } from '../lib/useKitchenData';
@@ -21,6 +22,7 @@ const TASTES: { key: TasteKey; icon: LucideIcon; tint: string }[] = [
   { key: 'sour', icon: Citrus, tint: 'bg-green-500' }, { key: 'spicy', icon: Flame, tint: 'bg-orange-500' },
 ];
 const TARGET: Record<Level, number> = { low: 2, medium: 5, high: 8 };
+const PREP_WORDS = /\b(soak|marinate|wash|rinse|knead|rest)\b/i;
 
 // A one-line description from what the recipe really contains, in place of invented copy.
 export function describeRecipe(recipe: Pick<Recipe, 'style' | 'ingredients' | 'nutrition' | 'servings'>) {
@@ -42,26 +44,26 @@ export function nutritionMatrix(recipe: Pick<Recipe, 'nutrition'>) {
   ];
 }
 
-function TasteCard({ taste, level, onSet }: { taste: (typeof TASTES)[number]; level: Level | null; onSet: (l: Level | null) => void }) {
-  const Icon = taste.icon;
-  const on = level !== null;
-  return (
-    <li className={`rounded-2xl border p-3 shadow-sm transition ${on ? 'border-rose-300 bg-white' : 'border-white bg-white/70'}`}>
-      <button type="button" className="flex w-full items-center gap-3 text-left" aria-pressed={on} onClick={() => onSet(on ? null : 'medium')}>
-        <span className={`grid h-9 w-9 place-items-center rounded-full text-white ${taste.tint}`}><Icon size={19} aria-hidden="true" /></span>
-        <span className="flex-1 text-[1.1rem] font-semibold">{TASTE_LABEL[taste.key]}</span>
-        {on ? <Check size={20} className="text-green-600" aria-label="On" /> : <span className="text-[0.8rem] text-stone-500">Tap to set</span>}
-      </button>
-      {on && (
-        <div role="radiogroup" aria-label={`${TASTE_LABEL[taste.key]} level`} className="mt-2.5 grid grid-cols-3 gap-1 rounded-full bg-stone-100 p-1">
-          {LEVELS.map((l) => (
-            <button key={l} type="button" role="radio" aria-checked={level === l} onClick={() => onSet(l)}
-              className={`rounded-full py-1 text-[0.86rem] capitalize ${level === l ? 'bg-gradient-to-r from-crimson to-ember font-semibold text-white shadow' : 'text-stone-700'}`}>{l}</button>
-          ))}
-        </div>
-      )}
-    </li>
-  );
+// The time a step states in its own text ("8–10 minutes", "1 hour"), or null when it gives none. Nothing is guessed.
+export function stepDuration(step: string): { min: number; max: number } | null {
+  const m = step.match(/(\d+(?:\.\d+)?)\s*(?:[–-]\s*(\d+(?:\.\d+)?))?\s*(?:more\s+)?(minutes?|mins?|hours?|hrs?)\b/i);
+  if (!m) return null;
+  const scale = /^h/i.test(m[3]) ? 60 : 1;
+  const min = Number(m[1]) * scale;
+  return { min, max: (m[2] ? Number(m[2]) : Number(m[1])) * scale };
+}
+
+const fmtRange = (d: { min: number; max: number }) => (d.min === d.max ? `${d.min} min` : `${d.min}–${d.max} min`);
+
+// Prep = the soaking/marinating/washing steps' stated times; cook = the rest of the engine's total time.
+export function timeSplit(recipe: Pick<Recipe, 'steps' | 'minutes'>) {
+  const prep = recipe.steps.filter((s) => PREP_WORDS.test(s)).reduce((sum, s) => sum + (stepDuration(s)?.max ?? 0), 0);
+  return { prep, cook: Math.max(0, recipe.minutes - prep), total: recipe.minutes };
+}
+
+// Overall taste as percentages of the 0–10 scale for each flavour.
+export function tastePercentages(taste: Recipe['taste']) {
+  return TASTES.map((t) => ({ key: t.key, label: TASTE_LABEL[t.key], percent: Math.round(Math.min(10, Math.max(0, taste?.[t.key] ?? 0)) * 10) }));
 }
 
 export function GenerateRecipePage() {
@@ -69,10 +71,7 @@ export function GenerateRecipePage() {
   const userId = session?.user.id;
   const token = session?.access_token;
   const { catalog, prefs, addBought } = useKitchenData(userId);
-  const { selection, setTaste, remove } = useSelection();
-  const [diets, setDiets] = useState<Diet[]>([]);
-  const [extraWords, setExtraWords] = useState('');
-  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const { selection, remove } = useSelection();
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [active, setActive] = useState(0);
   const [busy, setBusy] = useState(false);
@@ -84,29 +83,31 @@ export function GenerateRecipePage() {
   const actions = useRecipeActions(userId, recipe, addBought);
 
   const chosen = selection.ingredients.slice(0, 12);
+  const diets = selection.diets;
   const items = useMemo(() => chosen.map((n) => (catalog ?? []).find((i) => i.name === n)).filter((i): i is NonNullable<typeof i> => Boolean(i)), [catalog, chosen]);
   const conflicts = useMemo(() => items.flatMap((i) => ingredientConflicts(i, { tastes: selection.tastes, prefs, diets, maxKcal: selection.maxKcal ?? null })), [items, selection.tastes, prefs, diets, selection.maxKcal]);
 
+  // The generator gets exactly the preferences the Kitchen saved: tastes (this session's, seeded from the profile),
+  // allergens and calorie goal from the profile.
   const run = async (force = false) => {
     if (!token || !prefs || !chosen.length) return;
     if (conflicts.length && !force) { setAlert(conflicts); return; }
     setAlert([]);
-    setBusy(true); setError(''); setNote(''); setStep(3);
-    const used: Preferences = { ...prefs, tastes: selection.tastes, customAllergens: parseCustomAllergens([...prefs.customAllergens, extraWords].join(',')) };
+    setBusy(true); setError(''); setNote('');
     try {
-      const result = await generateRecipes(token, chosen, used, 4);
+      const result = await generateRecipes(token, chosen, { ...prefs, tastes: selection.tastes }, 4);
       setRecipes(result.recipes);
       setActive(0);
       if (!result.recipes.length) setError('No recipe could be made from these ingredients with your allergies. Try adding a main ingredient.');
     } catch (e) { setError((e as Error).message); } finally { setBusy(false); }
   };
 
-  // Ready-made recipes that use the same ingredients.
+  // Ready-made recipes that use the same ingredients (ranked by the same compatibility engine).
   useEffect(() => {
     if (!token || !prefs || chosen.length < 2) { setRelated([]); return; }
     let live = true;
     fetchCuratedRecommendations(token, { ...selection, ingredients: chosen, diets: [] }, prefs, [])
-      .then((r) => { if (live) setRelated(r.recipes.slice(0, 3)); }).catch(() => { if (live) setRelated([]); });
+      .then((r) => { if (live) setRelated(r.recipes.slice(0, 4)); }).catch(() => { if (live) setRelated([]); });
     return () => { live = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, prefs, chosen.join('|')]);
@@ -118,180 +119,199 @@ export function GenerateRecipePage() {
     } catch (e) { setNote((e as Error).message); }
   };
   const save = async () => { try { await actions.onSave?.(); } catch (e) { setNote((e as Error).message); } };
-  const tasteTargets = TASTES.filter((t) => selection.tastes[t.key]);
   const allergyChips = prefs ? [...effectiveAllergenTags(prefs).map(allergenLabel), ...prefs.customAllergens] : [];
   const saved = actions.saveState === 'saved' || actions.saveState === 'exists';
+  const setTastes = TASTES.filter((t) => selection.tastes[t.key]);
+  const goal = CALORIE_TIERS.find((t) => t.tier === prefs?.calorieTier);
+  // A generated dish has no photo of its own. Show the closest ready-made dish's photo only when it has one, and say so.
+  const photoOf = related.find((r) => recipeImage(r.slug, r.image_url));
+  const time = recipe ? timeSplit(recipe) : null;
 
   return (
     <div className="tight-page generate-page">
-      <PageHeader title="Generate" accent="Recipe" icon={Sparkles} subtitle="Create a personalized, step-by-step recipe based on your taste, diet and available ingredients." />
-      {alert.length > 0 && <ConflictAlert conflicts={alert} onChange={() => { setAlert([]); setStep(1); }} onProceed={() => run(true)} onClose={() => setAlert([])} />}
+      <PageHeader title="Generate" accent="Recipe" icon={Sparkles} subtitle="A step-by-step recipe built from your ingredients and saved preferences." />
+      {alert.length > 0 && <ConflictAlert conflicts={alert} onChange={() => setAlert([])} onProceed={() => run(true)} onClose={() => setAlert([])} />}
 
-      <section className="card print-hide grid gap-4 p-4 xl:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)]" aria-label="Recipe settings">
+      {/* Compact summary: what goes in, and the button. Preferences are edited on the Kitchen dashboard. */}
+      <section className="card print-hide grid gap-3 p-3.5 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)_auto] lg:items-center" aria-label="What the recipe uses">
         <div className="min-w-0">
-          <ol className="mb-3 flex flex-wrap gap-2" aria-label="Steps">
-            {(['Taste Profile', 'Allergies & Diet', 'Generate'] as const).map((s, i) => (
-              <li key={s}><button type="button" onClick={() => setStep((i + 1) as 1 | 2 | 3)} aria-current={step === i + 1 ? 'step' : undefined}
-                className={`flex items-center gap-2 rounded-full px-4 py-1.5 text-[0.95rem] font-medium shadow-sm ${step === i + 1 ? 'bg-gradient-to-r from-crimson to-ember text-white' : 'bg-white/80'}`}>
-                <span className={`grid h-5 w-5 place-items-center rounded-full text-[0.75rem] ${step === i + 1 ? 'bg-white/25' : 'bg-stone-100'}`}>{i + 1}</span>{s}</button></li>
-            ))}
-          </ol>
-          <p className="flex items-center gap-2 font-display text-[1.2rem] font-bold"><Flame size={20} className="fill-crimson text-crimson" aria-hidden="true" />Taste Profile Matrix</p>
-          <p className="text-[0.9rem]">Pick the flavors that define you. Tap a taste, then choose Low, Medium or High.</p>
-          <ul className="mt-2 grid gap-3 sm:grid-cols-2">
-            {TASTES.map((t) => <TasteCard key={t.key} taste={t} level={selection.tastes[t.key]} onSet={(l) => setTaste(t.key, l)} />)}
-          </ul>
+          <p className="flex items-center gap-1.5 text-[0.85rem] font-semibold uppercase tracking-wide text-stone-500"><ChefHat size={15} aria-hidden="true" />Ingredients ({chosen.length})</p>
+          {chosen.length === 0 ? (
+            <p className="mt-1 text-[0.92rem]">No ingredients chosen yet. <Link to="/select" className="font-semibold text-crimson underline">Select ingredients</Link></p>
+          ) : (
+            <ul className="mt-1 flex flex-wrap gap-1">
+              {chosen.map((n) => <li key={n} className="inline-flex items-center gap-1 rounded-full bg-rose-50 py-0.5 pl-1 pr-2 text-[0.82rem]"><IngredientBadge name={n} category="" size={18} />{n.replace(/\s*\(.*\)$/, '')}
+                <button type="button" className="ml-0.5 text-crimson" aria-label={`Remove ${n}`} onClick={() => remove(n)}>×</button></li>)}
+              <li><Link to="/select" className="inline-flex items-center rounded-full px-1.5 text-[0.8rem] font-semibold text-crimson underline">Change</Link></li>
+            </ul>
+          )}
         </div>
-        <div className="min-w-0 space-y-3">
-          <div>
-            <p className="flex items-center gap-2 font-display text-[1.2rem] font-bold"><ChefHat size={20} className="text-crimson" aria-hidden="true" />Your Ingredients <span className="font-sans text-[0.9rem] font-normal">({chosen.length})</span></p>
-            {chosen.length === 0 ? (
-              <p className="mt-1 text-[0.92rem]">No ingredients chosen yet. <Link to="/select" className="font-semibold text-crimson underline">Select ingredients</Link></p>
-            ) : (
-              <ul className="mt-1.5 flex flex-wrap gap-1.5">
-                {chosen.map((n) => <li key={n} className="inline-flex items-center gap-1 rounded-full bg-rose-50 py-0.5 pl-1 pr-1.5 text-[0.88rem] shadow-sm"><IngredientBadge name={n} category="" size={22} />{n.replace(/\s*\(.*\)$/, '')}
-                  <button type="button" className="text-crimson" aria-label={`Remove ${n}`} onClick={() => remove(n)}><X size={14} aria-hidden="true" /></button></li>)}
-                <li><Link to="/select" className="inline-flex h-full items-center rounded-full px-2 text-[0.85rem] font-semibold text-crimson underline">Change</Link></li>
-              </ul>
-            )}
-          </div>
-          <div>
-            <p className="flex items-center gap-2 font-display text-[1.2rem] font-bold"><Leaf size={20} className="fill-green-500 text-green-700" aria-hidden="true" />Diet & Allergies <span className="font-sans text-[0.9rem] font-normal">(Optional)</span></p>
-            <div className="mt-1.5 flex flex-wrap gap-1.5">
-              <label className="diet-pill"><input type="checkbox" checked={diets.length === 0} onChange={() => setDiets([])} />None</label>
-              {SETTINGS_DIETS.map((d) => <label key={d.key} className="diet-pill"><input type="checkbox" checked={diets.includes(d.key)} onChange={() => setDiets(diets.includes(d.key) ? diets.filter((x) => x !== d.key) : [...diets, d.key])} />{d.label}</label>)}
-            </div>
-            <p className="mt-2 text-[0.9rem] font-medium">Allergies (from your settings)</p>
-            <div className="mt-1 flex flex-wrap items-center gap-1.5">
-              {allergyChips.length ? allergyChips.map((a) => <span key={a} className="rounded-full bg-rose-100 px-2.5 py-0.5 text-[0.86rem]">{a}</span>) : <span className="text-[0.86rem] text-stone-500">None</span>}
-              <Link to="/settings?tab=diet" className="text-[0.85rem] font-semibold text-crimson underline">Edit</Link>
-            </div>
-            <input className="field mt-2 !py-1.5 text-[0.9rem]" aria-label="Also avoid for this recipe" placeholder="Also avoid for this recipe (comma separated)..." value={extraWords} onChange={(e) => setExtraWords(e.target.value)} />
-          </div>
-          <button type="button" className="btn-primary h-[3.2rem] w-full justify-center text-[1.05rem]" disabled={busy || !chosen.length || !prefs} onClick={() => run()}>
-            <Sparkles size={18} aria-hidden="true" />{busy ? 'Generating…' : recipe ? 'Generate Again' : 'Generate Recipe'}</button>
-          {conflicts.length > 0 && <p className="flex items-center gap-1.5 text-[0.85rem] text-crimson"><ShieldCheck size={15} aria-hidden="true" />{conflicts.length} preference conflict{conflicts.length === 1 ? '' : 's'}: you'll be asked before generating.</p>}
+        <div className="min-w-0 border-rose-100 lg:border-l lg:pl-3">
+          <p className="flex items-center justify-between text-[0.85rem] font-semibold uppercase tracking-wide text-stone-500">Your preferences
+            <Link to="/kitchen" className="normal-case tracking-normal text-crimson underline">Edit</Link></p>
+          <p className="mt-1 flex flex-wrap gap-1 text-[0.8rem]">
+            {setTastes.length ? setTastes.map((t) => <span key={t.key} className="rounded-full bg-orange-50 px-2 py-0.5 font-medium text-orange-800">{TASTE_LABEL[t.key]}: {LEVEL_LABEL[selection.tastes[t.key] as Level]}</span>)
+              : <span className="rounded-full bg-stone-100 px-2 py-0.5 text-stone-600">Any taste</span>}
+            {diets.map((d) => <span key={d} className="rounded-full bg-green-50 px-2 py-0.5 font-medium text-green-800">{SETTINGS_DIETS.find((x) => x.key === d)?.label ?? d}</span>)}
+            {allergyChips.length > 0 && <span className="rounded-full bg-rose-100 px-2 py-0.5 font-medium text-rose-800">Avoid: {allergyChips.slice(0, 3).join(', ')}{allergyChips.length > 3 ? ` +${allergyChips.length - 3}` : ''}</span>}
+            {goal && <span className="rounded-full bg-amber-50 px-2 py-0.5 font-medium text-amber-800">{goal.kcal} kcal/day</span>}
+          </p>
+        </div>
+        <div className="flex flex-col items-stretch gap-1">
+          <button type="button" className="btn-primary h-[3rem] justify-center whitespace-nowrap px-6 text-[1rem]" disabled={busy || !chosen.length || !prefs} onClick={() => run()}>
+            {recipe ? <RefreshCw size={17} aria-hidden="true" /> : <Sparkles size={17} aria-hidden="true" />}{busy ? 'Generating…' : recipe ? 'Regenerate' : 'Generate Recipe'}</button>
+          {conflicts.length > 0 && <p className="flex items-center gap-1 text-[0.75rem] text-crimson"><ShieldCheck size={13} aria-hidden="true" />{conflicts.length} conflict{conflicts.length === 1 ? '' : 's'} — you'll be asked first</p>}
         </div>
       </section>
 
       {error && <div className="mt-3"><ErrorNote>{error}</ErrorNote></div>}
       {busy && <div className="mt-4"><Spinner label="Generating your recipe" /></div>}
 
-      {recipe && !busy && (
-        <div className="print-area mt-4 grid gap-4 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
-          <div className="min-w-0 space-y-4">
-            <section className="card p-4" aria-label="Recipe">
+      {!recipe && !busy && !error && (
+        <section className="card mt-3 grid items-center gap-5 p-5 md:grid-cols-[minmax(0,0.75fr)_minmax(0,1.25fr)]" aria-label="How it works">
+          <div className="grid aspect-[16/9] place-items-center rounded-2xl bg-gradient-to-br from-[#fde3d8] via-[#fbd0c0] to-[#f7b9a3] text-[#b4231b]">
+            <span className="flex flex-col items-center gap-2 text-center"><span className="grid h-16 w-16 place-items-center rounded-full bg-white/80 shadow"><Sparkles size={32} aria-hidden="true" /></span>
+              <span className="font-display text-xl font-bold">Your recipe appears here</span></span>
+          </div>
+          <div>
+            <h2 className="font-display text-[1.6rem] font-bold leading-tight">{chosen.length ? <>Ready to cook with {chosen.length} ingredient{chosen.length === 1 ? '' : 's'}</> : 'Pick your ingredients first'}</h2>
+            <ol className="mt-3 space-y-2 text-[0.95rem]">
+              {['Your ingredients are paired using the weighted ingredient graph.', 'A Pakistani cooking style is chosen and quantities are scaled to realistic grams.', 'You get a dish name, numbered steps with times, nutrition and an overall taste breakdown.'].map((t, i) => (
+                <li key={t} className="flex gap-2.5"><span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-crimson text-[0.8rem] font-bold text-white">{i + 1}</span>{t}</li>
+              ))}
+            </ol>
+            {chosen.length ? <button type="button" className="btn-primary mt-4 h-[2.9rem] px-6" disabled={!prefs} onClick={() => run()}><Sparkles size={17} aria-hidden="true" />Generate Recipe</button>
+              : <Link to="/select" className="btn-primary mt-4 inline-flex h-[2.9rem] items-center px-6">Select ingredients<ArrowRight size={17} aria-hidden="true" /></Link>}
+            {catalog === null && <p className="mt-2 text-[0.85rem] text-stone-500">Loading ingredients…</p>}
+          </div>
+        </section>
+      )}
+
+      {recipe && !busy && time && (
+        <div className="print-area mt-3 space-y-4">
+          {/* The recipe itself, near the top. */}
+          <section className="card grid gap-5 p-4 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]" aria-label="Generated recipe">
+            <figure className="min-w-0">
+              <RecipeCardImage category="Main Course" imageUrl={photoOf ? recipeImage(photoOf.slug, photoOf.image_url) : null} name={recipe.title} rounded="rounded-2xl" />
+              <figcaption className="mt-1 text-[0.75rem] text-stone-500">{photoOf ? <>Photo: a similar ready-made dish, <Link to={`/recipe/${photoOf.slug}`} className="underline">{photoOf.name}</Link>. Your dish is generated, so it has no photo of its own.</> : 'Generated dish: no photo of its own yet.'}</figcaption>
+            </figure>
+            <div className="min-w-0">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="rounded-full bg-rose-100 px-3 py-0.5 text-[0.78rem] font-bold uppercase tracking-wide text-crimson">Generated Recipe</span>
+                <span className="rounded-full bg-rose-100 px-3 py-0.5 text-[0.75rem] font-bold uppercase tracking-wide text-crimson">Generated Recipe</span>
                 <div className="print-hide flex flex-wrap items-center gap-1.5">
                   <button type="button" className="icon-btn" aria-label={saved ? 'Saved' : 'Save as favourite'} onClick={save} disabled={saved}><Heart size={18} className={saved ? 'fill-crimson text-crimson' : ''} /></button>
                   <button type="button" className="icon-btn" aria-label="Share" onClick={share}><Link2 size={18} /></button>
                   <button type="button" className="btn-sm btn-outline" onClick={() => window.print()}><Download size={14} aria-hidden="true" />PDF</button>
-                  <button type="button" className="btn-sm btn-outline" onClick={save} disabled={saved}>{saved ? <BookmarkCheck size={14} /> : <Bookmark size={14} />}{saved ? 'Saved' : 'Save to My Recipes'}</button>
                 </div>
               </div>
-              <h2 className="mt-2 bg-gradient-to-r from-crimson via-orange-500 to-green-600 bg-clip-text font-display text-[2rem] font-extrabold leading-tight text-transparent">{recipe.title}</h2>
-              <p className="mt-1 text-[0.98rem]">{describeRecipe(recipe)}</p>
-              <ul className="mt-2 flex flex-wrap gap-1.5 text-[0.85rem]">
-                <li className="badge bg-white shadow-sm"><Clock size={14} aria-hidden="true" />{recipe.minutes} min</li>
-                <li className="badge bg-white shadow-sm"><Users size={14} aria-hidden="true" />Servings: {recipe.servings}</li>
+              <h2 className="mt-2 font-display text-[2.1rem] font-extrabold leading-tight text-ink">{recipe.title}</h2>
+              <p className="mt-1.5 text-[1rem] text-stone-700">{describeRecipe(recipe)}</p>
+              <ul className="mt-3 grid grid-cols-3 gap-2 text-center">
+                {[{ icon: Timer, label: 'Prep', value: time.prep ? `${time.prep} min` : '—' }, { icon: Flame, label: 'Cook', value: `${time.cook} min` }, { icon: Users, label: 'Servings', value: String(recipe.servings) }].map((s) => (
+                  <li key={s.label} className="rounded-2xl bg-white/90 px-2 py-2 shadow-sm"><s.icon size={18} className="mx-auto text-crimson" aria-hidden="true" />
+                    <strong className="mt-0.5 block text-[1.05rem]">{s.value}</strong><span className="text-[0.75rem] text-stone-500">{s.label}</span></li>
+                ))}
+              </ul>
+              <ul className="mt-3 flex flex-wrap gap-1.5 text-[0.82rem]">
+                <li className="badge bg-white shadow-sm"><Clock size={14} aria-hidden="true" />{time.total} min total</li>
                 <li className="badge badge-amber"><Flame size={14} aria-hidden="true" />≈ {Math.round(recipe.nutrition.per_serving.kcal)} kcal / serving</li>
                 {recipe.nutrition.per_serving.protein >= 25 && <li className="badge badge-green">High Protein</li>}
-                {recipe.match && <li className="badge badge-green">{recipe.match.percent}% match</li>}
+                {recipe.match && <li className="badge badge-green">{recipe.match.percent}% match to your taste</li>}
               </ul>
-              {note && <p role="status" className="print-hide mt-2 break-all text-[0.85rem] text-green-700">{note}</p>}
+              <button type="button" className="btn-primary print-hide mt-4 h-[2.8rem] w-full justify-center" onClick={save} disabled={saved}>
+                {saved ? <BookmarkCheck size={17} aria-hidden="true" /> : <Bookmark size={17} aria-hidden="true" />}{saved ? 'Saved to My Recipes' : 'Save to My Recipes'}</button>
+              {note && <p role="status" className="print-hide mt-2 break-all text-[0.82rem] text-green-700">{note}</p>}
               {recipes.length > 1 && (
-                <div className="print-hide mt-2 flex flex-wrap gap-1.5">
-                  {recipes.map((r, i) => <button key={r.fingerprint} type="button" className="pill !px-3 !py-0.5 !text-[0.82rem]" aria-pressed={i === active} onClick={() => setActive(i)}>{r.title}</button>)}
-                  <button type="button" className="pill !px-3 !py-0.5 !text-[0.82rem]" onClick={() => run(true)}><RefreshCw size={13} aria-hidden="true" />New ideas</button>
+                <div className="print-hide mt-3">
+                  <p className="text-[0.78rem] font-semibold text-stone-500">Other versions from the same ingredients</p>
+                  <div className="mt-1 flex flex-wrap gap-1.5">
+                    {recipes.map((r, i) => <button key={r.fingerprint} type="button" className="pill !px-3 !py-0.5 !text-[0.8rem]" aria-pressed={i === active} onClick={() => setActive(i)}>{r.title}</button>)}
+                  </div>
                 </div>
               )}
-            </section>
+            </div>
+          </section>
 
-            <Card title="Ingredients List" icon={ChefHat} action={<span className="text-[0.88rem] font-semibold text-crimson">Total: {Math.round(recipe.nutrition.total.kcal).toLocaleString()} kcal ({recipe.servings} servings)</span>}>
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+            <Card title="Ingredients" icon={ChefHat} action={<span className="text-[0.85rem] font-semibold text-crimson">{Math.round(recipe.nutrition.total.kcal).toLocaleString()} kcal total</span>}>
               <table className="data-table">
-                <thead><tr><th>Ingredient</th><th>Amount</th><th className="text-right">Calories</th></tr></thead>
+                <thead><tr><th>Ingredient</th><th>Quantity</th><th className="text-right">Calories</th></tr></thead>
                 <tbody>
                   {recipe.ingredients.map((i) => (
-                    <tr key={i.name}><td><span className="flex items-center gap-2"><IngredientBadge name={i.name} category={i.category} size={26} />{i.name}</span></td>
+                    <tr key={i.name}><td><span className="flex items-center gap-2"><IngredientBadge name={i.name} category={i.category} size={24} />{i.name}</span></td>
                       <td>{formatGrams(i.grams)}</td><td className="text-right">{i.kcal !== undefined ? `${Math.round(i.kcal)} kcal` : '—'}</td></tr>
                   ))}
                 </tbody>
               </table>
+              <p className="mt-2 text-[0.75rem] text-stone-500">Calories = grams × the catalog's kcal per 100 g. Estimates, not medical advice.</p>
             </Card>
+            <Card title="Cooking Steps" icon={Flame}>
+              <ol className="space-y-2">
+                {recipe.steps.map((s, i) => {
+                  const d = stepDuration(s);
+                  return (
+                    <li key={i} className="flex gap-3 rounded-2xl bg-white/85 p-2.5 shadow-sm">
+                      <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-crimson text-[0.85rem] font-bold text-white">{i + 1}</span>
+                      <p className="flex-1 text-[0.92rem] leading-snug">{s}</p>
+                      {d && <span className="h-fit shrink-0 whitespace-nowrap rounded-full bg-orange-50 px-2 py-0.5 text-[0.75rem] font-semibold text-orange-800"><Clock size={11} className="mr-0.5 inline" aria-hidden="true" />{fmtRange(d)}</span>}
+                    </li>
+                  );
+                })}
+              </ol>
+            </Card>
+          </div>
 
-            <Card title={<>Nutrition Summary <span className="font-sans text-base font-normal">(Per Serving)</span></>} icon={Gauge}>
-              <ul className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          <div className="grid gap-4 lg:grid-cols-2">
+            <Card title={<>Nutrition <span className="font-sans text-base font-normal">(per serving)</span></>} icon={Gauge}>
+              <ul className="grid grid-cols-4 gap-2">
                 {nutritionMatrix(recipe).map((n) => (
-                  <li key={n.key} className="rounded-2xl bg-white/85 p-2.5 text-center shadow-sm">
-                    {n.key === 'kcal' ? <Flame size={22} className="mx-auto text-crimson" aria-hidden="true" /> : n.key === 'protein' ? <ChefHat size={22} className="mx-auto text-orange-500" aria-hidden="true" /> : n.key === 'carbs' ? <Wheat size={22} className="mx-auto text-green-600" aria-hidden="true" /> : <Droplet size={22} className="mx-auto text-amber-500" aria-hidden="true" />}
-                    <strong className="block text-[1.15rem]">{n.value} <span className="text-[0.8rem] font-normal">{n.unit}</span></strong>
-                    <span className="text-[0.82rem]">{n.label}{n.share !== null && ` · ${n.share}%`}</span>
+                  <li key={n.key} className="rounded-2xl bg-white/85 p-2 text-center shadow-sm">
+                    {n.key === 'kcal' ? <Flame size={20} className="mx-auto text-crimson" aria-hidden="true" /> : n.key === 'protein' ? <ChefHat size={20} className="mx-auto text-orange-500" aria-hidden="true" /> : n.key === 'carbs' ? <Wheat size={20} className="mx-auto text-green-600" aria-hidden="true" /> : <Droplet size={20} className="mx-auto text-amber-500" aria-hidden="true" />}
+                    <strong className="block text-[1.05rem]">{n.value} <span className="text-[0.75rem] font-normal">{n.unit}</span></strong>
+                    <span className="text-[0.78rem]">{n.label}{n.share !== null && ` · ${n.share}%`}</span>
                   </li>
                 ))}
               </ul>
               <div className="mt-3 flex items-center gap-4">
-                <Donut size={96} thickness={6} label="Energy from protein, carbs and fat" parts={nutritionMatrix(recipe).filter((n) => n.share !== null).map((n, i) => ({ value: n.share ?? 0, color: ['#f97316', '#16a34a', '#f59e0b'][i], label: n.label }))}
-                  center={<span className="text-[0.72rem] leading-tight">Energy<br />split</span>} />
-                <p className="text-[0.85rem]">Share of the dish's energy from each macro (protein and carbs 4 kcal/g, fat 9 kcal/g). Values come from catalog nutrition per 100 g.</p>
+                <Donut size={88} thickness={6} label="Energy from protein, carbs and fat" parts={nutritionMatrix(recipe).filter((n) => n.share !== null).map((n, i) => ({ value: n.share ?? 0, color: ['#f97316', '#16a34a', '#f59e0b'][i], label: n.label }))}
+                  center={<span className="text-[0.7rem] leading-tight">Energy<br />split</span>} />
+                <p className="text-[0.82rem]">Share of the dish's energy from each macro (protein and carbs 4 kcal/g, fat 9 kcal/g), from the catalog's nutrition per 100 g.</p>
               </div>
             </Card>
-
-            {recipe.taste && (
-              <Card title="Taste Matrix" icon={Flame}>
-                <ul className="space-y-2 text-[0.92rem]">
-                  {TASTES.map((t) => {
-                    const value = recipe.taste?.[t.key] ?? 0;
-                    const target = selection.tastes[t.key];
-                    return (
-                      <li key={t.key} className="grid grid-cols-[4rem_1fr_5.5rem] items-center gap-2">
-                        <span>{TASTE_LABEL[t.key]}</span>
-                        <span className="relative h-3 rounded-full bg-stone-100">
-                          <span className={`absolute inset-y-0 left-0 rounded-full ${t.tint}`} style={{ width: `${Math.min(100, value * 10)}%` }} />
-                          {target && <span className="absolute -top-1 h-5 w-1 rounded bg-ink" style={{ left: `${TARGET[target] * 10}%` }} title={`Your ${target} target`} />}
-                        </span>
-                        <span className="text-right text-[0.82rem]">{value.toFixed(1)}/10{target && <span className="block text-stone-500">you: {target}</span>}</span>
-                      </li>
-                    );
-                  })}
-                </ul>
-                {tasteTargets.length === 0 && <p className="mt-1 text-[0.8rem] text-stone-500">Set a taste above to see your target on each bar.</p>}
-              </Card>
-            )}
+            <Card title="Overall Taste" icon={Leaf}>
+              <ul className="space-y-2.5 text-[0.92rem]">
+                {tastePercentages(recipe.taste).map((t) => {
+                  const meta = TASTES.find((x) => x.key === t.key)!;
+                  const target = selection.tastes[t.key];
+                  return (
+                    <li key={t.key} className="grid grid-cols-[4rem_1fr_6rem] items-center gap-2">
+                      <span className="font-medium">{t.label}</span>
+                      <span className="relative h-3 rounded-full bg-stone-100">
+                        <span className={`absolute inset-y-0 left-0 rounded-full ${meta.tint}`} style={{ width: `${t.percent}%` }} />
+                        {target && <span className="absolute -top-1 h-5 w-1 rounded bg-ink" style={{ left: `${TARGET[target] * 10}%` }} title={`Your ${LEVEL_LABEL[target]} target`} />}
+                      </span>
+                      <span className="text-right"><strong>{t.percent}%</strong>{target && <span className="block text-[0.72rem] text-stone-500">you: {LEVEL_LABEL[target]}</span>}</span>
+                    </li>
+                  );
+                })}
+              </ul>
+              <p className="mt-2 text-[0.75rem] text-stone-500">Each bar is the dish's intensity (0–10 shown as %): every ingredient adds its catalog taste score in proportion to how much of it is in one serving. The dark mark is your saved preference.</p>
+            </Card>
           </div>
 
-          <div className="min-w-0 space-y-4">
-            <Card title="Cooking Steps" icon={ChefHat}>
-              <ol className="space-y-2.5">
-                {recipe.steps.map((s, i) => (
-                  <li key={i} className="flex gap-3 rounded-2xl bg-white/80 p-3 shadow-sm">
-                    <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-crimson font-bold text-white">{i + 1}</span>
-                    <p className="text-[0.92rem] leading-snug">{s}</p>
-                  </li>
+          <Card title="Related Recipes" icon={Sparkles} action={<Link to="/recommendations" className="print-hide flex items-center gap-1 text-sm font-semibold text-crimson">View All<ArrowRight size={15} aria-hidden="true" /></Link>}>
+            {related.length === 0 ? <p className="text-[0.9rem] text-stone-500">Choose at least 2 ingredients to see ready-made recipes that use them.</p> : (
+              <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                {related.map((r) => (
+                  <li key={r.slug} className="overflow-hidden rounded-2xl bg-white/85 shadow-sm"><Link to={`/recipe/${r.slug}`} state={{ match: r }} className="block">
+                    <RecipeCardImage category={r.category} imageUrl={recipeImage(r.slug, r.image_url)} name={r.name} />
+                    <span className="block px-2.5 pt-1.5 text-[0.92rem] font-semibold leading-tight">{r.name}</span>
+                    <span className="block px-2.5 pb-2 text-[0.8rem] text-green-700">{r.match_percent}% match · {r.minutes} min</span></Link></li>
                 ))}
-              </ol>
-            </Card>
-            <section className="card flex items-center gap-3 !bg-green-50/90 p-4" aria-label="Recipe ready">
-              <CheckCircle2 size={40} className="shrink-0 fill-green-600 text-white" aria-hidden="true" />
-              <div><p className="font-display text-[1.25rem] font-bold">Your Recipe is Ready!</p><p className="text-[0.9rem] text-green-800">Serve hot and enjoy. Saved recipes keep their nutrition and steps.</p></div>
-            </section>
-            <Card title="Related Recipes" icon={Sparkles} action={<Link to="/recommendations" className="print-hide flex items-center gap-1 text-sm font-semibold text-crimson">View All<ArrowRight size={15} aria-hidden="true" /></Link>}>
-              {related.length === 0 ? <p className="text-[0.9rem] text-stone-500">Choose at least 2 ingredients to see ready-made recipes that use them.</p> : (
-                <ul className="grid gap-3 sm:grid-cols-3">
-                  {related.map((r) => (
-                    <li key={r.slug} className="overflow-hidden rounded-2xl bg-white/85 shadow-sm"><Link to={`/recipe/${r.slug}`} state={{ match: r }} className="block">
-                      <RecipeCardImage category={r.category} imageUrl={recipeImage(r.slug, r.image_url)} name={r.name} />
-                      <span className="block px-2.5 pt-1.5 text-[0.92rem] font-semibold leading-tight">{r.name}</span>
-                      <span className="block px-2.5 pb-2 text-[0.8rem] text-green-700">{r.match_percent}% match · {r.minutes} min</span></Link></li>
-                  ))}
-                </ul>
-              )}
-            </Card>
-          </div>
+              </ul>
+            )}
+          </Card>
         </div>
-      )}
-      {!recipe && !busy && !error && (
-        <p className="mt-6 text-center text-[0.95rem] text-stone-600">Set your tastes and press <strong>Generate Recipe</strong>. {catalog === null && 'Loading ingredients…'}</p>
       )}
     </div>
   );
