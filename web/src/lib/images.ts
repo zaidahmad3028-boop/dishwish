@@ -19,9 +19,13 @@ const INGREDIENT_PHOTOS = new Set(INGREDIENT_PHOTO_SLUGS);
 // Same rule as the script: "Spring Onion (Hara Pyaz)" -> "spring-onion-hara-pyaz".
 export const slugify = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
 
+// Bump when bundled recipe photos are replaced, so browsers that cached the old picture (images are cached
+// for a day) fetch the new one instead.
+export const RECIPE_PHOTO_VERSION = '2';
+
 // An admin-set image_url wins; otherwise the bundled/R2 photo; otherwise null (the default picture is shown).
 export const recipeImage = (slug: string, adminUrl?: string | null) =>
-  adminUrl || (RECIPE_PHOTOS.has(slug) ? imageUrl(`recipes/${slug}.webp`) : null);
+  adminUrl || (RECIPE_PHOTOS.has(slug) ? `${imageUrl(`recipes/${slug}.webp`)}?v=${RECIPE_PHOTO_VERSION}` : null);
 
 export const ingredientImage = (name: string, adminUrl?: string | null) => {
   const slug = slugify(name);
