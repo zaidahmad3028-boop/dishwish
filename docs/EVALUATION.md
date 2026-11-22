@@ -17,8 +17,10 @@ Three random seeds → 243 test cases.
 | Full engine without TF-IDF | 82.3% | 96.7% | 99.2% | 0.896 |
 | **Full engine** | **82.7%** | **97.5%** | **99.2%** | **0.904** |
 
-- The full engine is the best method and finds the right recipe in the top 5 in 99.2% of cases,
-  **5.7 times** the random baseline.
+- The full engine is the best method: the original catalogue recipe is in the top 5 in 99.2% of the offline
+  masking cases (241 of 243), **5.7 times** the random-order baseline measured in the same test (17.3%).
+  (Picking 5 of all 82 recipes uniformly at random would give about 6.1%; the random-order baseline is higher
+  because it ranks only the recipes that pass the same filters.)
 - Each component adds something: the graph alone is weaker, coverage is strong, and TF-IDF similarity lifts
   Top-1/Top-3 and MRR on top of the other components.
 - Limitation: the recipes come from our own catalogue, so this measures retrieval accuracy, not taste.
@@ -26,8 +28,14 @@ Three random seeds → 243 test cases.
 
 ## 2. Allergy safety
 
-40 random allergy profiles (1–3 allergens each) × random selections: **0 of 101** returned recipes contained
-an excluded allergen. Allergens are a hard filter, applied before scoring, and personal weights cannot bypass it.
+40 random allergy profiles (1–3 allergens each) × random selections: **0 detected violations in 101** returned
+recipes. Allergens are a hard filter, applied before scoring, and personal weights cannot bypass it.
+
+The automated tests also sweep every allergen tag against ten different main ingredients for the recipe
+generator, including the oil, spices, herbs, garnish and taste additions it adds by itself and its "add next"
+suggestions, and check every ingredient's substitutes with each allergen blocked (`tests/test_recipes.py`,
+`tests/test_substitutes.py`): no violation. This is strong evidence for the rules as written; it is not a
+real-world food-safety guarantee, because it depends on the catalogue's allergen tags being correct.
 
 ## 3. Personalised ranking (simulated cooks)
 
@@ -48,3 +56,17 @@ The improvement is modest, as expected when the global weights are already good;
 Rule-and-graph scoring (`api/engine/substitutes.py`): same group, nutrition and taste similarity, pairing with the
 rest of the dish, known kitchen swaps, and what the cook already has. Allergens are never suggested. Examples:
 Lemon → Amchur / Imli / Vinegar · Spinach → Sarson / Bathua / Methi · Yogurt → Hung Curd / Malai / Buttermilk.
+
+## How to state these results
+
+| Say | Not |
+|---|---|
+| "The original catalogue recipe is in the top 5 for 99.2% of offline masking cases" | "It finds the right recipe 99% of the time" |
+| "0 detected allergen violations across 40 simulated profiles" | "0 allergen leaks, guaranteed safe" |
+| "5.7× the random-order baseline (17.3% Top-5) in the same test" | "5.7× better than random" without the baseline |
+| "Personal weights improved first choice from 89.7% to 91.4% for simulated cooks" | "Personalisation improves real users' experience" |
+| "Estimated taste match" / "estimated taste intensity" | "Measured taste" |
+| "Rule-based (template) recipe generator" | "Generative AI writes the recipe" |
+
+These are retrieval and rule-safety results on our own catalogue. Real satisfaction needs the user test in
+[USER_TESTING.md](USER_TESTING.md); nutrition values are approximate (see [DATASET.md](DATASET.md)).

@@ -120,8 +120,8 @@ export function DashboardShell({ nav, admin = false }: { nav: NavItem[]; admin?:
   const name = displayName(session?.user);
   const photo = avatarUrl(session?.user);
   const userId = session?.user.id;
-  // The designs give only the Kitchen and Ingredient Selection the wider sidebar. The Kitchen design also leaves
-  // Ingredient Selection out of the menu; it stays one click away there through "More" and "Smart Matching".
+  // The designs give only the Kitchen and Ingredient Selection the wider sidebar. The menu itself is the same on
+  // every page, so the cook always finds Ingredient Selection in the same place.
   const wideSidebar = !admin && ['/kitchen', '/select'].includes(location.pathname);
 
   // A new page opens at its top, so its heading is never hidden by the old page's scroll position.
@@ -147,7 +147,7 @@ export function DashboardShell({ nav, admin = false }: { nav: NavItem[]; admin?:
       <Brand admin={admin} />
       <nav aria-label="Main" className="flex-1">
         <ul className={`flex flex-col ${wideSidebar ? 'gap-3' : admin ? 'gap-[0.19rem]' : 'gap-[0.26rem]'}`}>
-          {nav.filter((item) => !(location.pathname === '/kitchen' && item.to === '/select')).map(({ to, label, icon: Icon, end }) => (
+          {nav.map(({ to, label, icon: Icon, end }) => (
             <li key={to}>
               <NavLink to={to} end={end} className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                 {({ isActive }) => <>

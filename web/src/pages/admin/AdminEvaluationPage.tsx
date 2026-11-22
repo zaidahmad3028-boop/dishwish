@@ -60,10 +60,10 @@ export function AdminEvaluationPage() {
       {report && full && random && (
         <>
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <StatCard icon={Target} value={pct(full['hit@5'])} label="Right recipe in the top 5" tone="red" note={`${full.trials} test cases`} />
+            <StatCard icon={Target} value={pct(full['hit@5'])} label="Original recipe in the top 5 (offline)" tone="red" note={`${full.trials} test cases`} />
             <StatCard icon={Gauge} value={full.mrr.toFixed(3)} label="Mean reciprocal rank (MRR)" tone="purple" note="1.0 = always first" />
-            <StatCard icon={TrendingUp} value={report.lift_hit5_vs_random ? `${report.lift_hit5_vs_random}×` : '—'} label="Better than random (top 5)" tone="green" note={`Random: ${pct(random['hit@5'])}`} />
-            <StatCard icon={ShieldCheck} value={report.safety.violations} label="Allergen leaks found" tone={report.safety.violations ? 'red' : 'green'}
+            <StatCard icon={TrendingUp} value={report.lift_hit5_vs_random ? `${report.lift_hit5_vs_random}×` : '—'} label="Better than the random-order baseline (top 5)" tone="green" note={`Random: ${pct(random['hit@5'])}`} />
+            <StatCard icon={ShieldCheck} value={report.safety.violations} label="Allergen violations (simulated profiles)" tone={report.safety.violations ? 'red' : 'green'}
               note={`${report.safety.profiles} allergy profiles · ${report.safety.recipes_checked} results checked`} />
           </div>
           <div className="grid gap-4 xl:grid-cols-[1.6fr_1fr]">

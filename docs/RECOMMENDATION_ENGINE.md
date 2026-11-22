@@ -43,11 +43,11 @@ score = clamp(base − missing_penalty · max(0, missing − tolerance) − main
 match % = round(score × 100)
 ```
 
-Default weights: coverage 0.45, TF-IDF similarity 0.10, compatibility 0.30, taste 0.20, cooking 0.05; `missing_penalty` 0.03; `missing_tolerance` 3; `main_missing_penalty` 0.30; `min_score` (similarity threshold) 0.20. Admins change them in **System Settings → Recommendation Engine**; the database rejects invalid values (`valid_recommendation_settings`).
+Default weights: coverage 0.45, TF-IDF similarity 0.10, compatibility 0.30, taste 0.20, cooking 0.05; `missing_penalty` 0.03; `missing_tolerance` 3; `main_missing_penalty` 0.30; `min_score` (similarity threshold) 0.20. They add up to 1.10, and that is intended: the score divides by Σ wᵢ, so the effective shares are coverage 41%, compatibility 27%, taste 18%, similarity 9% and cooking 5% (and they re-balance the same way when a component has no input). Admins change them in **System Settings → Recommendation Engine**; the database rejects invalid values (`valid_recommendation_settings`).
 
 - **Fallback, not fabrication:** if the cook chose no taste or time limit, that component is reported as `null` ("not used") and the remaining weights are renormalised. The response's `weights_used` shows the effective weights.
 - **No double counting:** coverage already rewards having ingredients, so the penalty only applies beyond the tolerance (it represents extra shopping effort, not a second coverage term).
-- These weights are engineering assumptions and have **not** been validated against user outcomes. No accuracy, precision or recall is reported because there is no labelled evaluation dataset.
+- These weights are design priorities (having the ingredients matters most, then pairing, then taste), not a proven optimum. Their offline retrieval accuracy is measured in [EVALUATION.md](EVALUATION.md); they have **not** been validated against real user satisfaction.
 
 ### Worked example (tested in `tests/test_suitability.py`)
 

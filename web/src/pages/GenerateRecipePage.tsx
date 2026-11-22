@@ -154,7 +154,7 @@ export function GenerateRecipePage() {
       {/* Compact summary: what goes in, and the button. Preferences are edited on the Kitchen dashboard. */}
       <section className="card print-hide grid gap-3 p-3.5 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)_auto] lg:items-center" aria-label="What the recipe uses">
         <div className="min-w-0">
-          <p className="flex items-center gap-1.5 text-[0.85rem] font-semibold uppercase tracking-wide text-stone-500"><ChefHat size={15} aria-hidden="true" />Ingredients ({chosen.length})</p>
+          <p className="flex items-center gap-1.5 text-[0.85rem] font-semibold uppercase tracking-wide text-stone-600"><ChefHat size={15} aria-hidden="true" />Ingredients ({chosen.length})</p>
           {chosen.length === 0 ? (
             <p className="mt-1 text-[0.92rem]">No ingredients chosen yet. <Link to="/select" className="font-semibold text-crimson underline">Select ingredients</Link></p>
           ) : (
@@ -166,7 +166,7 @@ export function GenerateRecipePage() {
           )}
         </div>
         <div className="min-w-0 border-rose-100 lg:border-l lg:pl-3">
-          <p className="flex items-center justify-between text-[0.85rem] font-semibold uppercase tracking-wide text-stone-500">Your preferences
+          <p className="flex items-center justify-between text-[0.85rem] font-semibold uppercase tracking-wide text-stone-600">Your preferences
             <Link to="/kitchen" className="normal-case tracking-normal text-crimson underline">Edit</Link></p>
           <p className="mt-1 flex flex-wrap gap-1 text-[0.8rem]">
             {setTastes.length ? setTastes.map((t) => <span key={t.key} className="rounded-full bg-orange-50 px-2 py-0.5 font-medium text-orange-800">{TASTE_LABEL[t.key]}: {LEVEL_LABEL[selection.tastes[t.key] as Level]}</span>)
@@ -201,7 +201,7 @@ export function GenerateRecipePage() {
             </ol>
             {chosen.length ? <button type="button" className="btn-primary mt-4 h-[2.9rem] px-6" disabled={!prefs} onClick={() => run()}><Sparkles size={17} aria-hidden="true" />Generate Recipe</button>
               : <Link to="/select" className="btn-primary mt-4 inline-flex h-[2.9rem] items-center px-6">Select ingredients<ArrowRight size={17} aria-hidden="true" /></Link>}
-            {catalog === null && <p className="mt-2 text-[0.85rem] text-stone-500">Loading ingredients…</p>}
+            {catalog === null && <p className="mt-2 text-[0.85rem] text-stone-600">Loading ingredients…</p>}
           </div>
         </section>
       )}
@@ -226,23 +226,23 @@ export function GenerateRecipePage() {
               <h2 className="mt-2 font-display text-[2.1rem] font-extrabold leading-tight text-ink">{recipe.title}</h2>
               <p className="mt-1.5 text-[1rem] text-stone-700">{describeRecipe(recipe)}</p>
               <ul className="mt-3 grid grid-cols-3 gap-2 text-center">
-                {[{ icon: Timer, label: 'Prep', value: time.prep ? `${time.prep} min` : '—' }, { icon: Flame, label: 'Cook', value: `${time.cook} min` }, { icon: Users, label: 'Servings', value: String(recipe.servings) }].map((s) => (
+                {[{ icon: Timer, label: 'Prep', value: time.prep ? `${time.prep} min` : 'Not estimated' }, { icon: Flame, label: 'Cook', value: `${time.cook} min` }, { icon: Users, label: 'Servings', value: String(recipe.servings) }].map((s) => (
                   <li key={s.label} className="rounded-2xl bg-white/90 px-2 py-2 shadow-sm"><s.icon size={18} className="mx-auto text-crimson" aria-hidden="true" />
-                    <strong className="mt-0.5 block text-[1.05rem]">{s.value}</strong><span className="text-[0.75rem] text-stone-500">{s.label}</span></li>
+                    <strong className="mt-0.5 block text-[1.05rem]">{s.value}</strong><span className="text-[0.75rem] text-stone-600">{s.label}</span></li>
                 ))}
               </ul>
               <ul className="mt-3 flex flex-wrap gap-1.5 text-[0.9rem]">
                 <li className="badge bg-white shadow-sm"><Clock size={14} aria-hidden="true" />{time.total} min total</li>
                 <li className="badge badge-amber"><Flame size={14} aria-hidden="true" />≈ {Math.round(recipe.nutrition.per_serving.kcal)} kcal per serving{goal ? ` · ${Math.round((recipe.nutrition.per_serving.kcal / goal.kcal) * 100)}% of your ${goal.kcal} kcal day` : ''}</li>
                 {recipe.nutrition.per_serving.protein >= 25 && <li className="badge badge-green">High Protein</li>}
-                {recipe.match && <li className="badge badge-green">{recipe.match.percent}% match to your taste</li>}
+                {recipe.match && <li className="badge badge-green">≈{recipe.match.percent}% estimated taste match</li>}
               </ul>
               <button type="button" className="btn-primary print-hide mt-4 h-[2.8rem] w-full justify-center" onClick={save} disabled={saved}>
                 {saved ? <BookmarkCheck size={17} aria-hidden="true" /> : <Bookmark size={17} aria-hidden="true" />}{saved ? 'Saved to My Recipes' : 'Save to My Recipes'}</button>
               {note && <p role="status" className="print-hide mt-2 break-all text-[0.82rem] text-green-700">{note}</p>}
               {recipes.length > 1 && (
                 <div className="print-hide mt-3">
-                  <p className="text-[0.78rem] font-semibold text-stone-500">Other versions from the same ingredients</p>
+                  <p className="text-[0.78rem] font-semibold text-stone-600">Other versions from the same ingredients</p>
                   <div className="mt-1 flex flex-wrap gap-1.5">
                     {recipes.map((r, i) => <button key={r.fingerprint} type="button" className="pill !px-3 !py-0.5 !text-[0.8rem]" aria-pressed={i === active} onClick={() => setActive(i)}>{r.title}</button>)}
                   </div>
@@ -252,17 +252,18 @@ export function GenerateRecipePage() {
           </section>
 
           <div className="grid gap-4 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-            <Card title="Ingredients" icon={ChefHat} action={<span className="text-right text-[0.85rem] font-semibold text-crimson">{Math.round(recipe.nutrition.total.kcal).toLocaleString()} kcal whole dish<span className="block text-[0.75rem] font-normal text-stone-500">{recipe.servings} servings × {Math.round(recipe.nutrition.per_serving.kcal)} kcal</span></span>}>
+            <Card title="Ingredients" icon={ChefHat} action={<span className="text-right text-[0.85rem] font-semibold text-crimson">{Math.round(recipe.nutrition.total.kcal).toLocaleString()} kcal whole dish<span className="block text-[0.75rem] font-normal text-stone-600">{recipe.servings} servings × {Math.round(recipe.nutrition.per_serving.kcal)} kcal</span></span>}>
               <table className="data-table text-[0.98rem]">
                 <thead><tr><th>Ingredient</th><th className="text-right">Quantity</th><th className="text-right">Calories</th></tr></thead>
                 <tbody>
                   {recipe.ingredients.map((i) => (
-                    <tr key={i.name}><td><span className="flex items-center gap-2 font-medium"><IngredientBadge name={i.name} category={i.category} size={28} />{i.name}</span></td>
+                    <tr key={i.name}><td><span className="flex items-center gap-2 font-medium"><IngredientBadge name={i.name} category={i.category} size={28} />{i.name}
+                      <span className={`rounded-full px-1.5 py-0.5 text-[0.68rem] font-semibold ${i.role === 'main' || i.role === 'yours' ? 'bg-green-100 text-green-800' : 'bg-stone-100 text-stone-700'}`}>{i.role === 'main' || i.role === 'yours' ? 'Your pick' : 'Added staple'}</span></span></td>
                       <td className="text-right tabular-nums">{formatGrams(i.grams)}</td><td className="text-right tabular-nums">{i.kcal !== undefined ? `${Math.round(i.kcal)} kcal` : '—'}</td></tr>
                   ))}
                 </tbody>
               </table>
-              <p className="mt-2 text-[0.75rem] text-stone-500">Calories = grams × the catalog's kcal per 100 g. Estimates, not medical advice.</p>
+              <p className="mt-2 text-[0.78rem] text-stone-600"><strong>Your pick</strong> = ingredients you chose; <strong>Added staple</strong> = oil, salt, spices or herbs most kitchens have, added so the dish works. Calories = grams × the catalog's kcal per 100 g: approximate estimates, not medical advice.</p>
             </Card>
             <Card title="Cooking Steps" icon={Flame}>
               <ol className="space-y-3">
@@ -297,7 +298,7 @@ export function GenerateRecipePage() {
                 <p className="text-[0.82rem]">Share of the dish's energy from each macro (protein and carbs 4 kcal/g, fat 9 kcal/g), from the catalog's nutrition per 100 g.</p>
               </div>
             </Card>
-            <Card title="Overall Taste" icon={Leaf}>
+            <Card title={<>Overall Taste <span className="font-sans text-base font-normal">(estimated intensity)</span></>} icon={Leaf}>
               <ul className="space-y-2.5 text-[0.92rem]">
                 {tastePercentages(recipe.taste).map((t) => {
                   const meta = TASTES.find((x) => x.key === t.key)!;
@@ -309,17 +310,17 @@ export function GenerateRecipePage() {
                         <span className={`absolute inset-y-0 left-0 rounded-full ${meta.tint}`} style={{ width: `${t.percent}%` }} />
                         {target && <span className="absolute -top-1 h-5 w-1 rounded bg-ink" style={{ left: `${TARGET[target] * 10}%` }} title={`Your ${LEVEL_LABEL[target]} target`} />}
                       </span>
-                      <span className="text-right"><strong>{t.percent}%</strong>{target && <span className="block text-[0.72rem] text-stone-500">you: {LEVEL_LABEL[target]}</span>}</span>
+                      <span className="text-right"><strong>{t.percent}%</strong>{target && <span className="block text-[0.72rem] text-stone-600">you: {LEVEL_LABEL[target]}</span>}</span>
                     </li>
                   );
                 })}
               </ul>
-              <p className="mt-2 text-[0.75rem] text-stone-500">Each bar is the dish's intensity (0–10 shown as %): every ingredient adds its catalog taste score in proportion to how much of it is in one serving. The dark mark is your saved preference.</p>
+              <p className="mt-2 text-[0.75rem] text-stone-600">Estimated, not measured: each bar is the dish's taste intensity (0–10 shown as %), where every ingredient adds its catalog taste score in proportion to how much of it is in one serving. The dark mark is your saved preference.</p>
             </Card>
           </div>
 
           <Card title="Related Recipes" icon={Sparkles} action={<Link to="/recommendations" className="print-hide flex items-center gap-1 text-sm font-semibold text-crimson">View All<ArrowRight size={15} aria-hidden="true" /></Link>}>
-            {related.length === 0 ? <p className="text-[0.9rem] text-stone-500">Choose at least 2 ingredients to see ready-made recipes that use them.</p> : (
+            {related.length === 0 ? <p className="text-[0.9rem] text-stone-600">Choose at least 2 ingredients to see ready-made recipes that use them.</p> : (
               <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 {related.map((r) => (
                   <li key={r.slug} className="overflow-hidden rounded-2xl bg-white/85 shadow-sm"><Link to={`/recipe/${r.slug}`} state={{ match: r }} className="block">

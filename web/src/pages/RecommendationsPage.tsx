@@ -135,7 +135,7 @@ export function TestedBadge() {
   if (!s) return null;
   return (
     <span className="badge badge-green !px-3 !py-1.5 !text-[0.85rem]" title={`Offline test: ${s.trials} cases over ${s.recipes} recipes. Mean reciprocal rank ${s.mrr.toFixed(2)}.`}>
-      <ShieldCheck size={15} aria-hidden="true" /> Tested: right recipe in top 5 in {Math.round(s.hit5 * 100)}% of cases · {s.allergen_violations} allergen leaks
+      <ShieldCheck size={15} aria-hidden="true" /> Offline test: original recipe in the top 5 in {(s.hit5 * 100).toFixed(1)}% of {s.trials} cases · {s.allergen_violations} allergen violations in simulated profiles
     </span>
   );
 }

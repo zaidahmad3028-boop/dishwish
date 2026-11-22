@@ -72,3 +72,12 @@ def test_endpoints(monkeypatch):
     missing = [l for l in detail["ingredients"] if not l["have"] and not l["staple"]]
     assert missing and all("substitutes" in l for l in missing)
     assert "substitutes" not in client.get(f"/api/curated/{recipe.slug}").json()["ingredients"][0]
+
+
+def test_no_substitute_ever_carries_a_blocked_allergen():
+    engine = make_engine()
+    tags = sorted({t for i in engine.catalog.values() for t in i.allergens})
+    for tag in tags:
+        for name in engine.catalog:
+            for row in substitutes(engine, name, blocked=[tag], limit=10):
+                assert tag not in engine.catalog[row["name"]].allergens, (name, tag, row["name"])

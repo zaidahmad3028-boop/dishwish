@@ -190,3 +190,38 @@ def test_allergen_notice():
     recipe = ENGINE.generate(["Chicken Breast"], allergens=["milk"], blocked_words=["garlic"])["recipes"][1]
     assert recipe["allergens"]["avoided"] == ["milk"] and recipe["allergens"]["blocked_words"] == ["garlic"]
     assert "tomato" in recipe["allergens"]["contains"] and "milk" not in recipe["allergens"]["contains"]
+
+
+# ---- Safety sweep: every allergen against every kind of main, including what the generator adds itself ----
+ALL_TAGS = sorted({t for i in CATALOG.values() for t in i.allergens})
+SWEEP_MAINS = ["Chicken Breast", "Mutton", "Beef", "Prawns", "Eggs", "Paneer", "Masoor Dal", "Potato", "Basmati Rice", "Spinach"]
+
+
+@pytest.mark.parametrize("tag", ALL_TAGS)
+def test_no_generated_line_or_suggestion_contains_a_blocked_allergen(tag):
+    checked = 0
+    for main in SWEEP_MAINS:
+        if main not in CATALOG or tag in CATALOG[main].allergens:
+            continue
+        for tastes in ({}, {"sour": "high", "spicy": "high", "sweet": "high", "salty": "high"}):
+            try:
+                out = ENGINE.generate([main], allergens=[tag], tastes=tastes, limit=5)
+            except RecipeError:
+                continue  # refusing is safe
+            for recipe in out["recipes"]:
+                for name in names(recipe):  # staples, garnishes and taste additions included
+                    assert tag not in CATALOG[name].allergens, (main, tag, name)
+                checked += 1
+            for name in out["suggestions"]:
+                assert tag not in CATALOG[name].allergens, (main, tag, name)
+    assert checked, f"no recipe could be checked for {tag}"
+
+
+def test_aromatics_get_small_realistic_portions():
+    karahi = ENGINE.generate(["Chicken Breast", "Tomato", "Ginger", "Garlic", "Green Chilli", "Fresh Coriander"], servings=4)["recipes"][0]
+    grams = {r["name"]: r["grams"] for r in karahi["ingredients"]}
+    assert grams["Chicken Breast"] >= 500
+    for herb in ("Ginger", "Garlic", "Green Chilli", "Fresh Coriander"):
+        assert grams[herb] <= 40, (herb, grams[herb])  # a few teaspoons for four people, never a vegetable's portion
+    # An aromatic is never picked as the main ingredient when there is a real one.
+    assert ENGINE.generate(["Ginger", "Potato"])["recipes"][0]["ingredients"][0]["name"] == "Potato"

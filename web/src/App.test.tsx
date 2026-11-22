@@ -37,11 +37,10 @@ describe('routing', () => {
     expect(await screen.findByRole('heading', { name: 'Your Kitchen' })).toBeInTheDocument();
     expect(screen.getByText('Turn your ingredients into amazing recipes.')).toBeInTheDocument();
     const [sidebar] = screen.getAllByRole('navigation', { name: 'Main' });
-    for (const label of ['Kitchen', 'Recommendations', 'My Recipes', 'My Pantry', 'Profile', 'Settings']) {
+    // The same menu on every page, Ingredient Selection included.
+    for (const label of ['Kitchen', 'Ingredient Selection', 'Recommendations', 'My Recipes', 'My Pantry', 'Profile', 'Settings']) {
       expect(within(sidebar).getByRole('link', { name: label })).toBeInTheDocument();
     }
-    // Ingredient Selection stays reachable from the Kitchen itself, as in the design.
-    expect(within(sidebar).queryByRole('link', { name: 'Ingredient Selection' })).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Smart Matching/ })).toHaveAttribute('href', '/select');
     expect(within(sidebar).queryByRole('link', { name: 'Users' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /sign up|create account/i })).not.toBeInTheDocument();

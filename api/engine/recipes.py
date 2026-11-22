@@ -29,6 +29,10 @@ MAIN_GRAMS = {"red_meat": 150, "poultry": 160, "seafood": 150, "egg": 100, "pane
 EXTRA_GRAMS = {"red_meat": 60, "poultry": 60, "seafood": 60, "egg": 50, "paneer": 50, "pulse": 30, "veg": 70,
                "grain": 40, "fruit": 60, "yogurt": 40, "milk": 80, "flour": 20, "nut": 10, "other": 15}
 SEASONING_GRAMS = {"Spices": 2, "Oils & Sauces": 10}
+# Aromatics and herbs flavour a dish in small amounts, so they never get a vegetable's portion
+# (grams per serving: about 1 tsp of ginger/garlic, one green chilli, a small handful of herbs).
+AROMATIC_GRAMS = {"Garlic": 6, "Ginger": 6, "Green Chilli": 5, "Fresh Coriander": 4, "Fresh Mint (Pudina)": 4,
+                  "Curry Leaves (Kari Patta)": 1, "Lemon": 10}
 # Grocery items that only season a dish; they can't be its main ingredient.
 GROCERY_SEASONINGS = frozenset({"Salt", "White Sugar", "Jaggery (Gur)", "Honey", "Tamarind (Imli)", "Vinegar",
                                 "Soy Sauce", "Tomato Ketchup", "Baking Powder", "Baking Soda", "Rose Water (Gulab Jal)",
@@ -309,7 +313,7 @@ class RecipeEngine:
         mains = [i for i in chosen if seasoning_grams(i) is None]
         if not mains:
             raise RecipeError("Add at least one main ingredient (not only spices or oils)")
-        main = min(mains, key=lambda i: KIND_ORDER.index(kind_of(i)))
+        main = min(mains, key=lambda i: (i.name in AROMATIC_GRAMS, KIND_ORDER.index(kind_of(i))))
         kind = kind_of(main)
         meal_kcal = TIER_KCAL[calorie_tier] / MEALS_PER_DAY if calorie_tier else None
 
@@ -361,7 +365,7 @@ class RecipeEngine:
                 else:
                     rows[item.name] = ["fat" if item.category == "Oils & Sauces" else "spice", grams, False]
             else:
-                rows[item.name] = ["extras", EXTRA_GRAMS[kind_of(item)], True]
+                rows[item.name] = ["extras", AROMATIC_GRAMS.get(item.name, EXTRA_GRAMS[kind_of(item)]), True]
                 extras.append(item.name)
 
         used = set(rows)
