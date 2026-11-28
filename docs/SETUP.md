@@ -26,7 +26,8 @@ In Supabase **SQL Editor**, run each file in its own query (see [DATABASE.md](DA
 1. If the project is new: `0001` → `0002` → `0003` → `seed/seed.sql` → `0004`.
 2. `supabase/migrations/0005_admin_recipes.sql` (once).
 3. `supabase/seed/recipes.sql` (safe to re-run).
-4. Optional: `supabase/tests/admin_check.sql` should return `PASS: …`.
+4. `supabase/migrations/0006` to `0011`, in order, each once.
+5. Optional: `supabase/tests/admin_check.sql` should return `PASS: …`.
 
 Email confirmation and password reset need custom SMTP: see [AUTH_EMAIL.md](AUTH_EMAIL.md).
 

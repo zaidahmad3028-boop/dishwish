@@ -5,13 +5,14 @@ import { engineEvaluation, type EvalReport, type EvalRow } from '../../lib/admin
 
 const pct = (v: number) => `${Math.round(v * 1000) / 10}%`;
 const COLORS: Record<string, string> = {
-  'Random order': '#a8a29e', 'Coverage only': '#fb923c', 'Graph only': '#f59e0b', 'Without TF-IDF': '#f472b6', 'Full engine': '#e11d36',
+  'Random order': '#a8a29e', 'Coverage only': '#fb923c', 'Graph only': '#f59e0b', 'Without TF-IDF': '#f472b6', 'Without graph': '#a78bfa', 'Full engine': '#e11d36',
 };
 const NOTES: Record<string, string> = {
   'Random order': 'Baseline: recipes that share an ingredient, in random order',
   'Coverage only': 'Only counts how many of the dish\'s ingredients you have',
   'Graph only': 'Only the NetworkX ingredient-pairing weights',
   'Without TF-IDF': 'Full engine with the TF-IDF similarity switched off',
+  'Without graph': 'Full engine with the NetworkX pairing switched off; the graph still drives suggestions, swaps and explanations',
   'Full engine': 'The weights currently used for every cook',
 };
 
@@ -75,7 +76,7 @@ export function AdminEvaluationPage() {
             <div className="space-y-4">
               <Card title="How the test works" icon={FlaskConical}>
                 <ol className="list-decimal space-y-2 pl-5 text-[0.95rem] text-stone-700">
-                  <li>For each of the {report.recipes} published recipes, keep its main ingredient and a random half of the other main ingredients.</li>
+                  <li>For each of the {report.eligible_recipes ?? report.recipes} recipes with at least three main ingredients (of {report.recipes} published), keep its main ingredient and a random half of the other main ingredients.</li>
                   <li>Give only those ingredients to each method and rank all recipes.</li>
                   <li>Record where the real recipe lands. Repeated with {report.seeds.length} random seeds.</li>
                   <li><b>Top k</b> = share of tests with the real recipe in the first k results. <b>MRR</b> = average of 1 ÷ its position.</li>

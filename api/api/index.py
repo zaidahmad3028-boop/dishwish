@@ -314,7 +314,7 @@ def _evaluation_report(fresh: bool = False) -> tuple[dict, object]:
     key = (tuple(sorted(r.slug for r in engine.recipes)), engine.graph.number_of_edges(),
            tuple(sorted(engine.settings["weights"].items())))
     if fresh or _evaluation_cache["key"] != key:
-        report = evaluate(engine, seeds=(11, 23, 37))
+        report = evaluate(engine)
         report["personalization"] = {**simulate(engine),
                                      **personalization_settings(data.personalization)}
         _evaluation_cache.update(key=key, report=report)

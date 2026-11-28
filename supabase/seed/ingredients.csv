@@ -1,42 +1,42 @@
 category,name,kcal,protein,carbs,fat,sweet,salty,sour,spicy,priority
-Meat,Chicken Breast,165,31,0,3.6,0,2,0,0,2
-Meat,Chicken Thigh,209,26,0,11,0,2,0,0,2
-Meat,Chicken Wings,203,30,0,8,0,2,0,0,2
-Meat,Whole Chicken,239,27,0,14,0,2,0,0,2
+Meat,Chicken Breast,120,22.5,0,2.6,0,2,0,0,2
+Meat,Chicken Thigh,121,19.7,0,3.9,0,2,0,0,2
+Meat,Chicken Wings,191,17.5,0,12.8,0,2,0,0,2
+Meat,Whole Chicken,119,21.4,0,3.1,0,2,0,0,2
 Meat,Chicken Qeema,143,17,0,8,0,2,0,0,2
-Meat,Chicken Liver,167,24,1,6.5,0,2,0,0,4
-Meat,Mutton,294,25,0,21,0,2,0,0,2
-Meat,Mutton Chops,290,24,0,21,0,2,0,0,3
+Meat,Chicken Liver,119,16.9,0.7,4.8,0,2,0,0,4
+Meat,Mutton,282,16.6,0,23.4,0,2,0,0,2
+Meat,Mutton Chops,282,16.6,0,23.4,0,2,0,0,3
 Meat,Mutton Qeema,282,17,0,23,0,2,0,0,2
-Meat,Mutton Paya,180,20,0,11,0,2,0,0,4
-Meat,Beef,250,26,0,15,0,2,0,0,2
+Meat,Mutton Paya,135,15,0,8.3,0,2,0,0,4
+Meat,Beef,215,18.6,0,15,0,2,0,0,2
 Meat,Beef Qeema,254,17,0,20,0,2,0,0,2
-Meat,Beef Nihari Shank,235,27,0,14,0,2,0,0,4
+Meat,Beef Nihari Shank,176,20.3,0,10.5,0,2,0,0,4
 Meat,Rohu Fish,97,17,0,2.9,0,2,0,0,3
 Meat,Pomfret Fish,96,18,0,2,0,2,0,0,4
-Meat,Prawns,99,24,0.2,0.3,1,3,0,0,4
+Meat,Prawns,85,20.1,0,0.5,1,3,0,0,4
 Meat,Eggs,143,13,0.7,9.5,0,1,0,0,2
-Meat,Chicken Boneless (Boti),165,31,0,3.6,0,2,0,0,2
-Meat,Chicken Drumstick,172,28,0,5.7,0,2,0,0,3
-Meat,Chicken Leg Piece,209,26,0,11,0,2,0,0,3
+Meat,Chicken Boneless (Boti),120,22.5,0,2.6,0,2,0,0,2
+Meat,Chicken Drumstick,119,20.1,0,3.7,0,2,0,0,3
+Meat,Chicken Leg Piece,120,20,0,3.8,0,2,0,0,3
 Meat,Chicken Gizzard (Gizzi),94,17,0,2.1,0,2,0,0,4
-Meat,Mutton Leg (Raan),258,25,0,17,0,2,0,0,3
-Meat,Mutton Shoulder,270,24,0,19,0,2,0,0,3
-Meat,Mutton Ribs (Chaap),294,25,0,21,0,2,0,0,3
+Meat,Mutton Leg (Raan),242,17.4,0,18.7,0,2,0,0,3
+Meat,Mutton Shoulder,264,16.4,0,21.5,0,2,0,0,3
+Meat,Mutton Ribs (Chaap),282,16.6,0,23.4,0,2,0,0,3
 Meat,Mutton Liver (Kaleji),139,20.4,3.9,4.9,0,2,0,0,3
 Meat,Mutton Brain (Maghaz),145,10.9,0,10.3,0,2,0,0,4
 Meat,Mutton Kidney (Gurda),97,16.5,0.8,3.1,0,2,0,0,4
-Meat,Beef Boneless,250,26,0,15,0,2,0,0,3
-Meat,Beef Ribs,291,24,0,21,0,2,0,0,3
+Meat,Beef Boneless,215,18.6,0,15,0,2,0,0,3
+Meat,Beef Ribs,218,18,0,15.8,0,2,0,0,3
 Meat,Beef Liver (Kaleji),135,20,3.9,3.6,0,2,0,0,4
 Meat,Beef Bone Marrow (Nalli),750,7,0,80,0,1,0,0,4
 Meat,Beef Tripe (Ojri),85,12,0,3.7,0,2,0,0,4
 Meat,Catla Fish,111,16.6,0,2.5,0,2,0,0,3
-Meat,Tilapia Fish,128,26,0,2.7,0,2,0,0,3
+Meat,Tilapia Fish,96,20.1,0,1.7,0,2,0,0,3
 Meat,Hilsa Fish (Palla),273,22,0,20,0,2,0,0,4
 Meat,Singhara Fish (Catfish),105,18,0,2.9,0,2,0,0,3
-Meat,Surmai Fish (King Fish),134,22,0,4.5,0,2,0,0,3
-Meat,Quail (Bater),227,25,0,14,0,2,0,0,4
+Meat,Surmai Fish (King Fish),105,20.3,0,2,0,2,0,0,3
+Meat,Quail (Bater),192,19.6,0,12.1,0,2,0,0,4
 Vegetables,Tomato,18,0.9,3.9,0.2,2,0,4,0,1
 Vegetables,Onion,40,1.1,9.3,0.1,3,0,0,1,1
 Vegetables,Garlic,149,6.4,33,0.5,0,0,0,3,1

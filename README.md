@@ -17,7 +17,7 @@ api/  Python 3.11 + FastAPI + NetworkX (Vercel project "dishwish-api", root api/
   ├─ POST /api/recommend   public; ranks the public ingredient catalog
   ├─ GET  /api/me          signed-in (Supabase JWT)
   └─ POST /api/recipes     signed-in (Supabase JWT); deterministic recipe engine
-supabase/  SQL migrations, RLS, the 260-ingredient seed and an RLS check script
+supabase/  SQL migrations, RLS, the 261-ingredient seed and an RLS check script
 scripts/   build_seed.py (CSV → seed.sql + 0004 migration), build_engine_data.py (CSV → api/engine/ingredients.json)
 docs/      DATASET.md
 ```
@@ -28,7 +28,7 @@ docs/      DATASET.md
 
 ## How the NetworkX graph works
 
-`api/engine/recommender.py` builds a complete weighted graph over the 260 catalog ingredients (33,670 edges). The weight of the edge between ingredients *u* and *v* is
+`api/engine/recommender.py` builds a complete weighted graph over the 261 catalog ingredients (33,930 edges). The weight of the edge between ingredients *u* and *v* is
 
 ```
 w(u,v) = 0.35 · max(cat, 0.9 · cook) + 0.35 · cook + 0.20 · taste + 0.10 · harmony
@@ -93,7 +93,7 @@ cd web && npm test                 # Vitest + Testing Library: auth, onboarding,
 1. `supabase/migrations/0001_schema.sql`
 2. `supabase/migrations/0002_rls.sql`
 3. `supabase/migrations/0003_onboarding.sql`: adds the 19 allergen tags, optional tastes and calorie goal, `custom_allergens`, `onboarded`, and the username trigger.
-4. `supabase/seed/seed.sql`: 8 categories and 260 ingredients. Safe to re-run; it updates by name.
+4. `supabase/seed/seed.sql`: 8 categories and 261 ingredients. Safe to re-run; it updates by name.
 5. `supabase/migrations/0004_allergen_tags.sql`: UPDATE-only re-tagging of existing rows; safe to run more than once.
 6. `supabase/tests/rls_check.sql`: optional; expects one `PASS: …` row.
 

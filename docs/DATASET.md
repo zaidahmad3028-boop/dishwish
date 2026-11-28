@@ -1,14 +1,14 @@
 # DishWish ingredient dataset
 
-`supabase/seed/ingredients.csv` is the single source of truth for the 260 ingredients used by the app, the database seed and the API engine.
+`supabase/seed/ingredients.csv` is the single source of truth for the 261 ingredients used by the app, the database seed and the API engine.
 
 ## Columns
 
 | Column | Type | Meaning |
 | --- | --- | --- |
-| `category` | text | One of 8 groups: Meat (38), Vegetables (43), Fruits (33), Dairy (18), Grocery (36), Spices (42), Pulses & Nuts (28), Oils & Sauces (22) |
+| `category` | text | One of 8 groups: Meat (38), Vegetables (43), Fruits (33), Dairy (18), Grocery (37), Spices (42), Pulses & Nuts (28), Oils & Sauces (22) |
 | `name` | text | Unique English name, with the common Urdu/Pakistani name in parentheses where useful, e.g. `Okra (Bhindi)` |
-| `kcal` | number ≥ 0 | Energy per 100 g (edible, raw/as sold unless the name says otherwise) |
+| `kcal` | number ≥ 0 | Energy per 100 g (edible, raw/as sold unless the name says otherwise; meat and fish are raw, grains and pulses dry) |
 | `protein` | number ≥ 0 | Grams of protein per 100 g |
 | `carbs` | number ≥ 0 | Grams of carbohydrate per 100 g |
 | `fat` | number ≥ 0 | Grams of fat per 100 g |
@@ -22,7 +22,7 @@ Derived, not stored in the CSV:
 
 ## How the values were compiled
 
-Nutrition per 100 g values are typical published food-composition values for the closest matching raw ingredient. Taste intensities and priorities are editorial judgements for Pakistani home cooking. The values were compiled with AI assistance and then validated by hand on a sample of rows against published references. They are **approximate**: real values vary with variety, cut, brand, ripeness and cooking method. Do not use them for medical or clinical purposes.
+Nutrition per 100 g values are typical published food-composition values for the closest matching raw ingredient. Taste intensities and priorities are editorial judgements for Pakistani home cooking. The values were compiled with AI assistance and then validated by hand on a sample of rows against published references. Meat and fish rows were re-checked against USDA FoodData Central raw entries on 28 November 2026, because 22 of them had used cooked values (see [NUTRITION_AUDIT.md](NUTRITION_AUDIT.md)). They are **approximate**: real values vary with variety, cut, brand, ripeness and cooking method. Do not use them for medical or clinical purposes.
 
 ## Preprocessing
 

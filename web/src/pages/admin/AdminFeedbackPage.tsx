@@ -106,7 +106,7 @@ export function AdminFeedbackPage() {
       <PageHeader title="Feedback &" accent="Reviews" icon={MessageSquare} subtitle="Monitor user feedback, reviews, complaints and suggestions to improve Dish-Wish."
         actions={<><RangeSelect days={days} onChange={setDays} /><button type="button" className="btn-primary" onClick={exportCsv}><Download size={16} aria-hidden="true" />Export Report</button></>} />
       <div className="admin-stats admin-compact grid gap-3 sm:grid-cols-2 xl:grid-cols-7">
-        <StatCard icon={MessageSquare} value={current.length} label="Total Feedback" trend={pctShort(current.length, previous.length)} />
+        <StatCard icon={MessageSquare} value={current.length} label={`Feedback (last ${days} days)`} trend={pctShort(current.length, previous.length)} />
         <StatCard icon={Star} value={avg !== null ? <>{avg.toFixed(1)}<span className="text-base font-semibold"> / 5</span></> : '—'} label="Overall Rating" tone="amber" trend={pctShort(ratings.length, prevRatings.length)} />
         <StatCard icon={ThumbsUp} value={positive} label={`Positive${share(positive)}`} tone="green" trend={pctShort(positive, prevRatings.filter((r) => r >= 4).length)} />
         <StatCard icon={MinusCircle} value={neutral} label={`Neutral${share(neutral)}`} tone="amber" trend={pctShort(neutral, prevRatings.filter((r) => r === 3).length)} />

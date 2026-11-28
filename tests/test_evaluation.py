@@ -32,7 +32,7 @@ def test_queries_are_repeatable():
 def test_engine_beats_random_and_metrics_are_ordered():
     report = evaluate(make_engine(), seeds=(11,))
     rows = {r["method"]: r for r in report["methods"]}
-    assert set(rows) == {"Random order", "Coverage only", "Graph only", "Without TF-IDF", "Full engine"}
+    assert set(rows) == {"Random order", "Coverage only", "Graph only", "Without TF-IDF", "Without graph", "Full engine"}
     for row in rows.values():
         assert 0 <= row["hit@1"] <= row["hit@3"] <= row["hit@5"] <= 1
         assert 0 <= row["mrr"] <= 1
@@ -65,7 +65,7 @@ def test_evaluation_endpoint_is_admin_only(monkeypatch):
     monkeypatch.setenv("SUPABASE_JWT_SECRET", SECRET)
     monkeypatch.setenv("SUPABASE_URL", URL)
     monkeypatch.setattr(index, "get_engine", lambda: (engine, data))
-    monkeypatch.setattr(index, "evaluate", lambda e, seeds: evaluate(e, seeds=(11,)))
+    monkeypatch.setattr(index, "evaluate", lambda e, **kw: evaluate(e, seeds=(11,)))
     client = TestClient(index.app)
     assert client.get("/api/admin/evaluation").status_code == 401
     monkeypatch.setattr(auth, "is_admin_token", lambda token: False)
@@ -76,3 +76,31 @@ def test_evaluation_endpoint_is_admin_only(monkeypatch):
     assert body["data_source"] == "bundled" and "coverage" in body["weights"]
     summary = client.get("/api/evaluation/summary").json()
     assert summary["hit5"] == body["methods"][-1]["hit@5"] and summary["allergen_violations"] == 0
+
+
+def test_default_seeds_give_the_documented_case_count():
+    engine = make_engine()
+    report = evaluate(engine)
+    assert report["seeds"] == [11, 23, 37]
+    assert report["eligible_recipes"] == len(engine.recipes) - len(report["skipped_recipes"])
+    assert report["methods"][0]["trials"] == 3 * report["eligible_recipes"]
+    assert report["methods"][-1]["method"] == "Full engine"
+
+
+def test_leave_one_recipe_out_hides_the_target_from_the_graph():
+    from engine.evaluation import _without_recipe
+    engine = make_engine()
+    target = engine.recipes[0]
+    names = sorted({l.name for l in target.lines})
+    reduced = _without_recipe(engine, target.slug)
+    assert reduced.graph.number_of_edges() <= engine.graph.number_of_edges()
+    # Every pair still in the reduced graph is used together by some other recipe.
+    others = [r for r in engine.recipes if r.slug != target.slug]
+    for a, b, d in reduced.graph.edges(data=True):
+        if d["relation"] == "co-occurrence":
+            assert any({a, b} <= {l.name for l in r.lines} for r in others), (a, b)
+    report = evaluate(engine, seeds=(11,), leakage_check=True)
+    rows = {r["method"]: r for r in report["leave_one_recipe_out"]}
+    assert set(rows) == {"Graph only", "Full engine"}
+    assert rows["Full engine"]["hit@5"] >= 0.9
+    assert names

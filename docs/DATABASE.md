@@ -4,8 +4,10 @@ Run once in **SQL Editor**, each file in its own query, in this order (the first
 
 1. `migrations/0001_schema.sql` → `0002_rls.sql` → `0003_onboarding.sql` → `seed/seed.sql` → `0004_allergen_tags.sql`
 2. `migrations/0005_admin_recipes.sql`: roles, curated recipes, compatibility graph, settings, feedback, activity, audit log, admin RPCs
-3. `seed/recipes.sql`: 35 curated recipes (159 steps) and 334 compatibility edges. Idempotent; it never overwrites admin edits.
-4. Optional checks: `tests/rls_check.sql` and `tests/admin_check.sql` (each runs in a transaction, rolls back, and returns a `PASS` row).
+3. `seed/recipes.sql`: 82 curated recipes and 602 compatibility edges. Idempotent; it never overwrites admin edits.
+4. `migrations/0006` to `0010` in order (categories, settings and diets, realtime, storage, similarity weight).
+5. `migrations/0011_raw_nutrition.sql`: replaces cooked meat and fish values with raw ones (22 rows, UPDATE only; see NUTRITION_AUDIT.md).
+6. Optional checks: `tests/rls_check.sql` and `tests/admin_check.sql` (each runs in a transaction, rolls back, and returns a `PASS` row).
 
 ## Tables
 

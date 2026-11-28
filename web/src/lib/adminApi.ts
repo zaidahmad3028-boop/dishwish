@@ -274,7 +274,7 @@ export function pctChange(now: number, prev: number): string | null {
 // ---- Engine evaluation (FastAPI, Super Admin only; the API re-checks the admin role) ----
 export interface EvalRow { method: string; 'hit@1': number; 'hit@3': number; 'hit@5': number; mrr: number; trials: number }
 export interface EvalReport {
-  methods: EvalRow[]; best: string; lift_hit5_vs_random: number | null; recipes: number; seeds: number[]; protocol: string; seconds: number;
+  methods: EvalRow[]; best: string; lift_hit5_vs_random: number | null; recipes: number; eligible_recipes?: number; seeds: number[]; protocol: string; seconds: number;
   safety: { profiles: number; recipes_checked: number; violations: number }; data_source: string; weights: Record<string, number>;
   personalization?: { users: number; history_per_user: number; test_cases: number; hit1_global: number; hit1_personal: number; enabled: boolean; strength: number };
 }

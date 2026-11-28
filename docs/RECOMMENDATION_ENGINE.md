@@ -10,7 +10,7 @@ Dish-Wish has two separate engines, both in `api/engine/`, both deterministic an
 
 ## 1. Knowledge graph (ingredient compatibility)
 
-- One **node** per ingredient (260 in the seed; admins can add more).
+- One **node** per ingredient (261 in the seed; admins can add more).
 - One **edge** per stored row in `public.ingredient_compatibility` with `weight` (0–1), `relation_type` (`co-occurrence`, `complementary`, `flavour-bridge`, `contrast`, `avoid`), `evidence` text and `updated_at`.
 - **Weight meaning:** 1.0 = pairs very well; 0 = should not be combined.
 - **Seed edges (334)** come from co-occurrence in the 35 curated recipes: `weight = 0.5 + 0.5 × min(1, n/3)` where *n* is the number of curated recipes using both ingredients (as core ingredients). The evidence column says "used together in n curated recipes". The graph is **not** artificially complete: most of the 33,670 possible pairs have no stored edge.
